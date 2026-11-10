@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
-import type { BusinessAnalysis } from "../../src/api/business";
+import type { DemoAnalysis } from "../../src/pages/Business/demoData";
 
-const demo: BusinessAnalysis = JSON.parse(readFileSync(new URL("../../public/demos/pepsodent.json", import.meta.url), "utf8"));
+const demo: DemoAnalysis = JSON.parse(readFileSync(new URL("../../public/demos/pepsodent.json", import.meta.url), "utf8"));
 const conditionalCount = Object.values(demo.result.simulation!.stances!).filter(state => state.stance === "conditional").length;
 const messageCount = demo.result.simulation!.events.filter(event => ["post_message", "reply_message"].includes(event.kind)).length;
 
@@ -11,17 +11,21 @@ test("saved demo uses the real intake, idea workspace and result layout", async 
   page.on("request", request => { if (request.method() !== "GET") writes.push(request.method()); });
   await page.route("**/backend/**", route => route.fulfill({ status: 503, json: { message: "Offline" } }));
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto("/business/demo?view=intake");
-  await expect(page.getByRole("heading", { name: "Analisis bisnis baru" })).toBeVisible();
+  await page.goto("/business/demo");
+  await expect(page.getByRole("heading", { name: "Siapkan demo Pepsodent" })).toBeVisible();
   await expect(page.getByLabel("Nama analisis")).toBeDisabled();
   await expect(page.getByLabel("Keterangan dan pertanyaan")).toHaveValue(demo.input_snapshot.context.decision_question);
   await expect(page.getByRole("navigation", { name: "Alur demo" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Mulai simulasi demo", exact: true })).toBeDisabled();
+  await page.getByRole("button", { name: "Gunakan dokumen contoh", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Mulai simulasi demo", exact: true })).toBeDisabled();
+  await page.getByRole("button", { name: "Isi brief contoh", exact: true }).click();
+  await expect(page.getByLabel("Brief untuk stakeholder")).toHaveValue(demo.demo!.public_brief);
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: testInfo.outputPath("intake-desktop.png"), fullPage: true });
-  await page.getByRole("button", { name: "Buka ruang ide dahulu" }).click();
-  await expect(page.getByRole("region", { name: "Ulasan AI tersimpan" })).toBeVisible();
-  await expect(page.getByLabel("Pesan atau penjelasan tambahan")).toBeDisabled();
-  await page.getByRole("button", { name: "Lihat hasil analisis", exact: true }).click();
+  await page.getByRole("button", { name: "Mulai simulasi demo", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Proses analisis Pepsodent", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Lihat hasil langsung", exact: true }).click();
   await expect(page.getByRole("heading", { name: demo.input_snapshot.context.name, exact: true })).toBeVisible();
   await expect(page.locator(".business-results-navigation")).toBeVisible();
   await expect(page.locator(".result-graph-node")).toHaveCount(10);
@@ -46,11 +50,15 @@ test("entry still offers demo or real intake without history", async ({ page }) 
   for (const path of ["/", "/business"]) {
     await page.goto(path);
     await expect(page.getByRole("heading", { name: "Overview", exact: true })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Coba demo/ }).first()).toHaveAttribute("href", "/business/demo?view=process");
+    await expect(page.getByRole("link", { name: /Coba demo/ }).first()).toHaveAttribute("href", "/business/demo?view=intake");
     await expect(page.getByRole("link", { name: /Analisis ide sendiri/ })).toHaveAttribute("href", "/business/new");
     await expect(page.getByText(/Riwayat|Proyek bisnis Anda/)).toHaveCount(0);
   }
   await page.getByRole("link", { name: /Coba demo/ }).first().click();
+  await expect(page.getByRole("heading", { name: "Siapkan demo Pepsodent" })).toBeVisible();
+  await page.getByRole("button", { name: "Gunakan dokumen contoh", exact: true }).click();
+  await page.getByRole("button", { name: "Isi brief contoh", exact: true }).click();
+  await page.getByRole("button", { name: "Mulai simulasi demo", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Proses analisis Pepsodent", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Lihat hasil langsung", exact: true }).click();
   await expect(page.locator(".result-graph-node")).toHaveCount(10);

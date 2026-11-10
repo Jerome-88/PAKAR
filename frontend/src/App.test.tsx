@@ -52,7 +52,7 @@ describe("application routing", () => {
     expect(screen.queryByLabelText("Email")).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Analisis ide sendiri/ })).toHaveAttribute("href", "/business/new");
     for (const link of screen.getAllByRole("link", { name: /Coba demo/ })) {
-      expect(link).toHaveAttribute("href", "/business/demo?view=process");
+      expect(link).toHaveAttribute("href", "/business/demo?view=intake");
     }
   });
 

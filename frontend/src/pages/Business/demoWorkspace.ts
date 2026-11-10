@@ -18,6 +18,7 @@ export function activatePepsodentDemo() {
 export const demoProjectId = "pepsodent-demo";
 export const demoAnalysisId = "pepsodent-demo-analysis";
 export const demoReplayPath = publicDemoOnly ? "/?view=process" : "/business/demo?view=process";
+export const demoIntakePath = publicDemoOnly ? "/?view=intake" : "/business/demo?view=intake";
 export function workspaceAnalysisPath(id: string, tab = "summary", finding?: string) {
   const base = id === demoAnalysisId ? (publicDemoOnly ? "/?view=result" : "/business/demo?view=result") : `/business/analyses/${encodeURIComponent(id)}?view=result`;
   return `${base}&tab=${encodeURIComponent(tab)}${finding ? `&finding=${encodeURIComponent(finding)}` : ""}`;

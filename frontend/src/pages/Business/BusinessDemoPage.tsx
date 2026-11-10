@@ -24,7 +24,7 @@ import "./BusinessReport.css";
 
 export function BusinessDemoPage() {
   const [params, setParams] = useSearchParams();
-  const view = params.get("view") ?? (params.get("step") === "result" ? "result" : publicDemoOnly ? "home" : "process");
+  const view = params.get("view") ?? (params.get("step") === "result" ? "result" : publicDemoOnly ? "home" : "intake");
   const tab = ["summary", "swarm", "chat", "findings", "evidence", "scenario", "report", "audit"].includes(params.get("tab") ?? "") ? params.get("tab")! : "summary";
   const query = useQuery({ queryKey: demoQueryKey, queryFn: loadDemo, enabled: view !== "home" && view !== "projects", staleTime: Infinity, retry: false });
   useEffect(() => { if (view !== "home" && view !== "projects") activatePepsodentDemo(); }, [view]);
@@ -37,7 +37,7 @@ export function BusinessDemoPage() {
   if (view === "projects") return <BusinessProjectListPage />;
   if (!analysis) return <AppShell title="Analisis bisnis" subtitle="Memuat contoh Pepsodent tersimpan."><div className="business-workspace">{query.isError ? <><Notice error>Contoh hasil belum dapat dimuat. Periksa koneksi, lalu coba lagi.</Notice><button type="button" className="button secondary" onClick={() => query.refetch()}>Muat ulang demo</button></> : <p role="status">Memuat contoh hasil...</p>}</div></AppShell>;
   if (view === "process") return <AppShell title="Proses analisis Pepsodent" subtitle="Dari ide, persona, hingga langkah validasi."><div className="business-workspace"><BusinessProcessReplay analysis={analysis} onResult={() => showView("result")} /></div></AppShell>;
-  if (view === "intake") return <BusinessIntakePage savedDemo={{ analysis, publicBrief: analysis.demo?.public_brief ?? "", onResult: () => showView("result"), onWorkspace: () => showView("workspace") }} />;
+  if (view === "intake") return <BusinessIntakePage savedDemo={{ analysis, publicBrief: analysis.demo?.public_brief ?? analysis.input_snapshot.information_policy?.public_brief ?? "", onStart: () => showView("process"), onWorkspace: () => showView("workspace") }} />;
   if (view === "workspace") return <AppShell title={analysis.input_snapshot.context.name} subtitle="Ruang ide dan sumber analisis." actions={<button type="button" className="button primary" onClick={() => showView("result")}>Lihat hasil analisis</button>}><div className="business-workspace"><SavedProjectConversation analysis={analysis} onSources={() => showView("intake")} /></div></AppShell>;
 
   return <AppShell title={analysis.input_snapshot.context.name} subtitle={analysisDateLabel(analysis.created_at)} actions={<Link className="business-result-back" to={publicDemoOnly ? "/" : "/business"}><BusinessResultIcon name="back" />Kembali ke awal</Link>}>
