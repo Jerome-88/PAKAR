@@ -137,3 +137,14 @@ desktop.ini
 
 # --- Standalone Deployments / Demos ---
 /sites/pakar-demo-pepsodent/
+
+# --- Development Documentation, Design Specs & Agent Customizations ---
+# Excluded from repo so VPS clone remains minimal, fast, and clean
+docs/
+.agents/
+PAKAR_PRD_v1.0.docx
+PRODUCT.md
+SUMMARY.md
+TECH_STACK.md
+DEPLOYMENT_AUDIT.md
+skills-lock.json

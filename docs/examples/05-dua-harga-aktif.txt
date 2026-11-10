@@ -1,6 +1,0 @@
-Rencana pembukaan kedai kopi di provinsi DKI Jakarta untuk pekerja kantor.
-Harga jual Rp30.000 per unit.
-Biaya variabel Rp12.000 per unit.
-Biaya tetap Rp36.000.000 per bulan.
-Permintaan dan volume penjualan belum diuji. Supplier memasok bahan harian. Kompetitor dapat mengubah harga.
-Harga jual Rp25.000 per unit.
