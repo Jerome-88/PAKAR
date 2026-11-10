@@ -1,48 +1,45 @@
-name: Deploy Backend
+name: Deploy to VPS
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-vps
+  cancel-in-progress: false
 
 jobs:
   deploy:
-    name: Deploy to VM
-    runs-on: ubuntu-latest
+    name: Deploy to VPS
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
-
+    env:
+      VPS_HOST: ${{ secrets.VPS_HOST || secrets.GCP_HOST }}
+      VPS_USERNAME: ${{ secrets.VPS_USERNAME || secrets.GCP_USERNAME }}
+      VPS_SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY || secrets.GCP_SSH_PRIVATE_KEY }}
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH || '/opt/pakar' }}
     steps:
+      - name: Check SSH configuration
+        run: |
+          test -n "$VPS_HOST" || { echo 'Set VPS_HOST (or GCP_HOST) in repository secrets.'; exit 1; }
+          test -n "$VPS_USERNAME" || { echo 'Set VPS_USERNAME (or GCP_USERNAME) in repository secrets.'; exit 1; }
+          test -n "$VPS_SSH_PRIVATE_KEY" || { echo 'Set VPS_SSH_PRIVATE_KEY (or GCP_SSH_PRIVATE_KEY) in repository secrets.'; exit 1; }
+
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.GCP_HOST }}
-          username: ${{ secrets.GCP_USERNAME }}
-          key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
+          host: ${{ env.VPS_HOST }}
+          username: ${{ env.VPS_USERNAME }}
+          key: ${{ env.VPS_SSH_PRIVATE_KEY }}
+          envs: DEPLOY_PATH
           command_timeout: 50m
-
           script: |
-            set -e
-
-            cd "${{ vars.DEPLOY_PATH || '/opt/pakar' }}"
-
-            echo "== Pull latest code =="
-            git pull origin main
-
-            echo "== Disk usage before build =="
-            df -h /
-
-            echo "== Cleanup Docker build cache =="
-            docker builder prune -af
-
-            echo "== Build images =="
-            docker compose -f compose.yaml build --pull
-
-            echo "== Restart services =="
-            docker compose -f compose.yaml up -d
-
-            echo "== Container status =="
-            docker compose -f compose.yaml ps
-
-            echo "== Disk usage after deployment =="
-            df -h /
+            set -eu
+            cd "$DEPLOY_PATH"
+            git pull --ff-only origin main
+            sh deploy/pakar.sh config --quiet
+            sh deploy/pakar.sh build --pull backend frontend
+            sh deploy/pakar.sh up -d --wait --wait-timeout 180
+            sh deploy/pakar.sh ps

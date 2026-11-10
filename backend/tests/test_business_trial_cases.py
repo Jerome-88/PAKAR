@@ -13,7 +13,7 @@ from test_business_api import make_app, register, wait
 
 
 ROOT = Path(__file__).resolve().parents[2]
-CASES = json.loads((ROOT / "docs/evaluation/business-cases.v0.json").read_text(encoding="utf-8"))["cases"]
+CASES = json.loads((Path(__file__).parent / "fixtures/business-cases.v0.json").read_text(encoding="utf-8"))["cases"]
 EXAMPLES = json.loads((ROOT / "frontend/src/pages/Business/businessExamples.json").read_text(encoding="utf-8"))
 SCENARIOS = {
     "coffee-dki-v0": ({"kind": "competitor_price_cut", "magnitude_percent": 20, "response_strategy": "match_price"}, "3000"),

@@ -32,7 +32,7 @@ test("result chat is discoverable, pins context and persists a follow-up without
   });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(`/business/analyses/${row.id}`);
-  const chatTab = page.getByRole("button", { name: "Tanya PAKAR", exact: true });
+  const chatTab = page.getByRole("button", { name: "Diskusikan hasil ini", exact: true });
   await expect(chatTab).toBeVisible();
   await chatTab.focus();
   await page.keyboard.press("Enter");
@@ -49,13 +49,13 @@ test("result chat is discoverable, pins context and persists a follow-up without
   const composer = page.getByLabel("Pesan atau penjelasan tambahan");
   await composer.fill("Tube saya punya dua ruang. Apa dampaknya ke biaya dan asumsi penilaian?");
   await page.getByLabel("Tanya kepada").selectOption("finance");
-  await page.getByRole("button", { name: "Ringkasan", exact: true }).click();
+  await page.getByRole("button", { name: "Tim Discussion", exact: true }).click();
   await chatTab.click();
   await expect(composer).toHaveValue(/Tube saya punya dua ruang/);
   await page.getByRole("button", { name: "Kirim ke AI", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("Koneksi contoh terputus; pesan belum dikonfirmasi.");
   expect(sends).toHaveLength(1);
-  await page.getByRole("button", { name: "Ringkasan", exact: true }).click();
+  await page.getByRole("button", { name: "Tim Discussion", exact: true }).click();
   await chatTab.click();
   await expect(composer).toHaveValue(/Tube saya punya dua ruang/);
   expect(sends).toHaveLength(1);

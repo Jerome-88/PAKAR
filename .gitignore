@@ -78,7 +78,8 @@ htmlcov/
 .ruff_cache/
 
 # --- Application Runtime Data & Uploads ---
-data/
+/data/
+backend/oasis_engine_runtime/data/
 **/data/uploads/
 **/data/oasis/
 **/data/runtime-audit/

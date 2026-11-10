@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+test.skip(process.env.RUN_BUSINESS_E2E !== "true", "Requires a separate local API/PostgreSQL; uses fixture inference only.");
+
 test("intake freezes disclosure and retries the same launch after an ambiguous response", async ({ page }, info) => {
   const api = "/backend/api/v1/business";
   await page.request.post("/backend/api/auth/register", { data: { name: "Disclosure QA", email: `disclosure-intake-${Date.now()}@example.com`, password: "local-ui-test-password" } });

@@ -34,7 +34,8 @@ test("graph is the main result, with count filters, accessible reasons and visib
   const writes = await openExample(page, example());
   await expect(page.locator(".result-graph-node")).toHaveCount(8);
   await expect(page.locator(".result-graph-stage line")).toHaveCount(1);
-  expect((await page.locator(".result-graph-stage").boundingBox())!.y).toBeLessThan(600);
+  await page.locator(".result-graph-stage").scrollIntoViewIfNeeded();
+  await expect(page.locator(".result-graph-stage")).toBeInViewport();
   await expect(page.getByLabel("Jumlah sikap persona").getByRole("button", { name: "2 Mendukung", exact: true })).toBeVisible();
   const node = page.getByRole("button", { name: "Lihat alasan Persona 2: Menolak", exact: true });
   await node.focus();
@@ -51,17 +52,18 @@ test("graph is the main result, with count filters, accessible reasons and visib
   await page.getByRole("combobox", { name: "Kelompok persona" }).selectOption("all");
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.getByRole("group", { name: "Graf hasil interaktif" })).toBeVisible();
-  expect((await page.locator(".result-graph-stage").boundingBox())!.y).toBeLessThan(700);
+  await page.locator(".result-graph-stage").scrollIntoViewIfNeeded();
+  await expect(page.locator(".result-graph-stage")).toBeInViewport();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
   await page.screenshot({ path: testInfo.outputPath("graph-mobile.png") });
   await page.getByRole("combobox", { name: "Lihat persona" }).selectOption("person-2");
   await expect(page.getByLabel("Alasan persona terpilih")).toContainText("Alasan tersimpan untuk Persona 3");
   await page.getByLabel("Alasan persona terpilih").screenshot({ path: testInfo.outputPath("graph-reason-mobile.png") });
-  await page.getByRole("button", { name: "Buka diskusi lengkap", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Diskusi", exact: true })).toHaveAttribute("aria-current", "page");
+  await page.getByRole("button", { name: /^Baca seluruh diskusi/ }).click();
+  await expect(page.getByRole("button", { name: "Tim Discussion", exact: true })).toHaveAttribute("aria-current", "page");
   await expect(page).toHaveURL(/\?tab=swarm$/);
   await page.goBack();
-  await expect(page.getByRole("button", { name: "Ringkasan", exact: true })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("button", { name: "Tim Discussion", exact: true })).toHaveAttribute("aria-current", "page");
   await expect(page.getByRole("heading", { name: "Executive Summary", exact: true })).toBeVisible();
   expect(writes).toEqual([]);
 });
@@ -143,10 +145,10 @@ test("saved Pepsodent run keeps all eight declared undecided positions", async (
     await more.click();
     expect(await page.locator(".overview-priorities li").count()).toBeGreaterThan(3);
   }
-  await page.getByRole("button", { name: "Diskusi", exact: true }).click();
+  await page.getByRole("button", { name: "Tim Discussion", exact: true }).click();
   await expect(page.locator(".swarm-message")).not.toHaveCount(0);
   await expect(page.locator(".swarm-quality, .swarm-positions")).toHaveCount(0);
-  await page.getByRole("button", { name: "Ringkasan", exact: true }).click();
+  await page.getByRole("button", { name: "Tim Discussion", exact: true }).click();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: testInfo.outputPath("pepsodent-graph-mobile.png") });

@@ -58,12 +58,12 @@ describe("simple outcome summary", () => {
   it("opens the matching recorded reason by keyboard and keeps the selected persona after new messages", () => {
     const people = [persona("a"), persona("b")];
     const row = analysis(people, { a: state("support", "Manfaat konsep menarik"), b: state("conditional", "Perlu uji formula lebih dulu") });
-    const { rerender } = render(<BusinessOverview analysis={row} events={[]} showTab={vi.fn()} />);
+    const { rerender } = render(<MemoryRouter><BusinessOverview analysis={row} events={[]} showTab={vi.fn()} /></MemoryRouter>);
     const node = screen.getByRole("button", { name: "Lihat alasan Persona b: Bersyarat" });
     fireEvent.keyDown(node, { key: "Enter" });
     expect(node).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByText("Perlu uji formula lebih dulu")).toBeVisible();
-    rerender(<BusinessOverview analysis={row} events={[event(1, "a", "support")]} showTab={vi.fn()} />);
+    rerender(<MemoryRouter><BusinessOverview analysis={row} events={[event(1, "a", "support")]} showTab={vi.fn()} /></MemoryRouter>);
     expect(screen.getByRole("combobox", { name: "Lihat persona" })).toHaveValue("b");
     fireEvent.click(screen.getByRole("button", { name: "1 Mendukung" }));
     expect(screen.queryByRole("button", { name: "Lihat alasan Persona b: Bersyarat" })).not.toBeInTheDocument();

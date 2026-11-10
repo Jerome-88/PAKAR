@@ -46,12 +46,14 @@ describe("application routing", () => {
       http.get("/backend/api/v1/business/projects", () => HttpResponse.json({ items: [] })),
     );
     renderApp("/login?next=%2Fbusiness");
-    expect(await screen.findByRole("heading", { name: "Ide Anda, dari berbagai sudut pandang." })).toBeVisible();
+    expect(await screen.findByRole("heading", { name: "Overview" })).toBeVisible();
     expect(screen.getByTestId("location")).toHaveTextContent("/business");
     expect(screen.queryByRole("button", { name: "Keluar" })).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Email")).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Analisis ide sendiri/ })).toHaveAttribute("href", "/business/new");
-    expect(screen.getByRole("link", { name: /Coba demo/ })).toHaveAttribute("href", "/business/demo");
+    for (const link of screen.getAllByRole("link", { name: /Coba demo/ })) {
+      expect(link).toHaveAttribute("href", "/business/demo?view=process");
+    }
   });
 
   it("lets a shared workspace reconnect after backend failure without showing a login form", async () => {

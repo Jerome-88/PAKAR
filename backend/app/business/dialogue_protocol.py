@@ -174,6 +174,17 @@ def decode(raw, sim, actor_id, references, trigger):
         parent = references.get(proposed.reply_to_message)
         if proposed.reply_to_message is not None and parent is None:
             raise ValueError("Nomor pesan tidak ada dalam konteks yang diberikan")
+    if kind == "abstain":
+        # The selected server-owned choice means no statement and no stance
+        # update. Keep the raw proposal in OASIS's trace, but never publish its
+        # incidental text or turn an abstention into a fabricated opinion.
+        state = sim.states[actor_id]
+        return DialogueAction(actor_id=actor_id, target_id="all", kind="abstain",
+                              expected_version=state["version"], parent_event_ids=[], amount=None,
+                              rationale="Persona memilih tidak menambahkan pendapat pada giliran ini.",
+                              content="", visibility="participants", thread_id=None, reply_to=None,
+                              stance=state["stance"], stance_reason=state["stance_reason"],
+                              influenced_by_event_ids=[], dialogue_act="abstain")
     conversation_reply = kind == "reply_message"
     if conversation_reply and (not parent or parent["kind"] not in {"post_message", "reply_message"}):
         raise ValueError("Balasan membutuhkan nomor pesan diskusi yang terlihat")

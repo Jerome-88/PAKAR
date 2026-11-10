@@ -1,20 +1,14 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { BusinessLayout } from "../../components/AppShell/BusinessLayout";
-import { demoReplayPath, workspaceAnalysisPath, workspaceProjectPath } from "./demoWorkspace";
+import { demoReplayPath as savedDemoResultPath, workspaceAnalysisPath, workspaceProjectPath } from "./demoWorkspace";
 import { BusinessResultIcon } from "./BusinessResultIcon";
-import { statusLabel } from "./businessFormatting";
+import { projectDate, statusLabel } from "./businessFormatting";
 import { previewText } from "./resultSummary";
 import { useBusinessProjects } from "./useBusinessProjects";
 import "./BusinessHome.css";
 import "./Business.css";
 import "./BusinessProjects.css";
-
-export const savedDemoResultPath = demoReplayPath;
-export function projectDate(value: string) {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "Belum tercatat" : new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Jakarta" }).format(date);
-}
 
 export function BusinessProjectListPage() {
   const query = useBusinessProjects();

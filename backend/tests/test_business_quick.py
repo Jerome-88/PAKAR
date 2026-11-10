@@ -12,7 +12,7 @@ from app.business.service import BusinessService
 from test_business_api import make_app, register, wait
 
 
-CASES = json.loads((Path(__file__).resolve().parents[2] / "docs/evaluation/business-cases.v0.json").read_text(encoding="utf-8"))["cases"]
+CASES = json.loads((Path(__file__).parent / "fixtures/business-cases.v0.json").read_text(encoding="utf-8"))["cases"]
 
 
 def upload_only(client, case):

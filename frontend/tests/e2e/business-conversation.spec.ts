@@ -1,5 +1,7 @@
 import { expect, test, type Route } from "@playwright/test";
 
+test.skip(process.env.RUN_BUSINESS_E2E !== "true", "Requires a separate local API/PostgreSQL; AI replies are mocked.");
+
 test("project chat keeps ideas versioned and starts a new simulation only explicitly", async ({ page }, testInfo) => {
   const api = "/backend/api/v1/business";
   // React Query cancels obsolete GETs during route changes/StrictMode. A late

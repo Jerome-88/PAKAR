@@ -188,6 +188,26 @@ def test_groq_choice_ids_cannot_construct_a_reply_to_own_message(monkeypatch):
         decode(raw | {"choice": f"reply_question_message_{own['sequence']}"}, sim, b, references, trigger)
 
 
+def test_abstention_cannot_publish_incidental_text_or_change_stance_or_finances():
+    from app.business.dialogue_protocol import request_view, decode
+    from copy import deepcopy
+    sim = simulation()
+    actor = sim.turn_order()[0]
+    context = sim.turn_context(actor)
+    _, _, refs, trigger = request_view(sim, actor, {"actor_id": actor}, context,
+        {"context": {"decision_question": "Apa syarat membeli?"}, "values": sim.values, "config": {"choice_dialogue": True}}, swarm_action_schema(sim, actor, context))
+    key = next(k for k, c in refs.choices.items() if c["action"] == "abstain")
+    state, values = deepcopy(sim.states[actor]), deepcopy(sim.values)
+    raw = {"choice": key, "content": "Teks ini tidak boleh dipublikasikan.", "stance": "oppose", "stance_reason": "Alasan yang tidak boleh mengganti state", "amount": None}
+    action = decode(raw, sim, actor, refs, trigger)
+    event = sim.apply(action, 1)
+    assert event["kind"] == "abstain" and event["content"] == ""
+    assert sim.states[actor]["stance"] == state["stance"]
+    assert sim.states[actor]["stance_reason"] == state["stance_reason"]
+    assert sim.values == values
+    assert raw["content"] == "Teks ini tidak boleh dipublikasikan."
+
+
 def test_compact_valid_supplier_offer_and_operator_accept_use_the_original_financial_reducer():
     from app.business.dialogue_protocol import decode
     sim = simulation()
