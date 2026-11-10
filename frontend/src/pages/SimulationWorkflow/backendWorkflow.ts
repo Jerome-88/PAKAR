@@ -93,6 +93,7 @@ export function mapBackendSnapshot(snapshot: ApiSimulationSnapshot, simulationId
     time: event.time ?? event.elapsed ?? "00:00",
     channel: event.channel ?? "Simulasi",
     persona: event.persona ?? event.persona_name ?? "Persona",
+    personaId: event.persona_id,
     group: event.group ?? "Stakeholder",
     type: event.type ?? event.event_type ?? "Event",
     statement: event.statement ?? event.content ?? "",

@@ -1,3 +1,4 @@
+import { readBrandedStorage } from "./brandedStorage";
 import type { ProjectIntake } from "../pages/SimulationWorkflow/projectIntake";
 import type { ReportSection } from "../pages/SimulationWorkflow/workflowTypes";
 import { authStorageKey } from "../auth/storageNamespace";
@@ -32,7 +33,7 @@ type WorkspaceData = {
   reports: WorkspaceReport[];
 };
 
-const workspaceKey = () => authStorageKey("rekakebijakan-workspace-v1");
+const workspaceKey = () => authStorageKey("pakar-workspace-v1");
 
 const seedProjects: WorkspaceProject[] = [
   {
@@ -136,7 +137,7 @@ function initialData(): WorkspaceData {
 
 function read(): WorkspaceData {
   const key = workspaceKey();
-  const stored = localStorage.getItem(key);
+  const stored = readBrandedStorage(localStorage, key);
   if (!stored) {
     const data = initialData();
     localStorage.setItem(key, JSON.stringify(data));

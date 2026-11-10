@@ -1,3 +1,6 @@
+import { readBrandedStorage } from "../../data/brandedStorage";
+import { PersonaAvatar, AvatarCredits } from "../../components/PersonaAvatar/PersonaAvatar";
+import { agentAvatarId, findPersonaId } from "../../components/PersonaAvatar/avatar";
 import {
   useCallback,
   useEffect,
@@ -167,9 +170,7 @@ function initialQuickPresentation(session: WorkflowSession): WorkflowSession {
 
 function loadQuickPresentation(simulationId: string) {
   try {
-    const value = sessionStorage.getItem(
-      quickPresentationSessionKey(simulationId),
-    );
+    const value = readBrandedStorage(sessionStorage, quickPresentationSessionKey(simulationId));
     if (!value) return null;
     const stored = JSON.parse(value) as {
       version?: number;
@@ -523,7 +524,7 @@ function EnvironmentStep({
                 {demo.personas.slice(0, visibleGroups).map((persona) => (
                   <article key={persona.id}>
                     <div>
-                      <b>{persona.name}</b>
+                      <b className="persona-identity"><PersonaAvatar id={persona.id} size={32} /><span>{persona.name}</span></b>
                       <span>
                         {persona.group} · {persona.role}
                       </span>
@@ -733,10 +734,12 @@ function ActionContent({ event }: { event: SimulationEvent }) {
 
 function EventCard({
   event,
+  personaId,
   selected,
   onSelect,
 }: {
   event: SimulationEvent;
+  personaId?: string;
   selected: boolean;
   onSelect: () => void;
 }) {
@@ -749,9 +752,7 @@ function EventCard({
     >
       <header>
         <div className="event-persona">
-          <span className="event-avatar" aria-hidden="true">
-            {event.persona.charAt(0).toUpperCase()}
-          </span>
+          <PersonaAvatar id={personaId} name={event.persona} role={event.group} size={28} />
           <span>
             <b>{event.persona}</b>
             <small>{event.group}</small>
@@ -1135,6 +1136,7 @@ function SimulationStep({
                 </span>
                 <EventCard
                   event={event}
+                  personaId={event.personaId ?? findPersonaId(demo.personas, event.persona, event.group)}
                   selected={
                     activeNode ===
                     event.group.toLowerCase().replaceAll(" ", "-")
@@ -1746,9 +1748,7 @@ function InteractionStep({
                 </label>
                 {selectedPersona && (
                   <div className="persona-profile">
-                    <span className="persona-profile-avatar" aria-hidden="true">
-                      {selectedPersona.name.charAt(0)}
-                    </span>
+                    <PersonaAvatar id={selectedPersona.id} size={40} />
                     <div>
                       <h2>{selectedPersona.name}</h2>
                       <p>
@@ -1831,7 +1831,7 @@ function InteractionStep({
                         }
                       />
                       <span>
-                        <b>{persona.name}</b>
+                        <b className="persona-identity"><PersonaAvatar id={persona.id} size={32} /><span>{persona.name}</span></b>
                         <small>
                           {persona.group} · {persona.stance}
                         </small>
@@ -1859,9 +1859,7 @@ function InteractionStep({
                     key={message.id}
                     className={`chat-message ${message.role}`}
                   >
-                    <span className="message-avatar" aria-hidden="true">
-                      {message.role === "user" ? "A" : message.author.charAt(0)}
-                    </span>
+                    {message.role === "user" ? <span className="message-avatar" aria-hidden="true">A</span> : <PersonaAvatar id={agentAvatarId(message.author)} kind="agent" size={32} />}
                     <div>
                       <header>
                         <b>{message.author}</b>
@@ -1902,9 +1900,7 @@ function InteractionStep({
                     .map((item) => (
                       <article className="interview-result" key={item.id}>
                         <header>
-                          <span className="message-avatar" aria-hidden="true">
-                            {item.persona_name.charAt(0)}
-                          </span>
+                          <PersonaAvatar id={item.persona_id} name={item.persona_name} size={32} />
                           <div>
                             <b>{item.persona_name}</b>
                             <time>
@@ -2382,7 +2378,7 @@ export default function SimulationWorkflowPage() {
     const mode: ViewMode = step >= 4 ? "workbench" : session.viewMode;
     const next = { ...session, currentStep: step };
     setSession(next);
-    document.title = `${resolvedDemo.title} · ${stepQuery(step)} · RekaKebijakan`;
+    document.title = `${resolvedDemo.title} · ${stepQuery(step)} · PAKAR`;
     navigate(
       `/simulation/${simulationId}?step=${stepQuery(step)}&mode=${mode}`,
     );
@@ -2400,7 +2396,7 @@ export default function SimulationWorkflowPage() {
         4: { ...current.steps[4], status: "ready" },
       },
     }));
-    document.title = `${resolvedDemo.title} · report · RekaKebijakan`;
+    document.title = `${resolvedDemo.title} · report · PAKAR`;
     navigate(`/simulation/${simulationId}?step=report&mode=workbench`);
   };
   const setMode = (mode: ViewMode) => {
@@ -3043,6 +3039,7 @@ export default function SimulationWorkflowPage() {
         )}
       </main>
       {session.currentStep < 4 && <SystemConsole logs={session.logs} />}
+      <AvatarCredits />
     </div>
   );
 }

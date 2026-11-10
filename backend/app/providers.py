@@ -22,7 +22,7 @@ from .provider_errors import (
 )
 
 
-logger = logging.getLogger("rekakebijakan.provider")
+logger = logging.getLogger("pakar.provider")
 
 
 GROUPS = ["Pemerintah daerah", "Pelaku usaha", "Warga terdampak", "Akademisi", "Masyarakat sipil", "Media lokal"]

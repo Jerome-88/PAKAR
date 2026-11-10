@@ -1,0 +1,99 @@
+/* Extend the incumbent flat IBM Plex workspace; conversation is an inspection tool. */
+.project-conversation-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); border-top: 1px solid var(--line); }
+.project-chat { min-width: 0; }
+.project-chat-context { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding: 20px 24px 20px 0; border-bottom: 1px solid var(--line); }
+.project-chat-log { max-height: 65vh; min-height: 360px; overflow-y: auto; padding: 12px 24px 24px 0; overscroll-behavior: contain; scrollbar-color: var(--muted) var(--surface); scrollbar-width: thin; }
+.project-chat-log:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.project-chat-empty { padding: 44px 16px; }
+.project-chat-empty p { color: var(--muted); }
+.project-chat-message { padding: 20px 0; overflow-wrap: anywhere; }
+.project-chat-message + .project-chat-message { border-top: 1px solid var(--line); }
+.project-chat-message.is-user { background: var(--surface); padding: 16px 20px; margin-top: 20px; }
+.project-chat-message > p, .project-idea-text { white-space: pre-wrap; }
+.project-chat-author { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; line-height: 1.5; }
+.project-chat-author > span:last-child, .project-chat-author time, .project-chat-message > small { color: var(--muted); font-size: 14px; }
+.project-chat-message.is-agent > .project-chat-author { margin-bottom: 16px; }
+.project-chat-message.is-agent > .business-readable-text { max-width: 72ch; line-height: 1.75; }
+.project-chat-message.is-agent > .business-readable-text p { line-height: 1.75; }
+.project-chat-questions { max-width: 72ch; margin-top: 24px; font-size: 14px; }
+.chat-citation { display: inline; border: 0; border-radius: 0; padding: 2px; background: none; color: var(--blue-dark); font: inherit; font-size: 14px; cursor: pointer; text-underline-offset: 3px; text-decoration: underline; }
+.chat-citation:hover { color: var(--ink); background: var(--surface); }
+.chat-citation:focus-visible, .project-chat-sources blockquote:focus { outline: 2px solid var(--blue); outline-offset: 3px; }
+.project-chat-sources { max-width: 72ch; font-size: 14px; }
+.project-chat-source-title { display: block; font-size: 14px; font-weight: 600; }
+.project-chat-sources blockquote { scroll-margin-block: 12px; }
+.project-chat-message > small { display: block; margin-top: 8px; }
+.project-chat-message p { margin: 12px 0; }
+.project-chat-message blockquote { font-size: 14px; }
+.project-chat-message blockquote footer { font-size: 14px; }
+.project-chat-questions ul { padding-left: 20px; line-height: 1.6; }
+.project-chat-questions li + li { margin-top: 8px; }
+.project-chat-composer { border-top: 1px solid var(--line); padding: 20px 24px 0 0; }
+.project-chat-send { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 16px; margin-top: 16px; }
+.project-chat-send label { flex: 1 1 220px; }
+.project-chat-send .button { min-height: 44px; }
+.project-conversation .project-chat-note { font-size: 14px; line-height: 1.5; color: var(--muted); margin: 12px 0; }
+.project-idea-panel { border-left: 1px solid var(--line); padding: 20px 0 24px 24px; min-width: 0; }
+.project-idea-panel { scroll-margin-top: 80px; }
+.project-idea-panel h3 { margin-top: 0; }
+.project-idea-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.project-idea-panel p, .project-idea-panel summary, .project-idea-panel legend { font-size: 14px; }
+.project-idea-panel .button { width: 100%; text-align: center; justify-content: center; }
+.project-idea-editor { border-top: 1px solid var(--line); margin-top: 20px; padding-top: 8px; }
+.project-idea-editor label + label { margin-top: 16px; }
+.project-idea-editor fieldset { border: 1px solid var(--line); padding: 12px; margin: 16px 0; min-width: 0; }
+.project-idea-editor .business-check { display: flex; flex-direction: row; align-items: flex-start; overflow-wrap: anywhere; }
+.project-idea-editor .business-actions { gap: 12px; }
+.project-idea-run { margin-top: 24px; border-top: 1px solid var(--line); padding-top: 4px; }
+.project-idea-run > button { margin-top: 16px; }
+.project-source-list { border-top: 1px solid var(--line); padding-top: 16px; }
+.project-source-list ul { padding-left: 20px; font-size: 14px; line-height: 1.5; }
+.project-source-list li { overflow-wrap: anywhere; margin-bottom: 12px; }
+.project-source-list li span { display: block; color: var(--muted); margin-top: 4px; }
+.project-source-upload { display: grid; gap: 20px; margin-top: 24px; }
+.project-source-upload input { max-width: 100%; font-size: 14px; }
+.analysis-conversation { max-width: 1040px; margin-inline: auto; }
+.analysis-conversation > .business-section-heading { margin: 0 0 20px; gap: 16px; }
+.analysis-conversation > .business-section-heading h2 { font-size: 24px; }
+.analysis-conversation > .business-section-heading > a { font-size: 14px; min-height: 40px; display: inline-flex; align-items: center; }
+.analysis-conversation .project-conversation-layout { grid-template-columns: minmax(0, 1fr); border-top: 0; }
+.analysis-conversation .project-chat { border: 1px solid var(--line); background: #fff; }
+.analysis-conversation .project-chat-log { min-height: 280px; max-height: 480px; padding: 8px 32px 24px; }
+.analysis-conversation .project-chat-log:has(.project-chat-empty) { min-height: 0; }
+.analysis-conversation .project-chat-empty { padding: 20px 0; }
+.analysis-conversation .analysis-chat-context { margin: 0; padding: 16px 32px; max-width: none; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+.analysis-conversation .project-chat-composer { padding: 24px 32px; background: var(--surface); }
+.business-workspace .analysis-conversation :is(textarea, select) { background: #fff; border: 1px solid #8d8d8d; }
+.analysis-conversation textarea { resize: vertical; }
+.analysis-conversation .project-chat-send { justify-content: space-between; }
+.analysis-conversation .project-chat-send label { flex: 0 1 320px; }
+.analysis-conversation .project-chat-message.is-user { max-width: 85%; margin-left: auto; padding: 16px 20px; border-radius: 4px; }
+.analysis-conversation .project-chat-turn { max-width: 80ch; margin-inline: auto; }
+.analysis-conversation .project-chat-message.is-agent { padding-top: 28px; padding-bottom: 24px; }
+.analysis-conversation .project-chat-author .persona-identity { font-weight: 600; }
+.analysis-conversation .project-chat-message.is-agent > .business-readable-text { font-size: 16px; }
+.analysis-conversation .project-chat-note { max-width: 88ch; margin-bottom: 0; }
+.analysis-chat-prompts { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px 24px; }
+.analysis-chat-prompts button { text-align: left; }
+.analysis-conversation .project-chat-message.is-user > a { font-size: 14px; }
+@media (max-width: 640px) {
+  .analysis-conversation .project-chat-log { padding: 8px 16px 20px; max-height: 55svh; }
+  .analysis-conversation .analysis-chat-context { padding: 16px; }
+  .analysis-conversation .project-chat-composer { padding: 20px 16px; }
+  .analysis-conversation .project-chat-message.is-user { max-width: 100%; }
+  .analysis-conversation .project-chat-send label { flex-basis: 100%; }
+}
+@media (max-width: 850px) {
+  .project-conversation-layout { grid-template-columns: minmax(0, 1fr); }
+  .project-idea-panel { border-left: 0; border-top: 1px solid var(--line); padding: 20px 0 24px; margin-top: 24px; }
+  .project-chat-context, .project-chat-composer { padding-right: 0; }
+  .project-chat-log { padding-right: 0; min-height: 280px; max-height: 65svh; }
+  .project-chat-empty { padding: 28px 0; }
+  .project-idea-panel .button { width: auto; }
+  .project-source-upload { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 480px) {
+  .project-chat-context, .project-source-upload { grid-template-columns: minmax(0, 1fr); }
+  .project-chat-send > .button { width: 100%; }
+  .project-chat-message.is-user { padding: 16px; }
+}

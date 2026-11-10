@@ -1,0 +1,82 @@
+.pakar-business-layout { --business-sidebar-width: 324px; display: grid; grid-template-columns: var(--business-sidebar-width) minmax(0, 1fr); min-height: 100dvh; }
+.pakar-business-layout.is-collapsed { --business-sidebar-width: 88px; }
+.pakar-sidebar { position: sticky; top: 0; height: 100dvh; min-width: 0; display: flex; flex-direction: column; padding: 28px 20px 20px; border-right: 1px solid #ddd; background: #fff; z-index: 20; }
+.pakar-sidebar-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 76px; padding-bottom: 22px; border-bottom: 1px solid #dcdcdc; margin-bottom: 28px; }
+.pakar-sidebar-head .brand-workspace { gap: 14px; }
+.pakar-sidebar-head .brand-workspace > .pakar-mascot { width: 55px; height: 50px; }
+.pakar-sidebar-head .brand-workspace > .pakar-mascot > span { width: 55px; height: 50px; }
+.pakar-sidebar-collapse { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 28px; height: 28px; padding: 2px; border: 1px solid #aaa; border-radius: 4px; background: #fff; color: var(--ink); cursor: pointer; }
+.pakar-sidebar-collapse:hover { background: #f3f3f3; }
+.pakar-sidebar-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.pakar-sidebar-icon img { display: block; max-width: none; }
+.pakar-sidebar-nav { display: flex; flex-direction: column; gap: 14px; min-height: 0; overflow-y: auto; flex: 1; scrollbar-width: thin; }
+.pakar-sidebar-new { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 56px; padding: 16px 20px; margin-bottom: 8px; border: 0; border-radius: 30px; background: #fd937b; color: #242424; font-size: 14px; font-weight: 700; line-height: 1.5; text-decoration: none; }
+.pakar-sidebar-new:hover { background: #f78369; }
+.pakar-sidebar-new.is-unavailable { background: #f1e7e3; color: #74645e; cursor: not-allowed; }
+.pakar-sidebar-new.is-unavailable .pakar-sidebar-icon { opacity: .6; }
+.pakar-sidebar-link { display: flex; align-items: center; gap: 19px; min-height: 52px; padding: 12px 18px; border-radius: 26px; color: #171717; font-size: 16px; font-weight: 600; line-height: 1.5; text-decoration: none; }
+.pakar-sidebar-link > .pakar-sidebar-icon { width: 26px; }
+.pakar-sidebar-link:hover, .pakar-sidebar-link.is-active { background: #f3f3f3; }
+.pakar-sidebar-current { padding-top: 2px; }
+.pakar-sidebar-section { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; width: 100%; padding: 8px 0 8px 18px; border: 0; background: #fff; color: #171717; font: inherit; font-size: 15px; font-weight: 600; text-align: left; cursor: pointer; }
+.pakar-sidebar-section-name { display: inline-flex; align-items: center; gap: 19px; }
+.pakar-sidebar-section-name > .pakar-sidebar-icon { width: 26px; }
+.pakar-sidebar-chevron { display: inline-flex; align-items: center; justify-content: center; width: 33px; height: 33px; border-radius: 50%; background: #f3f3f3; }
+.pakar-sidebar-chevron.is-open { transform: rotate(180deg); }
+.pakar-sidebar-analysis { margin: 10px 0 0 16px; padding: 0 0 0 14px; border-left: 1px solid #aaa; }
+.pakar-sidebar-analysis a { display: block; padding: 14px 16px; border-radius: 25px; background: #f3f3f3; color: #171717; font-size: 13px; font-weight: 600; line-height: 1.6; text-decoration: none; overflow-wrap: anywhere; }
+.pakar-sidebar-analysis a:hover { background: #eaeaea; }
+.pakar-sidebar-footer { display: flex; align-items: center; gap: 14px; padding-top: 24px; margin-top: auto; }
+.pakar-sidebar-footer > .pakar-mascot { width: 38px; height: 38px; }
+.pakar-sidebar-footer strong { display: block; font-size: 13px; font-weight: 700; line-height: 1.5; }
+.pakar-sidebar-footer div > span { display: block; color: var(--muted); font-size: 10px; line-height: 1.6; }
+.pakar-business-content { min-width: 0; background: var(--pakar-canvas); }
+.pakar-business-content .pakar-home { min-height: 100dvh; }
+.pakar-business-content .pakar-home-main { padding-top: 43px; }
+.pakar-business-content .pakar-home-footer { padding-inline: 28px; }
+.pakar-business-account { display: flex; align-items: center; justify-content: flex-end; gap: 14px; padding: 14px 28px 0; font-size: 12px; color: var(--muted); }
+.pakar-business-account button { padding: 8px 12px; border: 1px solid var(--line); border-radius: 20px; background: #fff; color: var(--ink); font: inherit; cursor: pointer; }
+.pakar-mobile-header { display: none; }
+.is-collapsed .pakar-sidebar { padding: 24px 12px 20px; }
+.is-collapsed .pakar-sidebar-head { flex-direction: column; gap: 16px; padding-bottom: 20px; margin-bottom: 22px; }
+.is-collapsed .pakar-sidebar-head .brand-workspace { gap: 0; }
+.is-collapsed .pakar-sidebar-head .brand-workspace-name, .is-collapsed .pakar-sidebar .pakar-sidebar-label { display: none; }
+.is-collapsed .pakar-sidebar-head .brand-workspace > .pakar-mascot { width: 46px; height: 44px; }
+.is-collapsed .pakar-sidebar-head .brand-workspace > .pakar-mascot > span { width: 44px; height: 40px; }
+.is-collapsed .pakar-sidebar-collapse .pakar-sidebar-icon { transform: rotate(180deg); }
+.is-collapsed .pakar-sidebar-link { justify-content: center; min-height: 52px; padding-inline: 0; gap: 0; }
+.is-collapsed .pakar-sidebar-new { padding-inline: 0; min-height: 52px; }
+.is-collapsed .pakar-sidebar-footer { justify-content: center; }
+@media (min-width: 761px) and (max-width: 1359px) {
+  .pakar-business-layout { --business-sidebar-width: 272px; }
+  .pakar-business-layout.is-collapsed { --business-sidebar-width: 88px; }
+  .pakar-sidebar { padding-inline: 16px; }
+  .pakar-sidebar-head { gap: 12px; }
+  .pakar-sidebar-head .brand-workspace { gap: 10px; }
+}
+@media (min-width: 761px) and (max-width: 1200px) {
+  .pakar-business-layout:not(.is-collapsed) .pakar-home-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pakar-business-layout:not(.is-collapsed) .pakar-home-heading { flex-direction: column; align-items: flex-start; }
+  .pakar-business-layout:not(.is-collapsed) .pakar-home-review, .pakar-business-layout:not(.is-collapsed) .overview-executive-layout { grid-template-columns: minmax(0, 1fr); }
+  .pakar-business-layout:not(.is-collapsed) .pakar-finding-grid { grid-template-columns: minmax(0, 1fr); }
+  .pakar-business-layout:not(.is-collapsed) .pakar-finding-card h3, .pakar-business-layout:not(.is-collapsed) .pakar-finding-next p { min-height: 0; }
+  .pakar-business-layout:not(.is-collapsed) .business-overview .result-graph { grid-template-columns: minmax(0, 1fr); }
+  .pakar-business-layout:not(.is-collapsed) .project-conversation-layout { grid-template-columns: minmax(0, 1fr); }
+  .pakar-business-layout:not(.is-collapsed) .project-idea-panel { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; }
+}
+@media (max-width: 760px) {
+  .pakar-business-layout, .pakar-business-layout.is-collapsed { display: block; }
+  .pakar-sidebar { display: none; }
+  .pakar-mobile-header { display: block; padding: 12px 18px 8px; border-bottom: 1px solid var(--line); background: #fff; }
+  .pakar-mobile-header > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .pakar-mobile-header .pakar-sidebar-new { min-height: 42px; margin: 0; padding: 9px 15px; font-size: 12px; }
+  .pakar-mobile-header > nav { display: flex; align-items: center; gap: 8px; margin-top: 12px; overflow-x: auto; scrollbar-width: thin; }
+  .pakar-mobile-header > nav a { display: block; flex-shrink: 0; padding: 9px 13px; border-radius: 22px; color: var(--muted); font-size: 12px; font-weight: 600; line-height: 1.5; text-decoration: none; }
+  .pakar-mobile-header > nav a[aria-current=page] { color: var(--ink); background: #f3f3f3; }
+  .pakar-mobile-header > nav .pakar-mobile-current { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pakar-business-content .pakar-home-main { padding-top: 26px; }
+  .pakar-business-content .pakar-home-footer { padding-inline: 18px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pakar-sidebar-link, .pakar-sidebar-new { transition: background-color .15s ease; }
+}

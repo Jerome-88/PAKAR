@@ -86,7 +86,12 @@ def test_local_storage_rejects_unsafe_keys(storage: LocalStorageBackend, key: st
 def test_local_storage_rejects_symlink_escape(storage: LocalStorageBackend, tmp_path: Path):
     outside = tmp_path / "outside"
     outside.mkdir()
-    (storage.root / "escape").symlink_to(outside, target_is_directory=True)
+    try:
+        (storage.root / "escape").symlink_to(outside, target_is_directory=True)
+    except OSError as error:
+        if getattr(error, "winerror", None) == 1314:
+            pytest.skip("Windows account does not have the symlink privilege")
+        raise
 
     with pytest.raises(ValueError):
         storage.save("escape/file.txt", b"unsafe")

@@ -22,6 +22,9 @@ class TextSegment:
     page: int | None = None
     paragraph: int | None = None
     line: int | None = None
+    table: int | None = None
+    row: int | None = None
+    column: int | None = None
 
 
 @dataclass(frozen=True)
@@ -85,9 +88,27 @@ def extract_document(path: Path, max_pdf_pages: int = 200, max_chars: int = 2_00
                     raise ValueError("Kontainer DOCX tidak valid")
         except zipfile.BadZipFile as error:
             raise ValueError("Kontainer DOCX tidak valid") from error
-        for paragraph_index, paragraph in enumerate(Document(path).paragraphs, 1):
-            for line_index, line in enumerate(paragraph.text.splitlines() or [paragraph.text], 1):
-                values.append((line, {"page": None, "paragraph": paragraph_index, "line": line_index}))
+        from docx.table import Table
+
+        paragraph_index = 0
+        table_index = 0
+        for block in Document(path).iter_inner_content():
+            if isinstance(block, Table):
+                table_index += 1
+                for row_index, row in enumerate(block.rows, 1):
+                    seen = set()
+                    for column_index, cell in enumerate(row.cells, 1):
+                        # Merged cells repeat the same XML cell in row.cells.
+                        if cell._tc in seen:
+                            continue
+                        seen.add(cell._tc)
+                        for paragraph in cell.paragraphs:
+                            paragraph_index += 1
+                            values.append((paragraph.text, {"page": None, "paragraph": paragraph_index, "table": table_index, "row": row_index, "column": column_index}))
+            else:
+                paragraph_index += 1
+                for line_index, line in enumerate(block.text.splitlines() or [block.text], 1):
+                    values.append((line, {"page": None, "paragraph": paragraph_index, "line": line_index}))
     else:
         paragraph = 0
         try:
@@ -119,6 +140,7 @@ def _chunk_metadata(extraction: ExtractedDocument | None, start: int, end: int) 
             "page": segment.page,
             "paragraph": segment.paragraph,
             "line": segment.line,
+            **({"table": segment.table, "row": segment.row, "column": segment.column} if segment.table is not None else {}),
             "char_start": max(start, segment.char_start),
             "char_end": min(end, segment.char_end),
         }

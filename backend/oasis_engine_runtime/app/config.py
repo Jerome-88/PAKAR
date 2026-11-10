@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 
 # Load the .env file from the project root.
-# Path: rekakebijakan/.env (relative to backend/app/config.py)
+# Path: pakar/.env (relative to backend/app/config.py)
 project_root_env = os.path.join(os.path.dirname(__file__), '../../.env')
 
 if os.path.exists(project_root_env):
@@ -18,7 +18,7 @@ class Config:
     """Flask configuration."""
     
     # Flask configuration
-    SECRET_KEY = os.environ.get('SECRET_KEY', 'rekakebijakan-secret-key')
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'pakar-secret-key')
     DEBUG = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
     
     # Disable ASCII escaping so non-ASCII JSON characters display directly.
@@ -70,7 +70,7 @@ class Config:
         if not cls.ZEP_API_KEY:
             errors.append("ZEP_API_KEY is not configured")
         if os.environ.get("ZEP_API_URL"):
-            errors.append("ZEP_API_URL is not supported; rekakebijakan connects only to Zep Cloud")
+            errors.append("ZEP_API_URL is not supported; pakar connects only to Zep Cloud")
         if cls.DEBUG:
             import warnings
             warnings.warn("Flask DEBUG mode is enabled. Do not use in production.", RuntimeWarning)

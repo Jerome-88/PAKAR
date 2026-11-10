@@ -6,7 +6,7 @@ from pathlib import Path
 
 LOCAL_SCRIPTS = Path(__file__).resolve().parents[1] / "oasis_engine_runtime" / "scripts"
 SCRIPTS = LOCAL_SCRIPTS if LOCAL_SCRIPTS.exists() else Path(
-    "/opt/rekakebijakan/oasis_engine_runtime/scripts"
+    "/opt/pakar/oasis_engine_runtime/scripts"
 )
 
 

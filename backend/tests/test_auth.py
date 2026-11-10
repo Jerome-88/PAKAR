@@ -43,7 +43,7 @@ def test_register_cookie_me_logout_login_duplicate_and_invalid_credentials(tmp_p
         assert created.status_code == 201
         assert created.json()["user"]["email"] == "user@example.com"
         cookie = created.headers["set-cookie"]
-        assert "rk_session=" in cookie
+        assert "pakar_session=" in cookie
         assert "HttpOnly" in cookie
         assert "Max-Age=604800" in cookie
         assert client.get("/api/auth/me").json()["user"]["name"] == "Pengguna Satu"
@@ -132,18 +132,18 @@ def test_request_ids_and_security_headers_are_applied(tmp_path, database_url):
 
         metrics = client.get("/metrics")
         assert metrics.status_code == 200
-        assert "rekakebijakan_http_requests_total" in metrics.text
+        assert "pakar_http_requests_total" in metrics.text
         assert 'route="/health"' in metrics.text
-        assert "rekakebijakan_oldest_queued_job_age_seconds" in metrics.text
+        assert "pakar_oldest_queued_job_age_seconds" in metrics.text
 
 
 def test_session_and_user_persist_across_app_restart(tmp_path, database_url):
     app = make_app(tmp_path, database_url)
     with TestClient(app) as client:
         register(client)
-        token = client.cookies.get("rk_session")
+        token = client.cookies.get("pakar_session")
     with TestClient(make_app(tmp_path, database_url)) as reopened:
-        reopened.cookies.set("rk_session", token)
+        reopened.cookies.set("pakar_session", token)
         assert reopened.get("/api/auth/me").json()["user"]["email"] == "user@example.com"
 
 

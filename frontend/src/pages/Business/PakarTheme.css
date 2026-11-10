@@ -1,0 +1,114 @@
+﻿@font-face { font-family: Quicksand; src: url("/figma/pakar/quicksand-latin.woff2") format("woff2"); font-weight: 300 700; font-display: swap; }
+@font-face { font-family: Montserrat; src: url("/figma/pakar/montserrat-latin.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+.pakar-home, .app-shell-business {
+  --pakar-canvas: #f9f9f9;
+  --pakar-coral: #fd937b;
+  --pakar-yellow: #fed058;
+  --pakar-purple: #b896df;
+  --pakar-blue: #a0c0e6;
+  --ink: #171717;
+  --muted: #686868;
+  --subtle: #737373;
+  --surface: #f3f3f3;
+  --surface-strong: #e9e9e9;
+  --line: #ececec;
+  --blue: #8c492f;
+  --blue-dark: #713d28;
+  --blue-hover: #a55a3c;
+  --blue-pressed: #63331f;
+  font-family: Quicksand, sans-serif;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--pakar-canvas);
+  accent-color: #9c6146;
+  scrollbar-color: #ccc2bb var(--pakar-canvas);
+}
+.pakar-home :is(button, input, select, textarea), .app-shell-business :is(button, input, select, textarea) { font-family: Quicksand, sans-serif; }
+.pakar-home ::selection, .app-shell-business ::selection { background: #ffdfd5; color: #3f2b24; }
+.pakar-home :is(button, a, input, textarea, select, summary):focus-visible, .app-shell-business :is(button, a, input, textarea, select, summary):focus-visible { outline: 2px solid #925435; outline-offset: 4px; }
+.pakar-home input, .pakar-home textarea, .app-shell-business input, .app-shell-business textarea { caret-color: #8c492f; }
+.brand-workspace { display: inline-flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; flex-shrink: 0; }
+.brand-workspace-name { display: flex; flex-direction: column; gap: 1px; }
+.brand-workspace-name small { color: var(--muted); font-family: Quicksand, sans-serif; font-size: 9px; font-weight: 500; line-height: 1.5; letter-spacing: .03em; }
+.brand-workspace .brand-workspace-name b { color: #141414; font-family: Montserrat, sans-serif; font-size: 20px; font-weight: 700; line-height: 1.2; letter-spacing: -.025em; }
+.pakar-top-navigation { display: flex; align-items: center; gap: 26px; margin-left: auto; }
+.pakar-top-navigation a { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; color: var(--muted); font-size: 13px; font-weight: 600; line-height: 1.4; text-decoration: none; }
+.pakar-top-navigation a:hover, .pakar-top-navigation a[aria-current=page] { color: var(--ink); }
+.pakar-top-navigation .pakar-new-analysis { color: var(--ink); background: var(--pakar-coral); padding: 10px 20px; border-radius: 30px; font-weight: 700; }
+.pakar-top-navigation .pakar-new-analysis:hover { background: #f78369; }
+.app-shell-business .app-topbar { min-height: 86px; padding: 12px max(28px, calc((100vw - 1240px) / 2)); border-color: var(--line); }
+.app-shell-business .app-main, .app-shell-business .app-main:has(.business-results-navigation) { width: 100%; max-width: 1296px; margin-inline: auto; padding: 34px 28px 64px; }
+.app-shell-business .app-page-header { gap: 20px; padding-bottom: 24px; border-bottom: 0; }
+.app-shell-business .app-page-header h1, .app-shell-business .app-main:has(.business-results-navigation) > .app-page-header h1 { font-size: 28px; line-height: 1.35; font-weight: 700; letter-spacing: -.025em; }
+.app-shell-business .app-page-header p:not(.eyebrow), .app-shell-business .app-main:has(.business-results-navigation) > .app-page-header p { font-size: 15px; line-height: 1.7; margin-top: 6px; }
+.app-shell-business .business-workspace { margin-top: 12px; }
+.app-shell-business .business-workspace h2 { font-size: 23px; font-weight: 700; letter-spacing: -.02em; }
+.app-shell-business .business-workspace h3 { font-weight: 700; }
+.app-shell-business .button { border-radius: 28px; padding: 12px 22px; font-weight: 700; }
+.app-shell-business .primary { background: var(--pakar-yellow); color: var(--ink); }
+.app-shell-business .primary:hover:not(:disabled) { background: #f5c441; }
+.app-shell-business .primary:active:not(:disabled) { background: #e9b82f; }
+.app-shell-business .secondary { color: var(--ink); border-color: #353535; background: #fff; }
+.app-shell-business .secondary:hover:not(:disabled) { background: var(--surface); }
+.app-shell-business .button:disabled { background: #e8e5e1; border-color: #e8e5e1; color: #746f69; }
+.app-shell-business .business-notice { padding: 15px 20px; border: 1px solid #eee2c3; border-radius: 10px; color: #725c27; background: #fff9eb; font-size: 13px; }
+.app-shell-business .business-notice.is-error { background: #fff0ed; border-color: #f2ccc3; color: #a33b32; }
+.app-shell-business .business-status, .app-shell-business .business-severity { border-radius: 20px; padding-inline: 11px; font-weight: 700; }
+.app-shell-business .business-status.running { color: #315c8d; background: #e5effb; }
+.app-shell-business .business-status.partial { background: #fff2ce; color: #785b00; }
+.app-shell-business .business-intake { max-width: 1040px; padding: 28px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.app-shell-business .business-workspace input:not([type=checkbox]):not([type=file]), .app-shell-business .business-workspace select, .app-shell-business .business-workspace textarea { border: 1px solid #d7d3ce; border-radius: 8px; background: #fff; line-height: 1.6; }
+.app-shell-business .business-workspace :is(input, textarea, select):focus-visible { border-color: #925435; }
+.app-shell-business .business-upload { background: #fbfaf8; border-color: #c9b6a5; border-radius: 10px; }
+.app-shell-business .business-documents > div, .app-shell-business .business-inline-editor, .app-shell-business .business-validation-task { border-radius: 10px; }
+.app-shell-business .business-tabs { gap: 6px; border: 0; padding: 5px; width: fit-content; background: #efedeb; border-radius: 30px; }
+.app-shell-business .business-tabs button, .app-shell-business .business-results-navigation .business-tabs button { border: 0; border-radius: 24px; background: transparent; min-height: 44px; padding: 10px 22px; font-weight: 600; color: #68605b; }
+.app-shell-business .business-tabs button.active, .app-shell-business .business-results-navigation .business-tabs button.active { background: #fff; color: var(--ink); font-weight: 700; }
+.app-shell-business .business-tabs button:hover { background: #faf8f5; }
+.app-shell-business .business-results-navigation .business-tabs { flex: initial; }
+.app-shell-business .business-result-back, .app-shell-business .business-result-export { border-radius: 24px; font-weight: 600; }
+.app-shell-business .business-result-back { color: var(--ink); }
+.app-shell-business .overview-positions { gap: 14px; background: transparent; border: 0; }
+.app-shell-business .overview-positions button { min-height: 90px; border: 1px solid var(--line); border-radius: 10px; background: #fff; padding: 20px; }
+.app-shell-business .overview-positions button + button { border-left: 1px solid var(--line); }
+.app-shell-business .overview-positions button[aria-pressed=true] { border-color: #b68a61; background: #fff8e9; }
+.app-shell-business .overview-positions strong { font-size: 30px; font-weight: 700; }
+.app-shell-business .overview-positions span { font-weight: 600; }
+.app-shell-business .result-graph { border-color: var(--line); border-radius: 12px; overflow: hidden; }
+.app-shell-business .result-graph-heading { padding: 22px 24px; }
+.app-shell-business .business-workspace .result-graph-heading h2 { font-size: 20px; }
+.app-shell-business .result-graph-stage { background: #fbfaf8; }
+.app-shell-business .result-graph-detail { background: #fff; }
+.app-shell-business .result-network-controls button { border-radius: 8px; }
+.app-shell-business .overview-executive-summary { border-color: var(--line); border-radius: 12px; padding: 26px; }
+.app-shell-business .business-workspace .overview-executive-summary .overview-heading h3 { font-weight: 700; }
+.app-shell-business .business-summary-chat { background: var(--pakar-yellow); color: var(--ink); border: 1px solid transparent; border-radius: 24px; padding: 10px 18px; font-weight: 700; }
+.app-shell-business .business-summary-chat:hover { background: #f5c441; }
+.app-shell-business .project-conversation { padding: 24px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.app-shell-business .project-chat-message.is-user { background: #fff4e9; border-radius: 12px; }
+.app-shell-business .project-chat-composer { margin-top: 12px; padding-top: 22px; }
+.app-shell-business .project-chat-context select { background: #faf9f7; }
+.app-shell-business .project-chat-message blockquote { border-radius: 8px; }
+.app-shell-business .project-idea-editor fieldset { border-radius: 8px; }
+.app-shell-business .swarm-discussion { padding: 24px; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
+.app-shell-business .business-live { border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+@media (max-width: 760px) {
+  .app-shell-business .app-topbar { min-height: 76px; padding: 12px 18px; gap: 14px; flex-wrap: wrap; }
+  .app-shell-business .pakar-top-navigation { gap: 16px; }
+  .app-shell-business .pakar-top-navigation .pakar-new-analysis { padding: 9px 14px; }
+  .app-shell-business .app-main, .app-shell-business .app-main:has(.business-results-navigation) { padding: 26px 18px 48px; }
+  .app-shell-business .app-page-header { grid-template-columns: 1fr; gap: 14px; }
+  .app-shell-business .app-page-header h1, .app-shell-business .app-main:has(.business-results-navigation) > .app-page-header h1 { font-size: 25px; }
+  .app-shell-business .business-intake, .app-shell-business .project-conversation, .app-shell-business .swarm-discussion { padding: 20px 16px; }
+  .app-shell-business .overview-positions { gap: 8px; }
+  .app-shell-business .overview-positions button { padding: 14px 10px; }
+  .app-shell-business .overview-executive-summary { padding: 22px 18px; }
+}
+@media (max-width: 480px) {
+  .app-shell-business .pakar-top-navigation { gap: 12px; }
+  .app-shell-business .pakar-top-navigation a { font-size: 12px; }
+  .app-shell-business .pakar-top-navigation .pakar-new-analysis { padding-inline: 12px; }
+  .app-shell-business .pakar-top-navigation > a:first-child { display: none; }
+  .app-shell-business .overview-positions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .app-shell-business .business-tabs button, .app-shell-business .business-results-navigation .business-tabs button { padding: 10px 14px; font-size: 13px; }
+}

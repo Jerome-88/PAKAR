@@ -1,0 +1,31 @@
+.app-shell-business .business-results-navigation { min-width: 0; }
+.app-shell-business .business-results-navigation .business-tabs { display: flex; flex-wrap: nowrap; max-width: 100%; width: max-content; overflow-x: auto; scrollbar-width: thin; }
+.app-shell-business .business-results-navigation .business-tabs button { flex: 0 0 auto; white-space: nowrap; }
+.pakar-business-layout.app-shell-business .business-results-navigation .business-tabs button { flex: 0 0 auto; }
+.business-project-evidence { margin-top: 24px; }
+.app-shell-business .business-workspace .project-evidence-heading h2 { margin: 0 0 6px; font-size: 23px; }
+.app-shell-business .business-workspace .project-evidence-heading p { margin: 0 0 20px; color: var(--muted); font-size: 13px; }
+.project-evidence-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.project-evidence-grid > section, .project-evidence-calculation, .business-planned-tab { min-width: 0; padding: 26px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.app-shell-business .business-workspace .project-evidence-grid h3 { margin: 0 0 18px; font-size: 16px; }
+.project-evidence-grid article + article { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+.project-evidence-grid article > strong { display: block; margin-bottom: 10px; overflow-wrap: anywhere; font-size: 13px; }
+.app-shell-business .business-workspace .project-evidence-grid blockquote { margin: 12px 0; border-radius: 8px; font-size: 13px; }
+.project-evidence-grid small { color: var(--muted); font-size: 11px; }
+.app-shell-business .business-workspace .project-evidence-grid p, .app-shell-business .business-workspace .project-evidence-calculation p { color: var(--muted); font-size: 13px; }
+.project-evidence-calculation { margin-top: 20px; }
+.project-evidence-calculation dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.project-evidence-calculation dl > div { padding: 15px; border-radius: 10px; background: #f3f3f3; }
+.project-evidence-calculation dt { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.project-evidence-calculation dd { margin: 8px 0 0; font-size: 18px; font-weight: 700; }
+.business-planned-tab { margin-top: 24px; min-height: 220px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.app-shell-business .business-workspace .business-planned-tab h2 { margin: 0 0 10px; font-size: 24px; }
+.app-shell-business .business-workspace .business-planned-tab p { margin: 0; color: var(--muted); font-size: 14px; }
+@media (max-width: 1000px) {
+  .project-evidence-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .app-shell-business .business-results-navigation .business-tabs button { flex: 0 0 auto; padding: 11px 15px; }
+  .project-evidence-grid > section, .project-evidence-calculation, .business-planned-tab { padding: 22px 18px; }
+  .project-evidence-calculation dl { grid-template-columns: minmax(0, 1fr); }
+}

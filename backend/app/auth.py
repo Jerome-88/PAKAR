@@ -11,8 +11,9 @@ from collections import defaultdict, deque
 from fastapi import APIRouter, Depends, Request, Response
 from pwdlib import PasswordHash
 
-from .errors import AuthenticationRequired, EmailConflict, RateLimitExceeded
+from .errors import ApiError, AuthenticationRequired, EmailConflict, RateLimitExceeded
 from .models import LoginInput, RegisterInput
+from .legacy_branding import session_cookie_names
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 password_hash = PasswordHash.recommended()
@@ -56,14 +57,22 @@ class LoginRateLimiter:
 
 
 def public_user(user: dict) -> dict:
-    return {key: user[key] for key in ("id", "name", "email", "created_at")}
+    result = {key: user[key] for key in ("id", "name", "email", "created_at")}
+    if user.get("shared"):
+        result["shared"] = True
+    return result
 
 
 def current_user(request: Request) -> dict:
+    if not request.app.state.settings.auth_required:
+        return request.app.state.workspace_user
     cached = getattr(request.state, "current_user", None)
     if cached:
         return cached
-    token = request.cookies.get(request.app.state.settings.session_cookie_name)
+    # Presence wins: an invalid new cookie must never select another old session.
+    token = next((request.cookies[name] for name in session_cookie_names(
+        request.app.state.settings.session_cookie_name
+    ) if name in request.cookies), None)
     if not token:
         raise AuthenticationRequired()
     user = request.app.state.repository.user_for_session(token)
@@ -86,10 +95,17 @@ def set_session(request: Request, response: Response, user_id: str):
         samesite="lax",
         path="/",
     )
+    for legacy_name in session_cookie_names(settings.session_cookie_name)[1:]:
+        response.delete_cookie(
+            legacy_name, path="/", secure=settings.session_cookie_secure,
+            httponly=True, samesite="lax",
+        )
 
 
 @router.post("/register", status_code=201)
 def register(payload: RegisterInput, request: Request, response: Response):
+    if not request.app.state.settings.auth_required:
+        raise ApiError(409, "auth_not_required", "PAKAR memakai ruang kerja bersama; pendaftaran tidak diperlukan.")
     limiter = request.app.state.registration_limiter
     limit_key = limiter.client_key(request)
     retry_after = limiter.retry_after(limit_key)
@@ -107,17 +123,20 @@ def register(payload: RegisterInput, request: Request, response: Response):
 
 @router.post("/login")
 def login(payload: LoginInput, request: Request, response: Response):
+    if not request.app.state.settings.auth_required:
+        raise ApiError(409, "auth_not_required", "PAKAR dapat dibuka langsung tanpa login.")
     limiter = request.app.state.login_limiter
     limit_keys = (limiter.client_key(request), limiter.account_key(payload.email))
     retry_after = max(limiter.retry_after(key) for key in limit_keys)
     if retry_after:
         raise RateLimitExceeded(retry_after)
     user = request.app.state.repository.user_by_email(payload.email)
+    login_disabled = bool(user and user["password_hash"].startswith("!"))
     password_matches = password_hash.verify(
         payload.password,
-        user["password_hash"] if user else dummy_password_hash,
+        user["password_hash"] if user and not login_disabled else dummy_password_hash,
     )
-    if not user or not password_matches:
+    if not user or login_disabled or not password_matches:
         for key in limit_keys:
             limiter.record_failure(key)
         raise AuthenticationRequired("Email atau kata sandi salah")
@@ -135,8 +154,9 @@ def me(user: dict = Depends(current_user)):
 @router.post("/logout")
 def logout(request: Request, response: Response):
     settings = request.app.state.settings
-    token = request.cookies.get(settings.session_cookie_name)
-    if token:
+    names = session_cookie_names(settings.session_cookie_name)
+    for token in {request.cookies[name] for name in names if request.cookies.get(name)}:
         request.app.state.repository.delete_session(token)
-    response.delete_cookie(settings.session_cookie_name, path="/", secure=settings.session_cookie_secure, samesite="lax")
+    for name in names:
+        response.delete_cookie(name, path="/", secure=settings.session_cookie_secure, httponly=True, samesite="lax")
     return {"ok": True}

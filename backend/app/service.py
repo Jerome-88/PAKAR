@@ -22,7 +22,7 @@ from .oasis_runtime import normalize_action, normalize_environment, source_ident
 from .repository import Repository
 from .storage import LocalStorageBackend, StorageBackend
 
-logger = logging.getLogger("rekakebijakan.worker")
+logger = logging.getLogger("pakar.worker")
 
 
 STAGES = ("graph", "environment", "simulation", "report", "interaction")
@@ -97,6 +97,7 @@ class WorkflowService:
         self.threads: dict[str, threading.Thread] = {}
         self.thread_lock = threading.RLock()
         self.stopping = threading.Event()
+        self.business = None
 
     def create_project(
         self, project: dict, files: list, owner_user_id: str | None = None, idempotency_key: str | None = None,
@@ -416,6 +417,22 @@ class WorkflowService:
         job = self.repository.claim_next_job(self.worker_id, self.lease_seconds, job_id)
         if not job:
             return False
+        if job.get("business_chat_turn_id"):
+            try:
+                if self.business is None:
+                    raise RuntimeError("Business chat handler is not configured")
+                return self.business.conversation.execute(job, self.worker_id)
+            finally:
+                with self.thread_lock:
+                    self.threads.pop(job["id"], None)
+        if job.get("analysis_id"):
+            try:
+                if self.business is None:
+                    raise RuntimeError("Business job handler is not configured")
+                return self.business.execute(job, self.worker_id)
+            finally:
+                with self.thread_lock:
+                    self.threads.pop(job["id"], None)
         if job.get("run_id"):
             self.repository.sync_run_status(job["run_id"], "running")
         logger.info(
@@ -619,7 +636,7 @@ class WorkflowService:
                 and mapping_metadata.get("ontology_hash") == ontology_hash
             )
             existing_sync = mapping_metadata.get("graph_sync", {}) if resumable else {}
-            graph_id = mapping["zep_graph_id"] if resumable else f"rekakebijakan_{uuid.uuid4().hex[:16]}"
+            graph_id = mapping["zep_graph_id"] if resumable else f"pakar_{uuid.uuid4().hex[:16]}"
             build_id = existing_sync.get("build_id") or f"runtime-build-{uuid.uuid4().hex[:12]}"
             graph_metadata = dict(mapping_metadata) | {
                 "evidence_hash": evidence_hash, "ontology_hash": ontology_hash,
@@ -1052,7 +1069,7 @@ class WorkflowService:
         return {
             "id": raw.get("report_id") or identifier("report"), "version": 1,
             "title": outline.get("title") or "Laporan Prediksi Simulasi",
-            "generated_by": "rekakebijakan-oasis-report-agent", "sections": sections, "risks": [],
+            "generated_by": "pakar-oasis-report-agent", "sections": sections, "risks": [],
             "citations": [citation] if citation else [], "markdown_content": raw.get("markdown_content", ""),
             "outline": outline, "agent_log": raw.get("agent_log", []), "console_log": raw.get("console_log", []),
             "artifact_dir": raw.get("artifact_dir"), "status": raw.get("status"),
@@ -1076,12 +1093,13 @@ class WorkflowService:
             if document.get("status") == "ready":
                 continue
             suffix = Path(document["name"]).suffix
-            with self.storage.open(document["path"]) as stored, tempfile.NamedTemporaryFile(suffix=suffix) as temporary:
-                while chunk := stored.read(1024 * 1024):
-                    temporary.write(chunk)
-                temporary.flush()
+            with tempfile.TemporaryDirectory(prefix="pakar-ingest-") as temporary_dir:
+                temporary_path = Path(temporary_dir) / f"source{suffix}"
+                with self.storage.open(document["path"]) as stored, temporary_path.open("wb") as temporary:
+                    while chunk := stored.read(1024 * 1024):
+                        temporary.write(chunk)
                 extraction = extract_document(
-                    Path(temporary.name), self.max_pdf_pages, self.max_extracted_chars,
+                    temporary_path, self.max_pdf_pages, self.max_extracted_chars,
                 )
             pages = []
             page_numbers = sorted({segment.page for segment in extraction.segments if segment.page is not None})

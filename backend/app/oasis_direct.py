@@ -15,10 +15,12 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .provider_errors import ProviderResponseError, ProviderTransportError
+from .config import llm_key_for_endpoint
+from .llm_access import require_allowed_llm_endpoint
 
 
 class DirectOasisEngine:
-    """Runs RekaKebijakan's bundled CAMEL/OASIS engine on the worker host."""
+    """Runs PAKAR's bundled CAMEL/OASIS engine on the worker host."""
 
     name = "oasis-direct"
 
@@ -28,6 +30,8 @@ class DirectOasisEngine:
         self.timeout = timeout
         self.bridge = Path(__file__).with_name("oasis_direct_bridge.py")
         runtime_python = self.runtime_dir / ".venv" / "bin" / "python"
+        if not runtime_python.exists():
+            runtime_python = self.runtime_dir / ".venv" / "Scripts" / "python.exe"
         self.runtime_python = runtime_python if runtime_python.exists() else Path(sys.executable)
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
@@ -35,15 +39,22 @@ class DirectOasisEngine:
         return None
 
     def _environment(self) -> dict[str, str]:
-        return os.environ.copy() | {
-            "REKAKEBIJAKAN_OASIS_RUNTIME_PATH": str(self.runtime_dir),
+        environment = os.environ.copy() | {
+            "PAKAR_OASIS_RUNTIME_PATH": str(self.runtime_dir),
             "OASIS_DATA_DIR": str(self.data_dir),
             "LLM_MODEL_NAME": os.getenv("LLM_MODEL", os.getenv("LLM_MODEL_NAME", "gpt-4o-mini")),
             "PYTHONUTF8": "1",
             "PYTHONIOENCODING": "utf-8",
             "PYTHON_DOTENV_DISABLED": "1",
             "PYTHONWARNINGS": "ignore:invalid escape sequence:SyntaxWarning",
+            "PAKAR_BUSINESS_DOMAIN_PATH": str(Path(__file__).with_name("business")),
+            "PAKAR_PARENT_PID": str(os.getpid()),
         }
+        require_allowed_llm_endpoint(environment.get("LLM_BASE_URL"))
+        key = llm_key_for_endpoint(environment.get("LLM_BASE_URL"), environment.get("LLM_API_KEY"))
+        if key:
+            environment["LLM_API_KEY"] = key
+        return environment
 
     def _call(self, operation: str, payload: dict, timeout: float | None = None) -> dict:
         operation_timeout = timeout if timeout is not None else self.timeout
@@ -53,6 +64,7 @@ class DirectOasisEngine:
                 [str(self.runtime_python), str(self.bridge), operation],
                 input=json.dumps(payload, ensure_ascii=False),
                 text=True,
+                encoding="utf-8",
                 capture_output=True,
                 env=self._environment(),
                 timeout=operation_timeout,
@@ -86,13 +98,14 @@ class DirectOasisEngine:
 
     def _call_stream(
         self, operation: str, payload: dict, callback: Callable[[dict], None],
-        timeout: float | None = None,
+        timeout: float | None = None, *, cancelled=None,
     ) -> dict:
         operation_timeout = timeout if timeout is not None else self.timeout
+        deadline = time.monotonic() + operation_timeout
         process = subprocess.Popen(
             [str(self.runtime_python), str(self.bridge), operation],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-            text=True, bufsize=1, env=self._environment(),
+            text=True, encoding="utf-8", bufsize=1, env=self._environment(),
         )
         messages: queue.Queue[str | None] = queue.Queue()
         diagnostics: list[str] = []
@@ -115,52 +128,88 @@ class DirectOasisEngine:
         stderr_thread = threading.Thread(target=read_stderr, daemon=True)
         stdout_thread.start()
         stderr_thread.start()
-        assert process.stdin is not None
-        process.stdin.write(json.dumps(payload, ensure_ascii=False))
-        process.stdin.close()
-        deadline = time.monotonic() + operation_timeout
-        result: dict | None = None
-        stream_closed = False
-        while not stream_closed:
-            if time.monotonic() >= deadline:
-                process.kill()
-                raise ProviderTransportError(operation, f"timed out after {operation_timeout:g}s")
+        def write_stdin():
             try:
-                line = messages.get(timeout=0.25)
-            except queue.Empty:
-                if process.poll() is not None and not stdout_thread.is_alive():
-                    break
-                continue
-            if line is None:
-                stream_closed = True
-                continue
-            try:
-                message = json.loads(line)
-            except json.JSONDecodeError as error:
-                process.kill()
-                raise ProviderResponseError(operation, "invalid streaming response") from error
-            kind = message.get("kind")
-            if kind == "result":
-                result = message.get("data") or {}
-            elif kind == "error":
-                process.wait(timeout=5)
-                raise ProviderResponseError(operation, str(message.get("error", "streaming operation failed")))
-            else:
-                callback(message)
-        remaining = max(0.1, deadline - time.monotonic())
+                process.stdin.write(json.dumps(payload, ensure_ascii=False))
+            except (BrokenPipeError, OSError, ValueError):
+                pass
+            finally:
+                try:
+                    process.stdin.close()
+                except OSError:
+                    pass
+
+        stdin_thread = threading.Thread(target=write_stdin, daemon=True)
+        stdin_thread.start()
         try:
-            return_code = process.wait(timeout=remaining)
-        except subprocess.TimeoutExpired as error:
-            process.kill()
-            raise ProviderTransportError(operation, f"timed out after {operation_timeout:g}s") from error
-        stderr_thread.join(timeout=1)
-        if return_code:
-            raise ProviderTransportError(
-                operation, diagnostics[-1] if diagnostics else f"bridge exited {return_code}",
-            )
-        if result is None:
-            raise ProviderResponseError(operation, "stream ended without a result")
-        return result
+            result: dict | None = None
+            stream_closed = False
+            while not stream_closed:
+                if cancelled and cancelled():
+                    from .business.budget import RunCancelled
+                    raise RunCancelled("Analysis cancelled or lease lost")
+                if time.monotonic() >= deadline:
+                    process.kill()
+                    process.wait(timeout=2)
+                    if operation == "business-stream":
+                        from .business.budget import BudgetExceeded
+                        raise BudgetExceeded("Business runtime deadline reached")
+                    raise ProviderTransportError(operation, f"timed out after {operation_timeout:g}s")
+                try:
+                    line = messages.get(timeout=max(0.001, min(0.1, deadline - time.monotonic())))
+                except queue.Empty:
+                    if process.poll() is not None and not stdout_thread.is_alive():
+                        break
+                    continue
+                if line is None:
+                    stream_closed = True
+                    continue
+                try:
+                    message = json.loads(line)
+                except json.JSONDecodeError as error:
+                    process.kill()
+                    raise ProviderResponseError(operation, "invalid streaming response") from error
+                kind = message.get("kind")
+                if kind == "result":
+                    result = message.get("data") or {}
+                elif kind == "error" or message.get("success") is False:
+                    raise ProviderResponseError(operation, str(message.get("error", "streaming operation failed")))
+                else:
+                    callback(message)
+            remaining = max(0.1, deadline - time.monotonic())
+            try:
+                return_code = process.wait(timeout=remaining)
+            except subprocess.TimeoutExpired as error:
+                process.kill()
+                if operation == "business-stream":
+                    from .business.budget import BudgetExceeded
+                    raise BudgetExceeded("Business runtime exit deadline reached") from error
+                raise ProviderTransportError(operation, f"timed out after {operation_timeout:g}s") from error
+            stderr_thread.join(timeout=1)
+            if return_code:
+                raise ProviderTransportError(
+                    operation, diagnostics[-1] if diagnostics else f"bridge exited {return_code}",
+                )
+            if result is None:
+                raise ProviderResponseError(operation, "stream ended without a result")
+            return result
+        finally:
+            if process.poll() is None:
+                process.kill()
+            process.wait(timeout=2)
+            stdin_thread.join(timeout=0.5)
+            stdout_thread.join(timeout=0.5)
+            stderr_thread.join(timeout=0.5)
+            if process.stdout:
+                process.stdout.close()
+            if process.stderr:
+                process.stderr.close()
+
+
+    def run_business_simulation(self, run_id: str, snapshot: dict, callback: Callable[[dict], None], *, cancelled=None) -> dict:
+        # Attempt IDs isolate filesystem/SQLite/memory even after a worker retry.
+        runtime_id = f"business-{uuid.uuid4().hex}"
+        return self._call_stream("business-stream", {"run_id": run_id, "runtime_id": runtime_id, "snapshot": snapshot}, callback, timeout=snapshot["config"]["max_seconds"], cancelled=cancelled)
 
     def sync_graph(
         self, simulation_id: str, state: dict, chunks: list[dict], *, graph_id: str | None = None,
@@ -424,7 +473,7 @@ class DirectOasisEngine:
         process = subprocess.Popen(
             [str(self.runtime_python), str(self.bridge), "report"],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-            text=True, env=self._environment(),
+            text=True, encoding="utf-8", env=self._environment(),
         )
         completed: dict[str, str] = {}
 

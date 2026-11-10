@@ -1,5 +1,5 @@
 """
-rekakebijakan Backend - Flask application factory
+pakar Backend - Flask application factory
 """
 
 import os
@@ -27,7 +27,7 @@ def create_app(config_class=Config):
         app.json.ensure_ascii = False
     
     # Configure logging
-    logger = setup_logger('rekakebijakan')
+    logger = setup_logger('pakar')
     
     # Log startup only in the reloader child process to avoid duplicate debug logs.
     is_reloader_process = os.environ.get('WERKZEUG_RUN_MAIN') == 'true'
@@ -36,7 +36,7 @@ def create_app(config_class=Config):
     
     if should_log_startup:
         logger.info("=" * 50)
-        logger.info("rekakebijakan Backend is starting...")
+        logger.info("pakar Backend is starting...")
         logger.info("=" * 50)
     
     # Enable CORS
@@ -51,14 +51,14 @@ def create_app(config_class=Config):
     # Request logging middleware
     @app.before_request
     def log_request():
-        logger = get_logger('rekakebijakan.request')
+        logger = get_logger('pakar.request')
         logger.debug(f"Request: {request.method} {request.path}")
         if request.content_type and 'json' in request.content_type:
             logger.debug(f"Request body: {request.get_json(silent=True)}")
     
     @app.after_request
     def log_response(response):
-        logger = get_logger('rekakebijakan.request')
+        logger = get_logger('pakar.request')
         logger.debug(f"Response: {response.status_code}")
         return response
     
@@ -71,9 +71,9 @@ def create_app(config_class=Config):
     # Health check
     @app.route('/health')
     def health():
-        return {'status': 'ok', 'service': 'rekakebijakan Backend'}
+        return {'status': 'ok', 'service': 'pakar Backend'}
     
     if should_log_startup:
-        logger.info("rekakebijakan Backend started")
+        logger.info("pakar Backend started")
     
     return app

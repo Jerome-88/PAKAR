@@ -34,27 +34,27 @@ class MetricsRegistry:
             requests = dict(self.requests)
             durations = dict(self.duration_seconds)
         lines = [
-            "# HELP rekakebijakan_http_requests_total HTTP responses by route and status.",
-            "# TYPE rekakebijakan_http_requests_total counter",
+            "# HELP pakar_http_requests_total HTTP responses by route and status.",
+            "# TYPE pakar_http_requests_total counter",
         ]
         for (method, route, status), value in sorted(requests.items()):
-            lines.append(f"rekakebijakan_http_requests_total{self.labels(method=method, route=route, status=status)} {value}")
+            lines.append(f"pakar_http_requests_total{self.labels(method=method, route=route, status=status)} {value}")
         lines.extend([
-            "# HELP rekakebijakan_http_request_duration_seconds_sum Total HTTP request duration.",
-            "# TYPE rekakebijakan_http_request_duration_seconds_sum counter",
+            "# HELP pakar_http_request_duration_seconds_sum Total HTTP request duration.",
+            "# TYPE pakar_http_request_duration_seconds_sum counter",
         ])
         for (method, route), value in sorted(durations.items()):
-            lines.append(f"rekakebijakan_http_request_duration_seconds_sum{self.labels(method=method, route=route)} {value:.6f}")
+            lines.append(f"pakar_http_request_duration_seconds_sum{self.labels(method=method, route=route)} {value:.6f}")
         lines.extend([
-            "# HELP rekakebijakan_jobs Current durable job count by state.",
-            "# TYPE rekakebijakan_jobs gauge",
+            "# HELP pakar_jobs Current durable job count by state.",
+            "# TYPE pakar_jobs gauge",
         ])
         for status in ("queued", "running", "paused", "failed", "dead_letter"):
-            lines.append(f"rekakebijakan_jobs{self.labels(status=status)} {queue.get(status, 0)}")
+            lines.append(f"pakar_jobs{self.labels(status=status)} {queue.get(status, 0)}")
         lines.extend([
-            "# HELP rekakebijakan_oldest_queued_job_age_seconds Age of the oldest queued job.",
-            "# TYPE rekakebijakan_oldest_queued_job_age_seconds gauge",
-            f"rekakebijakan_oldest_queued_job_age_seconds {queue.get('oldest_queued_age_seconds', 0):.3f}",
+            "# HELP pakar_oldest_queued_job_age_seconds Age of the oldest queued job.",
+            "# TYPE pakar_oldest_queued_job_age_seconds gauge",
+            f"pakar_oldest_queued_job_age_seconds {queue.get('oldest_queued_age_seconds', 0):.3f}",
         ])
         return "\n".join(lines) + "\n"
 

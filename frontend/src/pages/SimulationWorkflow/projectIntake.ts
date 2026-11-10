@@ -1,3 +1,4 @@
+import { readBrandedStorage } from "../../data/brandedStorage";
 import { demoCases } from "./workflowData";
 import { getWorkspaceProjectBySimulation, saveWorkspaceProject } from "../../data/localWorkspace";
 import type { DemoCase, PolicyGraphEdge, PolicyGraphNode } from "./workflowTypes";
@@ -17,7 +18,7 @@ export type ProjectIntake = {
   createdAt: string;
 };
 
-const storagePrefix = "rekakebijakan-project-intake:";
+const storagePrefix = "pakar-project-intake:";
 
 export function saveProjectIntake(intake: ProjectIntake) {
   saveWorkspaceProject({ ...intake, projectId: intake.simulationId.replace(/-\d{6}$/, ""), stage: 0, updatedAt: intake.createdAt });
@@ -26,7 +27,7 @@ export function saveProjectIntake(intake: ProjectIntake) {
 export function loadProjectIntake(simulationId: string): ProjectIntake | null {
   const project = getWorkspaceProjectBySimulation(simulationId);
   if (project) return project;
-  const stored = sessionStorage.getItem(authStorageKey(`${storagePrefix}${simulationId}`));
+  const stored = readBrandedStorage(sessionStorage, authStorageKey(`${storagePrefix}${simulationId}`));
   if (!stored) return null;
   try {
     return JSON.parse(stored) as ProjectIntake;

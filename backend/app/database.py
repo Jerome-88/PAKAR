@@ -369,7 +369,9 @@ jobs = Table(
     "jobs",
     metadata,
     Column("id", String, primary_key=True),
-    Column("simulation_id", String, ForeignKey("simulations.id", ondelete="CASCADE"), nullable=False),
+    Column("simulation_id", String, ForeignKey("simulations.id", ondelete="CASCADE"), nullable=True),
+    Column("analysis_id", String, ForeignKey("business_analyses.id", ondelete="CASCADE"), nullable=True),
+    Column("business_chat_turn_id", String, ForeignKey("business_chat_turns.id", ondelete="CASCADE"), nullable=True),
     Column("run_id", String, ForeignKey("scenario_runs.id", ondelete="SET NULL"), nullable=True),
     Column("stage", String, nullable=False),
     Column("status", String, nullable=False),
@@ -403,7 +405,9 @@ jobs = Table(
         "status IN ('queued','running','paused','completed','failed','cancelled')",
         name="jobs_status_valid",
     ),
+    CheckConstraint("num_nonnulls(simulation_id, analysis_id, business_chat_turn_id) = 1", name="jobs_exactly_one_target"),
 )
+Index("jobs_analysis", jobs.c.analysis_id)
 Index("jobs_simulation_status", jobs.c.simulation_id, jobs.c.status)
 Index(
     "one_active_job_per_simulation",

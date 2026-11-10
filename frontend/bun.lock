@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "rekakebijakan",
+      "name": "pakar",
       "dependencies": {
         "@fontsource/ibm-plex-sans": "^5.2.8",
         "react": "^19.2.7",

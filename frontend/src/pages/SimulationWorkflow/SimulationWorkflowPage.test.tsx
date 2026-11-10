@@ -65,7 +65,7 @@ describe("SimulationWorkflowPage live mode", () => {
       height: { configurable: true, value: { baseVal: { value: 440 } } },
     });
   });
-  afterEach(() => vi.restoreAllMocks());
+  afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); });
 
   it("loads a non-demo ID only from the backend without local initialization", async () => {
     const storageRead = vi.spyOn(Storage.prototype, "getItem");
@@ -331,15 +331,18 @@ describe("SimulationWorkflowPage live mode", () => {
     log.scrollTop = 0;
 
     await user.type(screen.getByLabelText("Pertanyaan"), "Apa risiko utama?");
-    await user.click(screen.getByRole("button", { name: "Kirim →" }));
+    // Drive animation frames without racing wall-clock fallback timers.
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    log.scrollTop = 0;
+    fireEvent.click(screen.getByRole("button", { name: "Kirim →" }));
 
     expect(log.scrollTop).toBe(0);
     expect(runFrames(340, () => log.scrollTop > 0)).toBe(true);
     expect(log.scrollTop).toBeGreaterThan(0);
     expect(log.scrollTop).toBeLessThan(840);
-    expect(await screen.findByText("Jawaban scroll.")).toBeInTheDocument();
+    await vi.waitFor(() => expect(screen.getByText("Jawaban scroll.")).toBeInTheDocument());
     runFrames(1200, () => log.scrollTop === 840);
-    await waitFor(() => expect(log.scrollTop).toBe(840));
+    expect(log.scrollTop).toBe(840);
   });
 
   it("sends with Enter and keeps Shift+Enter available for multiline input", async () => {
@@ -529,6 +532,7 @@ describe("SimulationWorkflowPage live mode", () => {
     }));
   });
 
+  // Several real 1.5-second fallback polls are part of this full workflow.
   it("renders Simulasi Cepat through the standard five-step workflow", async () => {
     const quick = snapshot("report");
     quick.current_stage = "graph";
@@ -602,10 +606,11 @@ describe("SimulationWorkflowPage live mode", () => {
     expect(screen.queryByRole("button", { name: "Mulai membangun graf →" })).not.toBeInTheDocument();
     expect(screen.queryByText(/Simulasi Cepat|dipercepat|dikonfigurasi|tur berpindah|presentasi terpandu|lewati animasi/i)).not.toBeInTheDocument();
 
-    await user.click(await screen.findByRole("button", { name: "Lanjut ke penyiapan lingkungan →" }));
+    await user.click(await screen.findByRole("button", { name: "Lanjut ke penyiapan lingkungan →" }, { timeout: 5000 }));
     expect(await screen.findByRole("heading", { name: "Siapkan lingkungan simulasi" })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Siapkan lingkungan OASIS →" }));
-    await user.click(await screen.findByRole("button", { name: "Mulai simulasi →" }));
+    // The mocked environment completes via the 1.5-second fallback poll.
+    await user.click(await screen.findByRole("button", { name: "Mulai simulasi →" }, { timeout: 5000 }));
     const simulationHeading = await screen.findByRole("heading", { name: "Pantau dinamika skenario" });
     const simulationPane = simulationHeading.closest<HTMLElement>(".simulation-step")!;
     simulationPane.style.overflowY = "auto";
@@ -627,8 +632,8 @@ describe("SimulationWorkflowPage live mode", () => {
     expect(reportStep).toBeEnabled();
     expect(stageCalls).toBe(0);
     await user.click(screen.getByRole("button", { name: "Susun laporan →" }));
-    expect(await screen.findByText("Respons membaik setelah kepastian masa transisi dan layanan bergerak diumumkan.")).toBeInTheDocument();
-    expect(await screen.findByRole("button", { name: "Buka interaksi →" })).toBeInTheDocument();
+    expect(await screen.findByText("Respons membaik setelah kepastian masa transisi dan layanan bergerak diumumkan.", {}, { timeout: 5000 })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "Buka interaksi →" }, { timeout: 5000 })).toBeInTheDocument();
     expect(stageCalls).toBe(0);
-  });
+  }, 15_000);
 });

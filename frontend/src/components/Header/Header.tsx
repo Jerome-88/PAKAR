@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { navigation } from "../../data/content";
 import { useAuth } from "../../auth/useAuth";
 import "./Header.css";
+import { PakarMascot } from "../PakarMascot/PakarMascot";
 
 const scrollTo = (id: string) => {
   const element = document.getElementById(id);
@@ -13,26 +14,26 @@ const scrollTo = (id: string) => {
 
 const quickDemoPath = "/projects/new";
 
-export function Brand() {
+export function Brand({ to = "/", workspace = false }: { to?: string; workspace?: boolean }) {
   const navigate = useNavigate();
   return (
     <a
-      className="brand"
-      href="/"
-      aria-label="RekaKebijakan, kembali ke awal"
+      className={`brand${workspace ? " brand-workspace" : ""}`}
+      href={to}
+      aria-label={to === "/business" ? "PAKAR, kembali ke awal" : "PAKAR, kembali ke awal"}
       onClick={(e) => {
         e.preventDefault();
-        navigate("/");
-        scrollTo("utama");
+        navigate(to);
+        if (to === "/") scrollTo("utama");
       }}
     >
-      <img
+      {workspace ? <PakarMascot /> : <img
         className="brand-mark"
-        src="/reka-kebijakan-mark.svg"
+        src="/pakar-mark.svg"
         alt=""
         aria-hidden="true"
-      />
-      <b>RekaKebijakan</b>
+      />}
+      {workspace ? <span className="brand-workspace-name"><small>WORKSPACE</small><b>PAKAR</b></span> : <b>PAKAR</b>}
     </a>
   );
 }

@@ -1,12 +1,17 @@
+import { AvatarCredits } from "../PersonaAvatar/PersonaAvatar";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Brand } from "../Header/Header";
 import { useAuth } from "../../auth/useAuth";
 import { authStorageKey } from "../../auth/storageNamespace";
+import { publicDemoOnly } from "../../config/publicDemo";
 import "./AppShell.css";
+import "../../pages/Business/PakarTheme.css";
+import { BusinessLayout } from "./BusinessLayout";
 
 const productNav = [
+  ["/business", "Analisis bisnis", "projects"],
   ["/dashboard", "Dashboard", "dashboard"],
   ["/projects", "Proyek Kebijakan", "projects"],
   ["/reports", "Laporan", "reports"],
@@ -55,6 +60,7 @@ export function AppShell({ title, subtitle, eyebrow = "Menu", actions, children 
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { pathname: path } = useLocation();
+  const business = publicDemoOnly || path === "/business" || path.startsWith("/business/");
   const sidebarKey = authStorageKey("sidebar-collapsed");
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem(sidebarKey) === "true");
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -68,9 +74,11 @@ export function AppShell({ title, subtitle, eyebrow = "Menu", actions, children 
     };
   }, []);
 
+  if (business) return <BusinessLayout title={title} subtitle={subtitle} actions={actions}>{children}<AvatarCredits /></BusinessLayout>;
+
   const nav = (
     <nav className="app-sidebar-nav" aria-label="Navigasi produk">
-      {productNav.map(([href, label, icon]) => {
+      {productNav.filter(([href]) => !path.startsWith("/business") || href === "/business").map(([href, label, icon]) => {
         const active = path === href || (href !== "/dashboard" && path.startsWith(`${href}/`));
         return (
           <NavLink
@@ -90,8 +98,8 @@ export function AppShell({ title, subtitle, eyebrow = "Menu", actions, children 
   );
 
   return (
-    <div className={`app-shell ${collapsed ? "sidebar-collapsed" : ""}`}>
-      <aside className="app-sidebar" aria-label="Sidebar produk">
+    <div className={`app-shell ${business ? "app-shell-business" : collapsed ? "sidebar-collapsed" : ""}`}>
+      {!business && <><aside className="app-sidebar" aria-label="Sidebar produk">
         <div className="app-sidebar-brand"><Brand /></div>
         {nav}
         <button
@@ -119,18 +127,18 @@ export function AppShell({ title, subtitle, eyebrow = "Menu", actions, children 
       <div className={`app-drawer ${drawerOpen ? "open" : ""}`}>
         <div className="app-sidebar-brand"><Brand /></div>
         {nav}
-      </div>
+      </div></>}
       <div className="app-workspace">
         <header className="app-topbar">
-          <button className="menu-button app-menu-button" aria-label="Buka navigasi produk" aria-expanded={drawerOpen} onClick={() => setDrawerOpen(!drawerOpen)}>
+          {!business && <button className="menu-button app-menu-button" aria-label="Buka navigasi produk" aria-expanded={drawerOpen} onClick={() => setDrawerOpen(!drawerOpen)}>
             <span /><span /><span />
-          </button>
-          <div className="breadcrumb" aria-label="Breadcrumb">
-            <Link to="/dashboard">Menu</Link>
+          </button>}
+          {business ? <><Brand workspace to={publicDemoOnly ? "/" : "/business"} /><nav className="pakar-top-navigation" aria-label="Navigasi ruang bisnis"><Link to={publicDemoOnly ? "/" : "/business"}>Beranda</Link><Link to={publicDemoOnly ? "/?view=intake" : "/business/demo"}>Coba demo</Link>{!publicDemoOnly && <Link className="pakar-new-analysis" to="/business/new">Analisis baru<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg></Link>}</nav></> : <div className="breadcrumb" aria-label="Breadcrumb">
+            <Link to={path.startsWith("/business") ? "/business" : "/dashboard"}>Ruang kerja</Link>
             <span aria-hidden="true">/</span>
             <span>{title}</span>
-          </div>
-          <div className="topbar-account">
+          </div>}
+          {user && !user.shared && <div className="topbar-account">
             <span title={user?.email}>{user?.name || user?.email}</span>
             <button onClick={async () => {
               setLogoutError("");
@@ -141,19 +149,20 @@ export function AppShell({ title, subtitle, eyebrow = "Menu", actions, children 
                 setLogoutError(error instanceof Error ? error.message : "Gagal keluar dari akun.");
               }
             }}>Keluar</button>
-          </div>
+          </div>}
         </header>
         {logoutError && <p className="app-auth-error" role="alert">{logoutError}</p>}
         <main className="app-main">
           <section className="app-page-header" aria-labelledby="app-page-title">
             <div>
-              <p className="eyebrow">{eyebrow}</p>
+              {!business && <p className="eyebrow">{eyebrow}</p>}
               <h1 id="app-page-title">{title}</h1>
               <p>{subtitle}</p>
             </div>
             {actions && <div className="actions">{actions}</div>}
           </section>
           {children}
+          <AvatarCredits />
         </main>
       </div>
     </div>

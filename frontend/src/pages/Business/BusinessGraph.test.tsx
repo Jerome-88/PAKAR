@@ -1,0 +1,40 @@
+import { fireEvent, render, screen, within } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { Avatar } from "@dicebear/core";
+import type { BusinessAnalysis, BusinessPersona } from "../../api/business";
+import { getAvatarSource } from "../../components/PersonaAvatar/avatar";
+import { BusinessGraph } from "./BusinessGraph";
+
+describe("stakeholder graph portraits", () => {
+  it("renders 120 cached portraits and preserves keyboard selection, relations and event navigation", () => {
+    const personas: BusinessPersona[] = Array.from({ length: 120 }, (_, n) => ({ id: `graph-person-${n}`, name: `Stakeholder ${n}`, role: "supplier", stakeholder_type: "direct", goals: ["Keep supply stable"], motivations: [], constraints: [], knowledge: [], interests: [], relationships: [], provenance: {}, discovery_rationale: "Synthetic test", active: true, reviewed: true, revision: 1 }));
+    const analysis = { input_snapshot: { personas }, result: { simulation: { relationships: [{ source: personas[0].id, target: personas[1].id, status: "cooperate", event_ids: ["event:1"] }] } } } as BusinessAnalysis;
+    const openEvent = vi.fn();
+    const scrollTo = vi.spyOn(HTMLElement.prototype, "scrollTo");
+    const renderSvg = vi.spyOn(Avatar.prototype, "toDataUri");
+    const view = render(<BusinessGraph analysis={analysis} openEvent={openEvent} />);
+    expect(view.container.querySelectorAll("svg image")).toHaveLength(120);
+    expect(scrollTo.mock.lastCall?.[0]).toEqual(expect.objectContaining({ left: expect.any(Number), top: 0 }));
+    expect((scrollTo.mock.lastCall?.[0] as ScrollToOptions).left).toBeGreaterThan(0);
+    expect(renderSvg).toHaveBeenCalledTimes(120);
+    const node = screen.getByRole("button", { name: "Periksa persona Stakeholder 1" });
+    fireEvent.keyDown(node, { key: " " });
+    expect(node).toHaveAttribute("aria-pressed", "true");
+    expect(renderSvg).toHaveBeenCalledTimes(120);
+    const inspector = view.container.querySelector(".business-graph-detail")!;
+    const source = node.querySelector("image")!.getAttribute("href");
+    expect(inspector.querySelector("img")).toHaveAttribute("src", source);
+    expect(source).toBe(getAvatarSource({ id: personas[1].id }));
+    fireEvent.click(within(inspector as HTMLElement).getByText("Periksa 1 event penyebab"));
+    fireEvent.click(screen.getByRole("button", { name: "Buka event 1" }));
+    expect(openEvent).toHaveBeenCalledWith("event:1");
+    expect(view.container.querySelector("line")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Stakeholder yang diperiksa"), { target: { value: personas[60].id } });
+    expect((scrollTo.mock.lastCall?.[0] as ScrollToOptions).top).toBeGreaterThan(3000);
+    const calls = scrollTo.mock.calls.length;
+    view.rerender(<BusinessGraph analysis={{ ...analysis, input_snapshot: { ...analysis.input_snapshot, personas: [...personas] } }} openEvent={openEvent} />);
+    expect(scrollTo).toHaveBeenCalledTimes(calls);
+    scrollTo.mockRestore();
+    renderSvg.mockRestore();
+  });
+});

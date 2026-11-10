@@ -85,7 +85,7 @@ function errorMessage(error: unknown) {
 }
 
 export default function AuthPage({ mode }: AuthPageProps) {
-  const { loading, user, login, register } = useAuth();
+  const { loading, user, login, register, connectionError, retryConnection } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [error, setError] = useState("");
@@ -94,6 +94,10 @@ export default function AuthPage({ mode }: AuthPageProps) {
   const isRegister = mode === "register";
   const params = new URLSearchParams(location.search);
   const next = safeNext(params.get("next"));
+
+  if (loading || connectionError) {
+    return <main className="auth-loading">{connectionError ? <><div role="alert"><h1>Ruang kerja belum tersambung</h1><p>{connectionError}</p></div><button className="button primary" onClick={retryConnection}>Coba hubungkan lagi</button></> : <p>Menyiapkan ruang kerja…</p>}</main>;
+  }
 
   if (!loading && user) {
     return <Navigate to={next} replace />;
@@ -131,11 +135,11 @@ export default function AuthPage({ mode }: AuthPageProps) {
       <section className="auth-context" aria-labelledby="auth-context-title">
         <Brand />
         <div>
-          <p className="auth-kicker">Ruang kerja simulasi kebijakan</p>
-          <h1 id="auth-context-title">Uji asumsi sebelum kebijakan diterapkan.</h1>
+          <p className="auth-kicker">Ruang kerja analisis bisnis</p>
+          <h1 id="auth-context-title">Periksa asumsi sebelum keputusan bisnis diambil.</h1>
           <p>
-            Susun skenario, telusuri respons stakeholder sintetis, dan simpan
-            setiap temuan dalam ruang kerja institusi Anda.
+            Tinjau rencana bisnis, telusuri perspektif stakeholder, dan periksa
+            setiap temuan beserta evidence dan batas ketidakpastiannya.
           </p>
         </div>
         <p className="auth-responsibility">Keputusan tetap di tangan manusia.</p>
@@ -146,7 +150,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
             ← Kembali ke beranda
           </Link>
           <p className="eyebrow">{isRegister ? "Buat akun" : "Akses ruang kerja"}</p>
-          <h2 id="auth-title">{isRegister ? "Daftar ke RekaKebijakan" : "Masuk ke RekaKebijakan"}</h2>
+          <h2 id="auth-title">{isRegister ? "Daftar ke PAKAR" : "Masuk ke PAKAR"}</h2>
           <p className="auth-intro">
             {isRegister
               ? "Gunakan email kerja untuk membuat ruang kerja Anda."

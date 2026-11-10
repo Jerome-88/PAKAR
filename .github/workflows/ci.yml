@@ -16,16 +16,16 @@ jobs:
       postgres:
         image: postgres:17-alpine
         env:
-          POSTGRES_DB: rekakebijakan_test
-          POSTGRES_USER: rekakebijakan
-          POSTGRES_PASSWORD: rekakebijakan
+          POSTGRES_DB: pakar_test
+          POSTGRES_USER: pakar
+          POSTGRES_PASSWORD: pakar
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U rekakebijakan -d rekakebijakan_test"
+          --health-cmd "pg_isready -U pakar -d pakar_test"
           --health-interval 5s --health-timeout 3s --health-retries 10
     env:
-      DATABASE_URL: postgresql+psycopg://rekakebijakan:rekakebijakan@127.0.0.1:5432/rekakebijakan_test
+      DATABASE_URL: postgresql+psycopg://pakar:pakar@127.0.0.1:5432/pakar_test
     defaults:
       run:
         working-directory: backend
@@ -68,5 +68,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: docker build --target production --tag rekakebijakan-backend:ci backend
-      - run: docker build --target production --tag rekakebijakan-frontend:ci frontend
+      - run: docker build --target production --tag pakar-backend:ci backend
+      - run: docker build --target production --tag pakar-frontend:ci frontend

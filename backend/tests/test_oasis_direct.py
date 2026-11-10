@@ -12,11 +12,11 @@ import pytest
 from app import oasis_direct_bridge
 from app.oasis_direct import DirectOasisEngine
 from app.oasis_runtime import normalize_action
-from app.provider_errors import ProviderTransportError
+from app.provider_errors import ProviderResponseError, ProviderTransportError
 
 
 def test_bundled_oasis_locale_assets_load(monkeypatch):
-    runtime = Path("/opt/rekakebijakan/oasis_engine_runtime")
+    runtime = Path("/opt/pakar/oasis_engine_runtime")
     if not runtime.exists():
         runtime = Path(__file__).resolve().parents[1] / "oasis_engine_runtime"
     flask = types.ModuleType("flask")
@@ -211,6 +211,26 @@ def test_streaming_bridge_delivers_messages_before_result(tmp_path: Path):
     assert result == {"graph_id": "graph-1"}
 
 
+@pytest.mark.parametrize("failure", [
+    {"kind": "error", "success": False, "error": "missing profile field"},
+    {"success": False, "error": "missing profile field"},
+])
+def test_streaming_failure_preserves_runtime_error_without_calling_event_callback(tmp_path: Path, failure):
+    runtime = tmp_path / "runtime"
+    runtime.mkdir()
+    bridge = tmp_path / "failed_stream.py"
+    bridge.write_text(
+        "import json, sys\njson.load(sys.stdin)\n"
+        + f"print({json.dumps(failure)!r}, flush=True)\n"
+        + "raise SystemExit(1)\n",
+        encoding="utf-8",
+    )
+    engine = DirectOasisEngine(runtime, tmp_path / "data")
+    engine.bridge = bridge
+    with pytest.raises(ProviderResponseError, match="missing profile field"):
+        engine._call_stream("business-stream", {}, lambda _: pytest.fail("error passed as progress"), timeout=5)
+
+
 def test_start_simulation_resumes_alive_process(monkeypatch, tmp_path: Path):
     runtime = tmp_path / "runtime"
     runtime.mkdir()
@@ -268,7 +288,7 @@ def test_start_simulation_replaces_failed_alive_process(monkeypatch, tmp_path: P
 
 
 def test_hard_step_timeout_exits_when_cancellation_hangs(tmp_path: Path):
-    runtime = Path("/opt/rekakebijakan/oasis_engine_runtime")
+    runtime = Path("/opt/pakar/oasis_engine_runtime")
     if not runtime.exists():
         runtime = Path(__file__).resolve().parents[1] / "oasis_engine_runtime"
     scripts = runtime / "scripts"
@@ -649,7 +669,7 @@ print(json.dumps({"calls": calls, "context": context}))
 
 
 def test_namespaced_gpt5_uses_completion_token_parameter():
-    runtime = Path("/opt/rekakebijakan/oasis_engine_runtime")
+    runtime = Path("/opt/pakar/oasis_engine_runtime")
     if not runtime.exists():
         runtime = Path(__file__).resolve().parents[1] / "oasis_engine_runtime"
     compat_path = runtime / "app" / "utils" / "openai_chat_compat.py"

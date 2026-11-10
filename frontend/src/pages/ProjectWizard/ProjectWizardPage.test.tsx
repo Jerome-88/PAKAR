@@ -95,7 +95,7 @@ describe("project creation wizard", () => {
 
   it("prefills and submits Simulasi Cepat without requiring files", async () => {
     createProjectMock.mockResolvedValue({ simulation_id: "quick-1" });
-    sessionStorage.setItem("rekakebijakan-quick-presentation:quick-1", "stale");
+    sessionStorage.setItem("pakar-quick-presentation:quick-1", "stale");
     renderWizard();
 
     const modeOptions = screen.getAllByRole("radio");
@@ -108,7 +108,7 @@ describe("project creation wizard", () => {
     fireEvent.click(screen.getByRole("button", { name: "Mulai Simulasi Cepat →" }));
 
     await waitFor(() => expect(createProjectMock).toHaveBeenCalledOnce());
-    await waitFor(() => expect(sessionStorage.getItem("rekakebijakan-quick-presentation:quick-1")).toBeNull());
+    await waitFor(() => expect(sessionStorage.getItem("pakar-quick-presentation:quick-1")).toBeNull());
     expect(createProjectMock.mock.calls[0][0]).toMatchObject({
       projectName: "Registrasi Digital UMKM",
       files: [],

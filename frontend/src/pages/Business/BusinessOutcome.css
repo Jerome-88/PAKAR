@@ -1,0 +1,10 @@
+.business-outcome-status { padding: 18px 22px; background: #fff6da; border-radius: 12px; margin: 16px 0 24px; color: #493b16; }
+.business-outcome-status p { margin: 7px 0 0; line-height: 1.6; }
+.business-outcome-report, .business-outcome-trail { min-width: 0; overflow-wrap: anywhere; padding: clamp(20px, 3vw, 36px); background: #fff; border-radius: 12px; }
+.business-outcome-report section { margin: 26px 0; }
+.business-outcome-report li article { padding: 12px 0 22px; max-width: 75ch; }
+.business-outcome-report p, .business-outcome-trail p { line-height: 1.7; }
+.business-outcome-trail dl { display: grid; grid-template-columns: minmax(100px, 180px) minmax(0, 1fr); gap: 14px; }
+.business-outcome-trail dd { margin: 0; overflow-wrap: anywhere; }
+.business-outcome-trail pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .business-outcome-trail dl { grid-template-columns: 1fr; gap: 8px; } .business-outcome-trail dd { margin-bottom: 12px; } }

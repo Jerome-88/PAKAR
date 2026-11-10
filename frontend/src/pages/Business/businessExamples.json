@@ -1,0 +1,41 @@
+[
+  {
+    "id": "coffee-dki-v0",
+    "label": "kedai kopi DKI Jakarta",
+    "context": {
+      "name": "Demo kedai kopi DKI Jakarta",
+      "industry": "Kedai kopi",
+      "region": "DKI Jakarta",
+      "target_customer": "Pekerja kantor",
+      "decision_question": "Asumsi apa yang perlu divalidasi sebelum membuka kedai dan menghadapi penurunan harga competitor?",
+      "data_classification": "synthetic"
+    },
+    "proposal": "Rencana pembukaan kedai kopi di provinsi DKI Jakarta untuk pekerja kantor.\nHarga jual Rp30.000 per unit.\nBiaya variabel Rp12.000 per unit.\nBiaya tetap Rp36.000.000 per bulan.\nPermintaan dan volume penjualan belum diuji. Supplier memasok bahan harian. Kompetitor dapat mengubah harga."
+  },
+  {
+    "id": "supplier-bandung-v0",
+    "label": "produsen roti Bandung",
+    "context": {
+      "name": "Demo produsen roti Bandung",
+      "industry": "Produksi roti",
+      "region": "Bandung",
+      "target_customer": "Toko kelontong",
+      "decision_question": "Apa yang perlu divalidasi jika biaya bahan baku meningkat?",
+      "data_classification": "synthetic"
+    },
+    "proposal": "Produsen roti di Bandung memasok toko kelontong.\nHarga jual Rp10.000 per unit.\nBiaya variabel Rp6.000 per unit.\nBiaya tetap Rp12.000.000 per bulan.\nVolume penjualan belum diketahui. Satu pemasok utama menyediakan tepung."
+  },
+  {
+    "id": "services-dki-v0",
+    "label": "jasa perawatan DKI Jakarta",
+    "context": {
+      "name": "Demo jasa perawatan DKI Jakarta",
+      "industry": "Jasa perawatan kendaraan",
+      "region": "DKI Jakarta",
+      "target_customer": "Pemilik kendaraan",
+      "decision_question": "Apa asumsi kapasitas dan biaya yang harus divalidasi sebelum ekspansi layanan?",
+      "data_classification": "synthetic"
+    },
+    "proposal": "Rencana jasa perawatan kendaraan di DKI Jakarta.\nHarga jual Rp150.000 per unit.\nBiaya variabel Rp90.000 per unit.\nBiaya tetap Rp18.000.000 per bulan.\nVolume transaksi dan kapasitas teknisi belum diukur."
+  }
+]

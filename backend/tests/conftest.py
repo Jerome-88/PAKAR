@@ -8,12 +8,35 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.engine import make_url
 
 
+@pytest.fixture(scope="session", autouse=True)
+def isolate_external_credentials():
+    """Developer .env keys must never turn fixture tests into paid inference.
+
+    Tests for adapters may explicitly supply their own local/test credentials.
+    Read-only live audits are separate scripts, not part of the default suite.
+    """
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setenv("PYTHON_DOTENV_DISABLED", "1")
+        # Existing account-isolation regressions explicitly exercise optional auth.
+        patch.setenv("AUTH_REQUIRED", "true")
+        for key in ("LLM_API_KEY", "FREE_AI_KEY", "BPS_API_KEY", "ZEP_API_KEY", "OPENAI_API_KEY"):
+            patch.setenv(key, "")
+        patch.setenv("LLM_STRUCTURED_OUTPUTS", "false")
+        patch.setenv("LLM_BASE_URL", "http://127.0.0.1:9/v1")
+        patch.setenv("PAKAR_ALLOWED_LLM_HOSTS", "")
+        patch.setenv("PAKAR_OPENROUTER_MAX_PRICE", "")
+        patch.setenv("PAKAR_OPENROUTER_PROVIDER_ORDER", "")
+        patch.setenv("PAKAR_MAX_RUN_COST_USD", "0.03")
+        patch.setenv("PAKAR_CREDIT_RESERVE_USD", "0.10")
+        yield
+
+
 @pytest.fixture(scope="session")
 def database_url() -> str:
     application_url = make_url(
         os.getenv(
             "DATABASE_URL",
-            "postgresql+psycopg://rekakebijakan:rekakebijakan@localhost:5432/rekakebijakan",
+            "postgresql+psycopg://pakar:pakar@localhost:5432/pakar",
         )
     )
     test_url = make_url(os.getenv("TEST_DATABASE_URL")) if os.getenv("TEST_DATABASE_URL") else application_url.set(
@@ -42,6 +65,6 @@ def clean_database(database_url: str):
     command.upgrade(config, "head")
     engine = create_engine(database_url)
     with engine.begin() as connection:
-        connection.execute(text("TRUNCATE workflow_events, pilot_contacts, graph_feedback_versions, interviews, custom_personas, run_events, scenario_runs, scenario_revisions, audit_events, artifact_versions, scenarios, job_attempts, citations, document_pages, document_chunks, jobs, documents, sessions, simulations, projects, users CASCADE"))
+        connection.execute(text("TRUNCATE provider_spend_accounts, workflow_events, pilot_contacts, graph_feedback_versions, interviews, custom_personas, run_events, scenario_runs, scenario_revisions, audit_events, artifact_versions, scenarios, job_attempts, citations, document_pages, document_chunks, jobs, documents, sessions, simulations, projects, users CASCADE"))
     engine.dispose()
     yield

@@ -1,0 +1,20 @@
+{
+  "project_id": "appgprj_6af061dc049481919364add5f5858f54",
+  "source_commit": "f31ac2c1cd6e24c76b603caba1e6ea02d44fb83b",
+  "version_id": "appgprj_6af061dc049481919364add5f5858f54~appgver_e06a3a9573708191ae41d4c5223bc252",
+  "deployment_id": "appgdep_6af074792a988191bec83937cef96205",
+  "status": "succeeded",
+  "access_mode": "public",
+  "url": "https://pakar-demo-pepsodent.khakibowl1.chatgpt.site",
+  "expected_url": "https://pakar-demo-pepsodent.khakibowl1.chatgpt.site",
+  "source_analysis_id": "analysis_0c966db47157420b932f",
+  "personas": 10,
+  "rounds": 2,
+  "messages": 22,
+  "specialist_reviews": 4,
+  "interface": "shared-main-app-interactive-network",
+  "frontend_unit_tests": 112,
+  "normal_browser_cases": 9,
+  "public_browser_cases": 1,
+  "finish_review": "ship"
+}

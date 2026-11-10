@@ -1,0 +1,15 @@
+.pakar-mascot { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 46px; height: 46px; }
+.pakar-mascot > span { display: block; position: relative; overflow: hidden; width: 44px; height: 40px; }
+.pakar-mascot img { position: absolute; max-width: none; width: 325.98%; height: 204.55%; left: -112.56%; top: -53.79%; }
+.pakar-mascot-lumi, .pakar-mascot-noki { width: 40px; height: 40px; border: 1px solid #fed058; border-radius: 50%; background: #fff; }
+.pakar-mascot-lumi > span { width: 26px; height: 19.55px; }
+.pakar-mascot-lumi img { width: 369.23%; height: 276.21%; left: -130.19%; top: -91.56%; }
+.pakar-mascot-noki { border-color: #b896df; }
+.pakar-mascot-noki > span { width: 24.661px; height: 20.197px; }
+.pakar-mascot-noki img { width: 344.09%; height: 236.32%; left: -121.68%; top: -70.02%; }
+.pakar-mascot-peb, .pakar-mascot-kubo { width: 40px; height: 40px; border: 1px solid #a7d051; border-radius: 50%; background: #fff; }
+.pakar-mascot-peb > span { width: 28px; height: 20.8px; }
+.pakar-mascot-peb img { width: 374.27%; height: 283.46%; left: -136.65%; top: -93.96%; }
+.pakar-mascot-kubo { border-color: #a0c0e6; }
+.pakar-mascot-kubo > span { width: 25px; height: 21.7px; }
+.pakar-mascot-kubo img { width: 375.64%; height: 238.69%; left: -138.17%; top: -69.08%; }

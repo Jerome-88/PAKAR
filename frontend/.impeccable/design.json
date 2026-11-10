@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-29T16:19:41+00:00",
+  "title": "Design System: IBM / PAKAR workspace extension",
+  "extensions": {
+    "motion": [
+      {
+        "name": "motion-fast",
+        "value": "150ms ease",
+        "purpose": "Existing global transition token."
+      },
+      {
+        "name": "motion-base",
+        "value": "250ms ease",
+        "purpose": "Existing global transition token."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "workspace-stacked",
+        "value": "850px"
+      },
+      {
+        "name": "workspace-mobile",
+        "value": "560px"
+      },
+      {
+        "name": "report-section-jump",
+        "value": "800px"
+      },
+      {
+        "name": "report-export-mobile",
+        "value": "640px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary action",
+      "kind": "button",
+      "description": "Square blue action; shared global control.",
+      "html": "<button class=\"ds-primary\">Jalankan analisis</button>",
+      "css": ".ds-primary{font-family:\"IBM Plex Sans\",Arial,sans-serif;min-height:44px;padding:11px 16px;border:1px solid transparent;border-radius:0;background:var(--blue,#0f62fe);color:white;font-size:14px;cursor:pointer}.ds-primary:hover{background:var(--blue-hover,#0050e6)}.ds-primary:active{background:var(--blue-pressed,#002d9c)}.ds-primary:focus-visible{outline:2px solid var(--blue,#0f62fe);outline-offset:3px}",
+      "refersTo": "button-primary"
+    },
+    {
+      "name": "Outlined action",
+      "kind": "button",
+      "description": "PAKAR secondary uses the existing outlined blue control.",
+      "html": "<button class=\"ds-secondary\">Kembali ke proyek</button>",
+      "css": ".ds-secondary{font-family:\"IBM Plex Sans\",Arial,sans-serif;min-height:44px;padding:11px 16px;border:1px solid var(--blue,#0f62fe);border-radius:0;background:white;color:var(--blue,#0f62fe);font-size:14px;cursor:pointer}.ds-secondary:focus-visible{outline:2px solid var(--blue,#0f62fe);outline-offset:3px}"
+    },
+    {
+      "name": "Review field",
+      "kind": "input",
+      "description": "Square neutral field with bottom rule and visible keyboard focus.",
+      "html": "<label class=\"ds-field\">Nilai asumsi<input value=\"30000\" /></label>",
+      "css": ".ds-field{font-family:\"IBM Plex Sans\",Arial,sans-serif;display:grid;gap:8px;font-size:14px;color:var(--ink,#161616)}.ds-field input{font-family:\"IBM Plex Sans\",Arial,sans-serif;min-height:44px;padding:10px 12px;background:var(--surface,#f4f4f4);color:var(--ink,#161616);border:0;border-bottom:1px solid #8d8d8d;border-radius:0;font-size:14px}.ds-field input:focus-visible{outline:2px solid var(--blue,#0f62fe);outline-offset:3px}"
+    },
+    {
+      "name": "Workflow navigation",
+      "kind": "nav",
+      "description": "Overflowing text tabs mark the selected stage with a blue bottom rule.",
+      "html": "<nav class=\"ds-tabs\" aria-label=\"Tahap review\"><button aria-current=\"page\">Asumsi &amp; dokumen</button><button>Stakeholder &amp; persona</button></nav>",
+      "css": ".ds-tabs{display:flex;overflow:auto;border-bottom:1px solid var(--line,#e0e0e0)}.ds-tabs button{font-family:\"IBM Plex Sans\",Arial,sans-serif;flex-shrink:0;padding:18px 20px;border:0;border-bottom:3px solid transparent;background:white;color:var(--muted,#525252);font-size:14px;cursor:pointer}.ds-tabs button:hover{background:var(--surface,#f4f4f4);color:var(--ink,#161616)}.ds-tabs button[aria-current]{border-bottom-color:var(--blue,#0f62fe);color:var(--ink,#161616);font-weight:600}.ds-tabs button:focus-visible{outline:2px solid var(--blue,#0f62fe);outline-offset:3px}"
+    },
+    {
+      "name": "Review status",
+      "kind": "chip",
+      "description": "Static status text carries meaning alongside the semantic tint.",
+      "html": "<span class=\"ds-status\">Perlu review</span>",
+      "css": ".ds-status{font-family:\"IBM Plex Sans\",Arial,sans-serif;display:inline-flex;padding:4px 9px;border-radius:0;background:#fff1c7;color:#684e00;font-size:12px;line-height:1.5;font-weight:600}"
+    },
+    {
+      "name": "Informational notice",
+      "kind": "card",
+      "description": "Flat information band for execution and evidence boundaries.",
+      "html": "<p class=\"ds-notice\">Fixture sintetis ? tanpa model live.</p>",
+      "css": ".ds-notice{font-family:\"IBM Plex Sans\",Arial,sans-serif;margin:10px 0 16px;padding:16px 20px;background:#edf5ff;color:#0043ce;font-size:14px;line-height:1.65;border-radius:0}"
+    },
+    {
+      "name": "Source disclosure",
+      "kind": "custom",
+      "description": "Native disclosure keeps dense provenance inspectable.",
+      "html": "<details class=\"ds-disclosure\"><summary>Review profil, konteks dan provenance</summary><p>Profil/tujuan bersifat hipotesis kecuali atribut yang memiliki dukungan sumber. Respons tetap sintetis.</p></details>",
+      "css": ".ds-disclosure{font-family:\"IBM Plex Sans\",Arial,sans-serif;margin:14px 0;color:var(--ink,#161616)}.ds-disclosure summary{min-height:32px;padding:5px 0;line-height:1.5;color:var(--blue-dark,#0043ce);cursor:pointer}.ds-disclosure summary:focus-visible{outline:2px solid var(--blue,#0f62fe);outline-offset:3px}.ds-disclosure p{font-size:13px;color:var(--muted,#525252);line-height:1.65}"
+    },
+    {
+      "name": "Validation task",
+      "kind": "card",
+      "description": "Neutral next-action block inside a finding.",
+      "html": "<div class=\"ds-validation\"><strong>Tindakan validasi berikutnya</strong><p>Periksa asumsi dengan sumber yang relevan.</p><span>Penanggung jawab yang disarankan: Analyst</span></div>",
+      "css": ".ds-validation{font-family:\"IBM Plex Sans\",Arial,sans-serif;padding:20px;margin-top:24px;background:var(--surface,#f4f4f4);color:var(--ink,#161616);border-radius:0}.ds-validation p{font-size:14px;line-height:1.65;margin:8px 0}.ds-validation span{font-size:12px;color:var(--muted,#525252)}"
+    },
+    {
+      "name": "Persona identity",
+      "kind": "custom",
+      "description": "Decorative circular identity beside a visible name. This self-contained preview shows the implemented local generic fallback; runtime uses pinned local DiceBear Personas or Fun Emoji SVGs with a stable identity seed.",
+      "html": "<span class=\"ds-persona-identity\"><svg class=\"ds-persona-avatar\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\" width=\"36\" height=\"36\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"32\" fill=\"#e8eff9\"/><circle cx=\"32\" cy=\"25\" r=\"10\" fill=\"#526981\"/><path d=\"M13 56c0-22 38-22 38 0\" fill=\"#526981\"/></svg><span>Stakeholder</span></span>",
+      "css": ".ds-persona-identity{display:inline-flex;align-items:center;gap:10px;min-width:0;max-width:100%;vertical-align:middle;font-family:\"IBM Plex Sans\",Arial,sans-serif;color:var(--ink,#161616)}.ds-persona-avatar{display:inline-block;flex:none;max-width:none;border-radius:50%;vertical-align:middle;object-fit:contain}.ds-persona-identity>:last-child{min-width:0;overflow-wrap:anywhere}"
+    }
+  ],
+  "narrative": {
+    "overview": "PAKAR extends this incumbent system in Operate mode: IBM Plex Sans, neutral flat surfaces, square controls, blue actions and hairline-separated review rows. It does not replace the marketing identity. Its task headings use weight 400; compact metadata and source trails sit below the heading/body hierarchy. Repeated 13px metadata is observed density, not a new default body token.",
+    "rules": [
+      {
+        "name": "The Inspect Before Commitment Rule",
+        "body": "Keep review controls beside the assumptions they approve. Claims expose source excerpts, numerical values and units; persona disclosures expose goals, motivations, constraints, knowledge, interests, proposed relationships and provenance before approval. Source-supported attributes do not establish synthetic behavior as fact.",
+        "section": "components"
+      },
+      {
+        "name": "The Conditional Results Rule",
+        "body": "Finding priority has a text label and is explicitly separate from probability. Findings retain uncertainty, origin, evidence gaps and a next validation task. Calculations retain conditional labels and unknown values. Blue informational notices and semantic green/yellow/red status tints supplement readable labels; these tints are functional states, not additional brand accents.",
+        "section": "components"
+      },
+      {
+        "name": "The Same Inspection Rule",
+        "body": "Desktop graph nodes support Enter/Space with visible focus; the stakeholder selector exposes the same relationship details on mobile, where the SVG is hidden below 560px. Keep profile provenance and causal-event controls available in both presentations. New scenario findings and shared findings retain disclosures and links to the preserved baseline, rather than reducing comparison to a count.",
+        "section": "components"
+      },
+      {
+        "name": "The Stable Portrait Rule",
+        "body": "A saved identity keeps one locally generated portrait across lists, graph nodes, details, reports, timelines and scenarios. Human stakeholders use Personas; analytical/system agents use Fun Emoji. Stable IDs take precedence over editable metadata. Keep the pinned DiceBear versions and generator options stable; changing either requires an explicit avatar-version migration.",
+        "section": "components"
+      }
+    ]
+  }
+}

@@ -24,7 +24,7 @@ from ..utils.locale import t, get_locale, set_locale
 from ..utils.zep_lifecycle import get_graph_readers, graph_lifecycle_lock
 from ..models.project import ProjectManager
 
-logger = get_logger('rekakebijakan.api.simulation')
+logger = get_logger('pakar.api.simulation')
 
 
 def _get_default_platform(simulation_id: str) -> str:
@@ -201,7 +201,7 @@ def create_simulation():
     Request (JSON):
         {
             "project_id": "proj_xxxx",      // Required
-            "graph_id": "rekakebijakan_xxxx",    // Optional, if not provided then fromprojectget
+            "graph_id": "pakar_xxxx",    // Optional, if not provided then fromprojectget
             "enable_twitter": true,          // Optional, defaulttrue
             "enable_reddit": true            // Optional, defaulttrue
         }
@@ -212,7 +212,7 @@ def create_simulation():
             "data": {
                 "simulation_id": "sim_xxxx",
                 "project_id": "proj_xxxx",
-                "graph_id": "rekakebijakan_xxxx",
+                "graph_id": "pakar_xxxx",
                 "status": "created",
                 "enable_twitter": true,
                 "enable_reddit": true,
@@ -1430,7 +1430,7 @@ def generate_profiles():
     
     Request (JSON):
         {
-            "graph_id": "rekakebijakan_xxxx",     // Required
+            "graph_id": "pakar_xxxx",     // Required
             "entity_types": ["Student"],      // Optional
             "use_llm": true,                  // Optional
             "platform": "reddit"              // Optional

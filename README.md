@@ -1,6 +1,60 @@
-# RekaKebijakan
+# PAKAR
 
-RekaKebijakan is a policy-scenario simulation prototype with a React frontend and an original FastAPI backend. Its staged workflow covers source intake, graph construction, environment preparation, simulation, progressive reporting, and evidence-aware follow-up.
+The active business workspace opens without login or registration by default.
+`AUTH_REQUIRED=false` uses a shared workspace: visitors can access and edit the
+same business projects and saved conversations. Old demo links remain available;
+AI calls still require explicit actions and obey the configured budgets. Optional
+legacy account mode can be enabled with `AUTH_REQUIRED=true`.
+
+PAKAR is a business co-analyst with stakeholder/persona simulation, analytical specialists, traceable assumptions, evidence and versioned stress tests. The business workspace is at `/business`; the homepage now opens PAKAR. The original policy prototype remains at `/legacy` and its existing routes.
+
+See [PRODUCT.md](PRODUCT.md) for the product contract and [implementation status](docs/PAKAR_IMPLEMENTATION_STATUS.md) for capabilities, setup, verification and remaining live release gates.
+
+For a network-free development run, configure `OASIS_ENABLED=false`, `DEFAULT_SIMULATION_ENGINE=deterministic`, and `EMBEDDED_WORKER=true` for local processes. Apply migrations with `cd backend && python -m alembic upgrade head`, start the API and frontend, then open `/business` and select **Analisis ide sendiri**. Compose deployments use the separate worker instead.
+
+Live business mode retains the bundled OASIS/CAMEL runtime and requires its environment plus a configured model provider. BPS integration additionally requires `BPS_API_KEY` and a curated `PAKAR_BPS_INDICATORS` configuration. Offline fixtures do not establish live model quality, source applicability or production readiness.
+
+## Saved public demo
+
+The Pepsodent example uses the main app's homepage, intake, idea workspace and
+three result tabs: **Ringkasan**, **Diskusi** and **Tanya PAKAR**. It reads a real
+recorded Groq run on synthetic inputs: ten personas, two rounds, 22 messages
+and four completed AI specialist reviews. The shared D3 graph supports node
+dragging, canvas panning, zoom, fit and reset, with Executive Summary directly
+below. Intake fields are locked; the workspace and Tanya PAKAR display the actual
+idea and saved specialist reviews with new-message controls disabled. The demo
+makes no new AI calls, uploads or backend API requests. Repeated responses remain
+disclosed; the result is a hypothesis for validation. Internal documents and
+credentials are excluded from the public snapshot.
+
+Build and preview the isolated static demo without a backend:
+
+```sh
+cd frontend
+npm install
+npm run build:demo
+npm run preview:demo
+```
+
+Public demo: https://pakar-demo-pepsodent.khakibowl1.chatgpt.site.
+The shared-app/network v2 update is published with the existing public audience.
+
+For a local preview, open `http://127.0.0.1:4180/`. `build:demo` sets
+`VITE_PUBLIC_DEMO_ONLY=true` and writes `frontend/dist-demo/`; its root opens the
+shared homepage without auth-status requests. `?view=intake|workspace|result`
+opens the saved surfaces; result `tab=summary|swarm|chat` preserves the selected
+tab on reload. **Analisis ide sendiri** is visibly unavailable in the isolated
+build. Publish only the generated static directory. The normal `npm run dev` /
+`npm run build` app opens saved intake at `/business/demo` and retains
+**Analisis ide sendiri** for live intake and chat.
+
+To regenerate the reviewed public snapshot from its frozen archive, run
+`python scripts/export-public-demo.py` from the repository root before building.
+See [demo provenance, verification and publication status](docs/PAKAR_PUBLIC_DEMO_2026-11-08.md).
+
+## Legacy policy workflow and shared infrastructure
+
+The retained policy workflow uses the shared React frontend and FastAPI backend. Its staged workflow covers source intake, graph construction, environment preparation, simulation, progressive reporting, and evidence-aware follow-up.
 
 ## Architecture
 
@@ -38,7 +92,7 @@ Use `make up-d` or `make full-up-d` for detached startup, `make health` to check
 
 Copy `.env.example` to `.env` to customize host ports, CORS origins, upload limits, job delay, storage, or frontend build variables.
 
-Direct CAMEL/OASIS execution is enabled and selected by default. Configure `LLM_API_KEY` and `ZEP_API_KEY` before startup, or set `OASIS_ENABLED=false` and `DEFAULT_SIMULATION_ENGINE=deterministic` to run without OASIS. RekaKebijakan's worker runs its bundled simulation engine locally and requires no external source tree or HTTP simulation sidecar.
+Direct CAMEL/OASIS execution is enabled and selected by default. Business simulations need `LLM_API_KEY` and the installed isolated runtime; legacy graph workflows also need `ZEP_API_KEY`. Set `OASIS_ENABLED=false` and `DEFAULT_SIMULATION_ENGINE=deterministic` to run offline. Enable `LLM_STRUCTURED_OUTPUTS=true` only with a model/provider supporting strict JSON Schema responses. The worker runs its bundled simulation engine locally and requires no external source tree or HTTP simulation sidecar.
 
 To use Firebase Storage instead of local uploaded-document storage, set `STORAGE_BACKEND=firebase`, `FIREBASE_STORAGE_BUCKET=<your-bucket-name>`, and point `FIREBASE_CREDENTIALS_HOST_PATH` at a Firebase service-account JSON file on the host. Compose mounts that file at `GOOGLE_APPLICATION_CREDENTIALS=/app/secrets/firebase-service-account.json` for the API and worker containers. The `secrets/` directory is git-ignored.
 

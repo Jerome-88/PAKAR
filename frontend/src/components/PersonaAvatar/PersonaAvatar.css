@@ -1,0 +1,21 @@
+.persona-avatar {
+  display: inline-block;
+  flex: none;
+  max-width: none;
+  border-radius: 50%;
+  vertical-align: middle;
+  object-fit: contain;
+}
+.persona-identity {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+  vertical-align: middle;
+}
+.persona-identity > :last-child { min-width: 0; overflow-wrap: anywhere; }
+.avatar-credits { margin: 28px 0 0; padding: 16px 0; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+.avatar-credits summary { cursor: pointer; width: fit-content; }
+.avatar-credits p { max-width: 75ch; line-height: 1.6; }
+.avatar-credits a { color: var(--blue-dark); text-decoration: underline; text-underline-offset: 3px; }

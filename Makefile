@@ -61,8 +61,8 @@ backend-test:
 	$(COMPOSE) --profile test run --build --rm backend-test
 
 frontend-test:
-	docker build --target test --tag rekakebijakan-frontend-test ./frontend
-	docker run --rm rekakebijakan-frontend-test
+	docker build --target test --tag pakar-frontend-test ./frontend
+	docker run --rm pakar-frontend-test
 
 evaluation:
 	cd backend && $(BACKEND_PYTHON) -m app.evaluation

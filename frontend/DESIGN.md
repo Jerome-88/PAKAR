@@ -409,6 +409,34 @@ The brand commits to flat 0px corners. The other tokens exist for product / mobi
 
 ## Components
 
+### PAKAR workspace extension (observed)
+
+PAKAR extends this incumbent system in Operate mode: IBM Plex Sans, neutral flat surfaces, square controls, blue actions and hairline-separated review rows. It does not replace the marketing identity. Its task headings use weight 400; compact metadata and source trails sit below the heading/body hierarchy. Repeated 13px metadata is observed density, not a new default body token.
+
+**The Inspect Before Commitment Rule.** Keep review controls beside the assumptions they approve. Claims expose source excerpts, numerical values and units; persona disclosures expose goals, motivations, constraints, knowledge, interests, proposed relationships and provenance before approval. Source-supported attributes do not establish synthetic behavior as fact.
+
+**The Conditional Results Rule.** Finding priority has a text label and is explicitly separate from probability. Findings retain uncertainty, origin, evidence gaps and a next validation task. Calculations retain conditional labels and unknown values. Blue informational notices and semantic green/yellow/red status tints supplement readable labels; these tints are functional states, not additional brand accents.
+
+**The Same Inspection Rule.** Graph nodes support Enter/Space with visible focus; the native persona selector exposes the same recorded details. Completed results in the main app and public demo share a circular-avatar D3 network with node dragging, canvas panning, zoom, fit and reset; mobile retains that network with the inspection panel below it. Edges show recorded direct interactions or replies, and Executive Summary follows directly below. Legacy relationship graphs retain their selector-based mobile presentation where the SVG is hidden below 560px. Keep profile provenance and causal-event controls available in their existing review surfaces. New scenario findings and shared findings retain disclosures and links to the preserved baseline, rather than reducing comparison to a count.
+
+The workspace narrows to a 1280px maximum. Two-column forms collapse below 560px; headings/actions stack below 850px. Tables use horizontal overflow where necessary. Neutral disclosure panels carry audit details without adding shadows. Standard controls retain a 44px minimum height; smaller text disclosures remain an observed limitation, not a blanket touch-target promise.
+
+Surface-specific workflow, fixture disclosures and finish-review evidence are recorded in `.impeccable/surfaces/`, not promoted into global visual tokens. Live OASIS/BPS effectiveness and deployment readiness are not established by this frontend record.
+
+### PAKAR completed-report extension (observed)
+
+The completed report preserves the workspace's flat-square IBM Plex system. A restrained title introduces a reading column with hairline-separated sections, neutral tables, blue source links and native disclosures. Section headings use the existing 24px role; the decision question uses 20px and report/table text uses the existing 14px/16px hierarchy. Source and causal trails remain subordinate to the finding and its named validation owner.
+
+At desktop, a sticky 205px contents column sits beside the flexible reading column with a 40px gap. At 800px and below, a labeled native section selector replaces the contents links. Metric tables retain scoped horizontal scrolling, a visible mobile instruction naming the Delta column where applicable, and a labeled keyboard-focusable region with the standard blue focus outline. Page width stays within the viewport; hidden columns remain discoverable through the instruction. The portable HTML export retains the neutral document treatment, shifts its layout below 640px and supplies print rules. Report-specific strategy and proof live in the workspace surface brief; these patterns add no brand colors, radius or type tokens.
+
+### PAKAR persona-avatar extension (observed)
+
+**The Stable Portrait Rule.** A saved identity keeps one locally generated portrait across lists, graph nodes, details, reports, timelines and scenarios. Human stakeholders use Personas; analytical/system agents use Fun Emoji. Stable IDs take precedence over editable metadata. Keep the pinned DiceBear versions and generator options stable; changing either requires an explicit avatar-version migration.
+
+Circular avatars are a localized identity affordance beside visible names, not a change to square controls or the IBM Plex, white/neutral and blue Operate system. One 64px SVG source scales to compact 24–40px displays. Blue, teal and lavender skin and restricted friendly variants are illustrative; names and roles supply no demographic inference. The image is decorative beside its name, with a safe local generic fallback. Avatar illustration colors add no global palette tokens. Credits retain original authors, CC BY 4.0 and PAKAR adaptations; the public notice also retains the core MIT license.
+
+The shared memoized component and bounded cache serve the same URI to HTML images and SVG graph images. Desktop retains readable node labels, selection and keyboard inspection; mobile retains the native selector and avatar detail. Surface-specific integration, dense-graph viewport behavior, verification and finish evidence live in `.impeccable/surfaces/src-components-personaavatar-personaavatar-tsx.md`; the full implementation manifest remains in `../docs/persona-avatars.md`. Portable HTML exports remain text reports.
+
 ### Buttons
 
 **`button-primary`** — Blue solid CTA. The default primary across all pages.

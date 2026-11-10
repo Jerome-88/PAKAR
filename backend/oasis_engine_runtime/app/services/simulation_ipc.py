@@ -19,7 +19,7 @@ from enum import Enum
 
 from ..utils.logger import get_logger
 
-logger = get_logger('rekakebijakan.simulation_ipc')
+logger = get_logger('pakar.simulation_ipc')
 
 
 class CommandType(str, Enum):

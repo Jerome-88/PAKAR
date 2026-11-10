@@ -1,138 +1,127 @@
-# RekaKebijakan Product Brief
+# PAKAR
 
-## Overview
+PAKAR is a business co-analyst for Business Analysts and Strategic Planning teams. It combines stakeholder perspectives, analytical specialists, source evidence, and scenario stress tests to identify blind spots and the next questions to validate.
 
-RekaKebijakan is an early-stage public policy simulation platform for exploring how policy drafts, programs, or regulatory changes may be interpreted by affected groups before implementation.
+The application opens at `/` or `/business` with two public choices: **Coba
+demo** and **Analisis ide sendiri**. `/business/demo` packages a read-only saved
+real-AI Pepsodent study using synthetic inputs: ten personas, two rounds and 22
+recorded messages. Final positions are seven conditional, one opposed and two
+undecided; four internal AI specialist reviews completed. The demo reuses the
+main app homepage, intake, idea workspace and three result tabs: **Ringkasan**,
+**Diskusi** and **Tanya PAKAR**. Locked intake fields preserve the original idea
+and public brief. The idea workspace and Tanya PAKAR show that idea and four
+actual saved specialist reviews, with new-message controls disabled. The shared
+interactive graph supports dragging nodes, panning, zooming, fit and reset;
+Executive Summary sits directly below it. All demo content reads saved output
+without inference, new AI credit use, uploads or backend API requests. Repetitive
+messages remain disclosed, so the run retains partial quality status.
+`VITE_PUBLIC_DEMO_ONLY=true` builds a static visitor experience whose root opens
+the shared homepage; it skips auth bootstrap and disables new analysis. It needs
+no backend or provider key. Normal `/business/demo` opens the saved intake.
+`/business/new` opens the actual intake through the
+existing protected-route mechanism and the **shared workspace without
+registration or login**
+(`AUTH_REQUIRED=false`, the default). Everyone using the application can read and
+edit business projects, saved analyses and conversations. Existing records retain
+their original ownership fields; the shared API resolves those fields internally
+so saved demo links remain usable without rewriting results. New projects use a
+stable internal workspace identity, with no session cookie. Account controls are
+absent, and old login/register links open their intended workspace destination.
+Optional legacy account mode remains available with `AUTH_REQUIRED=true`.
+AI calls remain explicit and retain the existing spending and runtime limits.
 
-The product helps policy teams turn source documents into a structured policy graph, generate synthetic stakeholder personas, run bounded scenario simulations, and produce evidence-aware reports that preserve citations back to the original sources and simulation events.
+Visible business project lists and run history are removed, including the run
+list in project settings; that tab is now **Pengaturan analisis**. Underlying
+records remain saved, and direct project/result links, real-result chat and HTML
+export remain available. The public demo does not expose those live actions.
 
-RekaKebijakan is designed as decision-support infrastructure. It is not a replacement for public consultation, legal review, or domain-expert judgment.
+The product follows `docs/PAKAR_PRD_REVISION_v1.1.md`. The policy product remains available through legacy workflows; its brief is archived in `docs/PAKAR_PRODUCT_LEGACY.md`.
 
-## Product Problem
+## User workflow
 
-Policy teams often need to reason about social impact before a policy is deployed, but early analysis is constrained by incomplete evidence, fragmented stakeholder maps, and slow feedback loops. Draft regulations and program documents may contain technical language that different groups interpret differently. Risk narratives can form before official clarification, while indirect impacts may only become visible after rollout.
+1. Upload PDF, DOCX, TXT or Markdown, enter an analysis name and describe the business decision. Industry, region and target customer are optional additional settings; unspecified values stay unknown.
+2. Start analysis directly. A leased background job prepares source-linked assumptions and contextual personas. Profiles are not marked human-reviewed; ambiguous numerical inputs remain unknown. Parsing failures remain visible.
+3. Live discovery uses a bounded schema with document-supported business roles and display labels. If it fails, contextual role selection is explicitly labeled as a fallback. Default quick runs use three rounds, four customer perspectives and up to eight personas. Threaded swarm discussion records replies, access boundaries and declared stance changes; older snapshots retain pairwise behavior. Synthetic demo mode makes no model calls.
+4. Freeze prepared inputs once, then run bounded analysis. Personas propose interactions; the server validates actions and changes state. Specialists examine assumptions, findings and evidence gaps. Manual source/profile review remains available through project settings, rather than blocking the default workflow.
+5. Review blind spots by priority/category. Follow findings to source claims, interaction chains, conditional calculations and validation tasks.
+6. Create a separate scenario with a scheduled shock. Compare calculations, stakeholder states and findings against the unchanged baseline.
+7. Download an HTML report with assumptions, evidence, findings, disagreements, calculations and limitations.
 
-RekaKebijakan addresses this gap by providing a repeatable simulation workflow that surfaces likely stakeholder concerns, narrative risks, evidence gaps, and follow-up questions while keeping outputs traceable to source material.
+The business workspace uses a single top header and local page navigation, with no product sidebar, mobile drawer or hamburger. Completed results expose three tabs: **Ringkasan**, **Diskusi** and **Tanya PAKAR**. Ringkasan opens the shared D3 network with circular portrait nodes, node dragging, canvas panning, zoom controls, fit and reset, plus compact counts of active simulation personas supporting, opposing, supporting conditionally or undecided. Select a persona to read its recorded reason beside the graph (below it on mobile); stance and customer-only filters narrow the graph. Lines represent recorded direct interactions or replies, never proposed profile relationships or inferred broadcast conversations. Missing stance data is shown separately, never counted as opposition. Each persona counts once; analytical specialists are outside the denominator. Counts are synthetic positions, not market shares or a business approval score.
 
-## Target Users
+**Executive Summary** sits directly below both the main graph and the legacy interaction graph. A visible **Lihat Executive Summary** link above either graph moves to that section; `#executive-summary` also works when analysis data loads asynchronously. Result tabs follow the URL and browser Back/Forward navigation. The summary groups the short stance headline and **Yang masih kurang**: up to three priority findings linked to accepted recorded interactions, each with a short next action and optional full reason. Further discussion-linked findings expand inline. It reads saved results without another model call. Generic assumption-register and missing-input checks do not occupy this short discussion view. No finding is invented when the discussion has no recorded summary. Diskusi retains the actual messages, replies and reasons without quality metrics, dispatch diagnostics or repeated final-position tables. The normal result interface removes assumption registers, full-report navigation, the advanced menu, completed process/profile/provenance disclosures and the complete limitations block. Incomplete runs retain their actionable failure/recovery controls.
 
-- Policy analysis units evaluating draft regulations, programs, or implementation plans.
-- Local governments reviewing service delivery, MSME, community, or vulnerable-group impacts.
-- Researchers and academic teams testing policy hypotheses with traceable scenarios.
-- Civil society organizations identifying stakeholder risks and consultation priorities.
+The **Unduh** link retains the archived eight-section HTML report and its report API, reconstructed from frozen inputs and saved results without another model call or change to the baseline. Existing explicit technical URLs for findings, timeline, evidence, scenario and audit remain compatible; they are outside the normal three-tab navigation. The old report tab opens the summary instead. Legacy policy pages retain their own existing shell.
 
-## Value Proposition
+## Two complementary layers
 
-RekaKebijakan helps teams move from static documents to structured, inspectable policy simulations.
+- Simulation personas represent stakeholder perspectives: customers, suppliers, competitors, operators, employees, regulators, partners and indirect stakeholders. Configurable persona counts do not represent population shares.
+- Analytical specialists cover Market, Finance, Legal/Compliance and Risk. Their number is separate from simulation personas. Orchestration and report synthesis coordinate the workflow.
 
-Core value:
+OASIS/CAMEL remains the live runtime. A business adapter supplies scoped interactions and server-authoritative state transitions. An offer is separate from acceptance. Financial calculations use typed decimal inputs.
 
-- Map affected groups, policy issues, obligations, risks, and relationships from uploaded sources.
-- Convert policy graph entities into synthetic personas grounded in available evidence.
-- Run scenario simulations across bounded rounds and channels.
-- Track support, concern, narrative risk, and emerging issues over time.
-- Generate reports with structured citations and evidence references.
-- Ask follow-up questions about reports, personas, evidence, risks, comparisons, and revisions.
+## Truth boundaries
 
-## Core Workflow
+- Persona behavior is a synthetic hypothesis. Source support for a profile attribute does not verify generated behavior.
+- Simulated agreement, repetition or graph ingestion is not independent factual evidence.
+- User approval confirms the analysis input, not external claim validity.
+- Evidence must match geography, period, units and meaning; an official URL alone is insufficient.
+- Missing values remain unknown. Numerical outputs are conditional on recorded inputs/formulas.
+- A competitor price shock does not automatically change own price or demand. Matching is an explicit strategy assumption.
+- Legal findings require qualified review. PAKAR does not certify compliance or predict business success.
 
-RekaKebijakan uses a five-stage workflow.
+## Current capabilities and limits
 
-1. **Source Intake**
-   Users create a policy project by providing project metadata, an institution or team name, an analysis objective, and source files such as PDF, DOCX, Markdown, or text documents.
+The implementation includes a shared business workspace, traceable intake/claim review, persona review, leased analysis jobs, interaction reducer, OASIS bridge, specialist adapters, findings/report/export, basic relationship graph and versioned scenario comparison.
 
-2. **Graph Build**
-   The system extracts policy concepts, stakeholder groups, issues, objectives, risks, indicators, and relationships into a source-grounded policy graph.
+Project workspaces also include persistent **Chat & ide**. Users distinguish
+supporting documents from idea files, discuss a selected idea or saved analysis
+with one named facilitator/specialist per message, and explicitly save immutable
+idea revisions. A chosen revision starts a separate swarm run; chat does not
+silently change ideas or start simulations. Replies cite supplied excerpts with
+source classifications and uncertainty. New intake can open this workspace
+before analysis. One active turn per project and no automatic paid retry bound
+the pilot. General answer quality, OCR and individual-persona chat remain separate
+limitations.
 
-3. **Environment Setup**
-   The system prepares simulation configuration, creates synthetic personas from eligible graph entities, and links them to evidence where possible.
+Analysis results also expose **Tanya PAKAR** beside the default graph summary.
+This reuses project chat with a pinned saved analysis and its frozen idea version,
+showing follow-up turns for that result. Users explicitly send to the facilitator
+or one of the four internal specialists. Saved stance counts, recorded reasons
+and accepted interactions can be cited as synthetic sources, within the bounded
+chat context. A chat does not change votes, update the saved result or start a new
+swarm. Drafts and pending request identity survive switching between result tabs;
+saved replies remain in the project. Editing an idea and starting another run stay
+separate actions in the idea workspace.
 
-4. **Simulation**
-   Personas respond to the policy scenario across configured rounds. In the full runtime, Twitter-like and Reddit-like social environments can run in parallel through the bundled OASIS simulation engine.
+The result view uses a neutral canvas around white reading surfaces. Graph nodes
+group each stable portrait, name, role and stance marker; the selected person's
+recorded reason sits in a white inspection panel. A two-column Executive Summary
+stacks on smaller screens and opens the existing chat through **Diskusikan hasil
+ini**. The bounded conversation separates its reading area from the composer.
+Chat renders resolvable source IDs as numbered controls that open and focus the
+original saved quotation. Unmatched or ambiguous references stay as written;
+this presentation does not rewrite the answer or infer extra sources.
 
-5. **Report and Interaction**
-   The system generates report sections, risk narratives, cited evidence, and follow-up tools for questioning findings, interviewing personas, comparing scenarios, and exploring revisions.
+Offline fixtures are restricted to synthetic projects and visibly labeled. Without an LLM, contextual persona candidates come from a bounded role catalog and require human review; this does not demonstrate live discovery quality.
 
-## Key Capabilities
+Live mode requires a configured model provider and installed OASIS runtime. BPS retrieval requires an API key and curated indicators. Retrieved data remains partial until applicability is checked; source outages remain unavailable. Offline tests do not establish live effectiveness or production readiness.
 
-### Document-Grounded Project Creation
+Privacy scope is public, synthetic or non-confidential documents. A configured provider may receive scoped context during live analysis. Enterprise roles, private inference, ERP/CRM, large-data analytics, advanced visualizations and calibrated feasibility scoring remain later work.
 
-Users can upload real policy sources and define the question they want to test. Uploaded documents are parsed, chunked, and assigned stable evidence identifiers so downstream artifacts can cite the source material.
+See `docs/PAKAR_IMPLEMENTATION_STATUS.md` for verification and remaining release gates.
 
-### Policy Graph Construction
-
-The graph captures entities and relationships relevant to the policy scenario, such as affected groups, implementing institutions, obligations, risks, issues, and indicators. Users can provide feedback on graph nodes and edges, with downstream artifacts invalidated when reviewed graph changes affect the simulation context.
-
-### Synthetic Persona Generation
-
-Graph entities can become synthetic personas with roles, stances, concerns, topics, and group membership. Personas are meant to approximate plausible viewpoints for scenario exploration, not represent real individuals.
-
-### Scenario Simulation
-
-The simulation engine produces event streams across rounds and channels. Events record persona statements, concerns, stance, risk narratives, influence sources, platform metadata, and citations where available.
-
-### Evidence-Aware Reporting
-
-Reports summarize findings, risks, and policy-relevant observations while preserving citations to documents, graph nodes, simulation events, interview answers, or report sections. The frontend exposes citation details instead of synthesizing missing evidence.
-
-### Follow-Up Interaction
-
-Users can ask questions about the generated report, inspect persona viewpoints, request evidence explanations, review risk narratives, compare scenarios, and explore revision-oriented questions.
-
-### Scenario and Persona Control
-
-The product supports scenario configuration, persona overrides, custom personas, run controls, version-aware mutations, and project lifecycle operations for managing policy experiments over time.
-
-## Evidence and Provenance Principles
-
-RekaKebijakan treats evidence traceability as a core product requirement.
-
-- Source documents are preserved separately from generated outputs.
-- Document chunks use stable identifiers for citation and retrieval.
-- Graph nodes, report sections, risks, and interaction answers expose structured evidence references.
-- Model-provided source IDs are not trusted without backend validation against stored evidence.
-- Internal storage paths are not exposed through project or evidence APIs.
-
-The product should make uncertainty visible. When a finding is based on simulation behavior rather than source evidence, the interface should preserve that distinction.
-
-## Simulation Model
-
-RekaKebijakan supports two simulation modes.
-
-- **Deterministic provider:** A reproducible, offline provider for local development, tests, and network-free evaluation.
-- **OASIS runtime:** A fuller social simulation runtime where graph entities become agents, platform worlds run in parallel, actions stream into PostgreSQL, and completed actions can update temporal graph memory.
-
-Both modes should preserve the same product contract: bounded scenarios, inspectable outputs, and evidence-aware reporting.
-
-## Responsible Use
-
-RekaKebijakan is intended to support earlier, better-informed policy analysis. It should not be used as a sole basis for policy decisions.
-
-Responsible-use expectations:
-
-- Treat personas as synthetic approximations, not actual public opinion.
-- Use findings to identify questions, risks, and consultation priorities.
-- Validate high-impact recommendations with affected communities and subject-matter experts.
-- Preserve citations and expose evidence gaps rather than overclaiming certainty.
-- Avoid representing simulation outputs as predictions of real-world outcomes.
-
-## Current Product Status
-
-The current implementation is a prototype with a React frontend and FastAPI backend. It supports authenticated user workspaces, project creation, document upload, graph construction, environment generation, simulation runs, reports, interactions, interviews, provenance, and deterministic evaluation.
-
-The full Docker workflow can run the bundled OASIS runtime when configured with the required external services. Demo-mode flows remain available for local frontend scenarios.
-
-## Success Criteria
-
-Product success should be evaluated by whether RekaKebijakan helps users produce more grounded and reviewable policy analysis earlier in the policy design process.
-
-Practical signals include:
-
-- Users can upload source material and receive a coherent policy graph.
-- Personas and simulation events reflect source-grounded stakeholder concerns.
-- Reports include valid citations and sufficient citation coverage.
-- Users can trace claims back to documents, events, or graph elements.
-- Follow-up questions reveal useful risks, evidence gaps, or revision options.
-- Teams can compare scenarios without losing provenance or version context.
-
-Formal evaluation currently focuses on concept recall, citation validity, and citation coverage through deterministic fixtures.
+New business runs separate internal analysis from the stakeholder room. Users
+explicitly supply a public stakeholder brief; internal research, the full idea,
+business inputs and document-derived persona attributes are not forwarded to
+stakeholder models. External personas use bounded synthetic role/lens profiles
+and visible discussion messages. The product facilitator in that room also has
+only the public brief. Internal specialists cross-check reactions against the
+original sources. Run snapshots retain the disclosed brief and stable persona IDs.
+Customer base turns can target another customer's contribution from round two,
+without forcing consensus or increasing the all-pairs call count. Historical runs
+remain unchanged and are labeled when they predate this separation. Ambiguous
+launch failures freeze the original brief, body and idempotency key across intake,
+project and idea-workspace flows. This isolates simulated-role context; it is not
+enterprise user RBAC or automatic DLP for text explicitly put in the public brief.
+See `docs/PAKAR_INFORMATION_BOUNDARIES_2026-11-01.md` for implementation and limits.

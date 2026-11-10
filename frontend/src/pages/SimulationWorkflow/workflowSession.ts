@@ -1,3 +1,4 @@
+import { readBrandedStorage, removeBrandedStorage } from "../../data/brandedStorage";
 import type { ConsoleLog, ReportSection, SimulationStatus, ViewMode, WorkflowStep } from "./workflowTypes";
 import { authStorageKey } from "../../auth/storageNamespace";
 
@@ -44,13 +45,13 @@ export type WorkflowSession = {
   updatedAt: string;
 };
 
-const prefix = "rekakebijakan-workflow-v2:";
+const prefix = "pakar-workflow-v2:";
 const sessionKey = (simulationId: string) => authStorageKey(`${prefix}${simulationId}`);
 export const quickPresentationSessionKey = (simulationId: string) =>
-  `rekakebijakan-quick-presentation:${simulationId}`;
+  `pakar-quick-presentation:${simulationId}`;
 
 export function clearQuickPresentationSession(simulationId: string) {
-  sessionStorage.removeItem(quickPresentationSessionKey(simulationId));
+  removeBrandedStorage(sessionStorage, quickPresentationSessionKey(simulationId));
 }
 
 function readyStep(status: StepRunStatus): WorkflowStepState {
@@ -85,7 +86,7 @@ export function createWorkflowSession(simulationId: string, projectName: string)
 }
 
 export function loadWorkflowSession(simulationId: string): WorkflowSession | null {
-  const stored = localStorage.getItem(sessionKey(simulationId));
+  const stored = readBrandedStorage(localStorage, sessionKey(simulationId));
   if (!stored) return null;
   try {
     const parsed = JSON.parse(stored) as Partial<WorkflowSession>;
@@ -148,7 +149,7 @@ export function loadWorkflowSession(simulationId: string): WorkflowSession | nul
 }
 
 export function clearWorkflowSession(simulationId: string) {
-  localStorage.removeItem(sessionKey(simulationId));
+  removeBrandedStorage(localStorage, sessionKey(simulationId));
 }
 
 export function saveWorkflowSession(session: WorkflowSession) {

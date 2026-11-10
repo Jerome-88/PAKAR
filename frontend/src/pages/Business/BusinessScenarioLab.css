@@ -1,0 +1,109 @@
+.pakar-scenario-lab { min-width: 0; margin-top: 22px; color: #171717; }
+.pakar-scenario-lab-intro { margin-bottom: 21px; }
+.business-workspace .pakar-scenario-lab h2 { margin: 0 0 8px; font-size: 17px; font-weight: 700; line-height: 1.4; letter-spacing: 0; }
+.business-workspace .pakar-scenario-lab-intro h2 { font-size: 20px; }
+.pakar-scenario-lab-intro p { margin: 0; color: #706b71; font-size: 12px; line-height: 1.65; }
+.pakar-scenario-presets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 19px; margin-bottom: 22px; }
+.pakar-scenario-preset { display: flex; min-width: 0; flex-direction: column; align-items: stretch; gap: 17px; padding: 27px 20px 24px; border: 2px solid #f1f1f1; border-radius: 9px; background: #fff; text-align: left; color: inherit; font: inherit; cursor: pointer; transition: border-color 150ms ease-out; }
+.pakar-scenario-preset[aria-pressed=true] { border-color: #171717; }
+.pakar-scenario-preset:hover:not(:disabled) { border-color: #a69d9c; }
+.pakar-scenario-preset[aria-pressed=true]:hover { border-color: #171717; }
+.pakar-scenario-preset:disabled { cursor: default; }
+.pakar-scenario-preset-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.pakar-scenario-number { display: inline-flex; width: fit-content; padding: 7px 12px; border-radius: 20px; background: #0b0b0b; color: #fff; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.pakar-scenario-preset-risk { padding: 6px 10px; border: 1px solid; border-radius: 20px; font-size: 10px; font-weight: 600; white-space: nowrap; }
+.pakar-scenario-preset-risk.is-base { color: #375f8d; border-color: #a0c0e6; background: #e9f1fb; }
+.pakar-scenario-preset-risk.is-risk { color: #bb2934; border-color: #ef787e; background: #ffe6e7; }
+.pakar-scenario-preset-title { font-size: 15px; line-height: 1.45; font-weight: 700; }
+.pakar-scenario-preset-description { color: #706b71; font-size: 11px; line-height: 1.6; min-height: 54px; }
+.pakar-scenario-preset-values { display: grid; gap: 10px; margin-top: auto; padding: 15px 12px; border-radius: 10px; background: #f5f5f5; }
+.pakar-scenario-preset-values > span { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; font-size: 10px; line-height: 1.5; }
+.pakar-scenario-preset-values > span > span { color: #69666b; }
+.pakar-scenario-preset-values strong { text-align: right; font-weight: 700; white-space: nowrap; }
+.pakar-scenario-lab-layout { display: grid; grid-template-columns: minmax(285px, .84fr) minmax(0, 1.3fr); gap: 22px; align-items: start; }
+.pakar-scenario-lab-sidebar { display: grid; gap: 20px; min-width: 0; }
+.pakar-scenario-controls, .pakar-scenario-assessment, .pakar-scenario-comparison { min-width: 0; padding: 25px 20px; border: 1px solid #efefef; border-radius: 10px; background: #fff; }
+.pakar-scenario-control-note, .pakar-scenario-assessment > p { margin: 0 0 22px; color: #706b71; font-size: 10px; line-height: 1.7; }
+.pakar-scenario-slider { display: block; margin: 26px 0 34px; min-width: 0; }
+.pakar-scenario-slider > span:first-child { display: flex; gap: 10px; justify-content: space-between; align-items: baseline; margin-bottom: 19px; font-size: 11px; line-height: 1.6; }
+.pakar-scenario-slider strong { font-weight: 600; }
+.pakar-scenario-slider output { color: #c22f38; font-weight: 600; text-align: right; white-space: nowrap; }
+.app-shell-business .business-workspace .pakar-scenario-lab .pakar-scenario-slider input[type=range] { display: block; appearance: none; width: 100%; height: 5px; min-height: 5px; background: #efefef; border: 0; border-radius: 20px; padding: 0; margin: 0 0 12px; cursor: pointer; }
+.pakar-scenario-slider input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border: 0; border-radius: 50%; background: #111; }
+.pakar-scenario-slider input[type=range]::-moz-range-thumb { width: 20px; height: 20px; border: 0; border-radius: 50%; background: #111; }
+.pakar-scenario-slider input[type=range]:disabled { opacity: .45; cursor: default; }
+.pakar-scenario-range-captions { display: flex; justify-content: space-between; gap: 8px; }
+.pakar-scenario-range-captions small { color: #716c72; font-size: 9px; line-height: 1.5; }
+.pakar-scenario-capex { display: block; margin: 27px 0 22px; }
+.pakar-scenario-capex > span:first-child { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 10px; font-size: 11px; font-weight: 600; line-height: 1.6; }
+.pakar-scenario-capex small { color: #b72f37; font-size: 10px; font-weight: 500; text-align: right; }
+.pakar-scenario-capex > span:last-child { display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: #f3f3f3; border-radius: 8px; }
+.pakar-scenario-capex b { font-size: 12px; }
+.app-shell-business .business-workspace .pakar-scenario-lab .pakar-scenario-capex input[type=number] { min-width: 0; width: 100%; min-height: 24px; height: 24px; border: 0; background: transparent; padding: 0; text-align: right; color: #171717; font: inherit; font-size: 13px; font-weight: 700; }
+.pakar-scenario-event-editor { min-width: 0; margin: 28px 0 0; padding: 20px 0 0; border: 0; border-top: 1px solid #ece9ed; }
+.pakar-scenario-event-editor legend { float: left; width: 100%; margin-bottom: 17px; padding: 0; font-size: 14px; font-weight: 700; }
+.pakar-scenario-event-editor > label, .pakar-scenario-event-fields label { display: grid; gap: 7px; clear: both; margin: 16px 0; font-size: 11px; line-height: 1.65; }
+.pakar-scenario-event-editor select, .pakar-scenario-event-editor input[type=number], .pakar-scenario-event-editor textarea { width: 100%; min-width: 0; padding: 8px 10px; color: #272129; font: inherit; font-size: 12px; }
+.pakar-scenario-event-editor textarea { resize: vertical; }
+.pakar-scenario-event-editor small { color: #6a606e; font-size: 10px; }
+.pakar-scenario-event-editor .pakar-scenario-event-toggle { display: flex; flex-direction: row; align-items: flex-start; gap: 8px; font-size: 11px; }
+.pakar-scenario-event-toggle input { flex: 0 0 auto; accent-color: #171717; margin: 3px 0 0; }
+.pakar-scenario-event-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.pakar-scenario-assessment-note { padding: 13px 12px; border: 1px solid #efbe50; border-radius: 9px; background: #fff7e2; color: #51441e !important; font-size: 11px !important; line-height: 1.7 !important; margin: 14px 0 0 !important; }
+.pakar-scenario-comparison-heading { padding-bottom: 17px; margin-bottom: 17px; border-bottom: 1px solid #eee; }
+.pakar-scenario-comparison-heading h2 { font-size: 15px !important; }
+.pakar-scenario-comparison-heading > span { color: #70646e; font-size: 10px; }
+.pakar-scenario-metric-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+.pakar-scenario-metric { display: flex; flex-direction: column; min-width: 0; padding: 17px 15px; border: 1px solid #eee; border-radius: 11px; }
+.pakar-scenario-metric-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.business-workspace .pakar-scenario-metric h3 { margin: 0; font-size: 11px; line-height: 1.5; font-weight: 700; }
+.pakar-scenario-metric-badge { flex: 0 0 auto; max-width: 90px; padding: 4px 6px; border: 1px solid #afc78c; border-radius: 15px; background: #f5faed; color: #496229; font-size: 9px; line-height: 1.5; text-align: center; }
+.pakar-scenario-metric[data-negative=true] .pakar-scenario-metric-badge { color: #bf2934; border-color: #f08b91; background: #fff0f0; }
+.pakar-scenario-metric-baseline { font-size: 10px; color: #706970; margin: 16px 0 7px; }
+.pakar-scenario-metric-value { display: block; margin-top: auto; font-size: clamp(23px, 2.1vw, 31px); font-weight: 700; line-height: 1.35; letter-spacing: -.025em; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.pakar-scenario-metric-track { height: 6px; background: #f1f1f1; border-radius: 20px; margin-top: 12px; overflow: hidden; }
+.pakar-scenario-metric-track > span { display: block; height: 100%; background: #abc956; border-radius: inherit; transition: width 180ms ease-out; }
+.pakar-scenario-metric[data-negative=true] .pakar-scenario-metric-track > span { background: #e34a58; }
+.pakar-scenario-metric-caption { margin: 8px 0 0; color: #756c75; font-size: 9px; line-height: 1.55; }
+.pakar-scenario-event-timeline { padding: 22px 0; margin-top: 22px; border-top: 1px solid #eee; border-bottom: 1px solid #eee; }
+.pakar-scenario-timeline-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 17px; }
+.pakar-scenario-timeline-heading h3, .pakar-scenario-volume-chart h3, .pakar-scenario-ai-action h3 { margin: 0; font-size: 14px; font-weight: 700; line-height: 1.5; }
+.pakar-scenario-timeline-heading > span { color: #756775; font-size: 10px; }
+.pakar-scenario-rounds { display: flex; gap: 8px; overflow-x: auto; padding: 2px; scrollbar-width: thin; }
+.pakar-scenario-rounds button { flex: 1 0 64px; padding: 11px 7px; min-height: 50px; border: 1px solid #ddd8df; border-radius: 8px; background: #fafafa; color: #524a55; font: inherit; font-size: 10px; cursor: pointer; }
+.pakar-scenario-rounds button[data-event=true] { background: #fff2e9; border-color: #e8b79d; color: #8d4c2b; }
+.pakar-scenario-rounds button[aria-pressed=true] { border: 2px solid #171717; padding: 10px 6px; color: #171717; }
+.pakar-scenario-rounds small { display: block; margin-top: 5px; font-size: 8px; }
+.pakar-scenario-event-banner { margin-top: 14px; padding: 13px 14px; border-radius: 9px; background: #f4f2f6; color: #605567; }
+.pakar-scenario-event-banner[data-phase=active], .pakar-scenario-event-banner[data-phase=preview] { background: #fff0e1; color: #854a22; }
+.pakar-scenario-event-banner strong { font-size: 12px; }
+.pakar-scenario-event-banner p { font-size: 11px; line-height: 1.65; margin: 5px 0 0; }
+.pakar-scenario-timeline-actions { display: flex; gap: 18px; align-items: center; margin-top: 14px; }
+.pakar-scenario-preview-button { padding: 10px 15px; border: 1px solid #171717; border-radius: 20px; background: #171717; color: #fff; font: inherit; font-size: 11px; cursor: pointer; }
+.pakar-scenario-preview-disclaimer { color: #716573; font-size: 10px; line-height: 1.65; margin: 12px 0 0; }
+.pakar-scenario-volume-chart { margin-top: 24px; }
+.pakar-scenario-volume-chart h3 { padding-bottom: 12px; border-bottom: 1px solid #eee; }
+.pakar-scenario-volume-row { margin: 18px 0; }
+.pakar-scenario-volume-row > p { margin: 0 0 9px; font-size: 12px; }
+.pakar-scenario-volume-track { display: flex; height: 36px; overflow: hidden; border-radius: 5px; background: #f3f3f3; }
+.pakar-scenario-volume-track > span { display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; white-space: nowrap; font-size: 10px; color: #171717; }
+.pakar-scenario-volume-track .is-bep { background: #a0c0e6; }
+.pakar-scenario-volume-track .is-achieved, .pakar-scenario-volume-track .is-surplus { background: #afd057; }
+.pakar-scenario-volume-track .is-gap { background: #fd937b; }
+.pakar-scenario-volume-row small { display: block; color: #6e6673; font-size: 9px; margin-top: 7px; line-height: 1.5; }
+.pakar-scenario-bep-conclusion { margin: 18px 0 0; padding: 14px; border-radius: 9px; background: #f4f4f4; color: #3c353f; font-size: 11px; line-height: 1.75; }
+.pakar-scenario-unknown { color: #736676; font-size: 11px !important; line-height: 1.7; }
+.pakar-scenario-calculation-details { margin-top: 23px; color: #6b606f; font-size: 10px; line-height: 1.7; }
+.pakar-scenario-calculation-details summary { cursor: pointer; text-decoration: underline; text-underline-offset: 4px; }
+.pakar-scenario-calculation-details p { margin: 12px 0; }
+.pakar-scenario-ai-action { margin-top: 24px; padding-top: 23px; border-top: 1px solid #eee; }
+.pakar-scenario-ai-action p { font-size: 11px; line-height: 1.75; color: #695e6d; }
+.pakar-scenario-ai-action .button { font-size: 12px; margin-top: 7px; }
+.pakar-scenario-error { color: #a82a36 !important; }
+.pakar-scenario-lab button:focus-visible, .pakar-scenario-lab input:focus-visible, .pakar-scenario-lab select:focus-visible, .pakar-scenario-lab textarea:focus-visible { outline: 2px solid #77558f; outline-offset: 4px; }
+.app-shell-business .business-workspace:has(.pakar-scenario-lab) > .business-results-navigation .business-tabs { background: #fff; border: 1px solid #efefef; }
+.app-shell-business .business-workspace:has(.pakar-scenario-lab) > .business-results-navigation .business-tabs button.active { background: #080808; color: #fff; }
+@media (max-width: 1100px) { .pakar-scenario-lab-layout { grid-template-columns: 1fr; } .pakar-scenario-lab-sidebar { grid-template-columns: minmax(0, 1fr) minmax(0, .8fr); align-items: start; } .pakar-scenario-preset { padding: 22px 15px; } .pakar-scenario-preset-values { padding: 13px 10px; } .pakar-scenario-preset-values > span { font-size: 9px; } }
+@media (max-width: 700px) { .pakar-scenario-presets { grid-template-columns: 1fr; gap: 13px; } .pakar-scenario-preset { gap: 13px; padding: 20px; } .pakar-scenario-preset-description { min-height: 0; } .pakar-scenario-preset-values > span { font-size: 11px; } .pakar-scenario-lab-sidebar { grid-template-columns: 1fr; } .pakar-scenario-controls, .pakar-scenario-assessment, .pakar-scenario-comparison { padding: 23px 18px; } .pakar-scenario-lab-layout { gap: 18px; } }
+@media (max-width: 460px) { .pakar-scenario-metric-grid { grid-template-columns: 1fr; } .pakar-scenario-metric-value { font-size: 30px; } .pakar-scenario-metric-heading h3 { max-width: 20ch; } .pakar-scenario-range-captions small { font-size: 8px; } }
+@media (prefers-reduced-motion: reduce) { .pakar-scenario-preset, .pakar-scenario-metric-track > span { transition: none; } }

@@ -11,7 +11,7 @@ COPY pyproject.toml README.md ./
 COPY app ./app
 COPY alembic.ini ./alembic.ini
 COPY migrations ./migrations
-COPY oasis_engine_runtime /opt/rekakebijakan/oasis_engine_runtime
+COPY oasis_engine_runtime /opt/pakar/oasis_engine_runtime
 
 FROM base AS production
 
@@ -19,16 +19,16 @@ RUN apt-get update && \
     apt-get install --yes --no-install-recommends gcc libc6-dev libcairo2 && \
     rm -rf /var/lib/apt/lists/* && \
     pip install ".[llm,firebase]" uv && \
-    uv sync --project /opt/rekakebijakan/oasis_engine_runtime --frozen --no-dev && \
-    groupadd --gid 10001 reka && \
-    useradd --uid 10001 --gid reka --create-home reka && \
-    mkdir -p /app/data /opt/rekakebijakan/oasis_engine_runtime/logs && \
-    chown -R reka:reka /app /opt/rekakebijakan/oasis_engine_runtime/logs
+    uv sync --project /opt/pakar/oasis_engine_runtime --frozen --no-dev && \
+    groupadd --gid 10001 pakar && \
+    useradd --uid 10001 --gid pakar --create-home pakar && \
+    mkdir -p /app/data /opt/pakar/oasis_engine_runtime/logs && \
+    chown -R pakar:pakar /app /opt/pakar/oasis_engine_runtime/logs
 
 COPY run.py ./run.py
 COPY worker.py ./worker.py
 
-USER reka
+USER pakar
 EXPOSE 5001
 
 CMD ["python", "run.py"]

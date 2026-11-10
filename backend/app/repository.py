@@ -38,6 +38,17 @@ class Repository:
         self.lock = threading.RLock()
         self.project_retention_days = project_retention_days
 
+    def shared_workspace_user(self) -> dict:
+        """Stable internal actor for the shared workspace, not a login/session."""
+        workspace_id = "workspace_pakar"
+        with self.engine.begin() as db:
+            db.execute(postgresql_insert(users).values(
+                id=workspace_id, name="Ruang kerja PAKAR", email="workspace@pakar.invalid",
+                password_hash="!shared-workspace-login-disabled", created_at=utc_now(),
+            ).on_conflict_do_nothing(index_elements=[users.c.id]))
+            row = dict(db.execute(select(users).where(users.c.id == workspace_id)).mappings().one())
+        return {**row, "shared": True}
+
     def close(self) -> None:
         self.engine.dispose()
 
@@ -1425,7 +1436,7 @@ class Repository:
         now = utc_now()
         with self.engine.begin() as db:
             row = db.execute(select(jobs).where(jobs.c.id == job_id).with_for_update()).mappings().one_or_none()
-            if not row or row["lease_owner"] != worker_id or row["execution_token"] != execution_token:
+            if not row or row["status"] != "running" or row["lease_owner"] != worker_id or row["execution_token"] != execution_token:
                 return False
             retry = retry_delay is not None and row["attempts"] < row["max_attempts"]
             db.execute(update(jobs).where(jobs.c.id == job_id).values(
@@ -1439,6 +1450,15 @@ class Repository:
             db.execute(update(job_attempts).where(
                 job_attempts.c.job_id == job_id, job_attempts.c.execution_token == execution_token
             ).values(completed_at=now, outcome="retry" if retry else "failed", error_code=error_code, error_message=error[:4000]))
+            if row["analysis_id"] and not retry:
+                from .business.tables import business_analyses
+                # Final publication can be fenced out after a lease expires.
+                # Mark the still-active analysis terminal along with its owned
+                # job, retaining its existing raw result and committed events.
+                db.execute(update(business_analyses).where(
+                    business_analyses.c.id == row["analysis_id"],
+                    business_analyses.c.status.in_(["queued", "running"]),
+                ).values(status="failed", stage="failed", updated_at=now))
             return True
 
     def job_control_state(self, job_id: str, execution_token: str) -> str | None:
@@ -1451,6 +1471,16 @@ class Repository:
         now = utc_now()
         with self.engine.begin() as db:
             expired = and_(jobs.c.status == "running", jobs.c.lease_expires_at < now)
+            from .business.tables import business_analyses, business_chat_turns
+            exhausted_chat = select(jobs.c.business_chat_turn_id).where(expired, jobs.c.attempts >= jobs.c.max_attempts, jobs.c.business_chat_turn_id.is_not(None))
+            db.execute(update(business_chat_turns).where(business_chat_turns.c.id.in_(exhausted_chat), business_chat_turns.c.status.in_(["queued", "running"])).values(
+                status="failed", updated_at=now, response={"error": "Worker chat terhenti; pesan tetap tersimpan. Tidak ada retry AI otomatis.", "error_type": "LeaseExpired", "billing_status": "unknown"},
+            ))
+            exhausted = select(jobs.c.analysis_id).where(expired, jobs.c.attempts >= jobs.c.max_attempts, jobs.c.analysis_id.is_not(None))
+            db.execute(update(business_analyses).where(business_analyses.c.id.in_(exhausted)).values(
+                status="failed", stage="failed", updated_at=now,
+                result={"error": "Worker tidak menyelesaikan job setelah batas percobaan; jalankan analisis baru setelah memeriksa layanan."},
+            ))
             db.execute(update(jobs).where(
                 expired, jobs.c.attempts >= jobs.c.max_attempts,
             ).values(

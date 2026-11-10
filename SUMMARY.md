@@ -1,12 +1,14 @@
-# RekaKebijakan Summary
+# PAKAR ? Legacy Policy Workflow Summary
+
+This document archives the retained policy workflow. The current business product is defined in [PRODUCT.md](PRODUCT.md) and [implementation status](docs/PAKAR_IMPLEMENTATION_STATUS.md).
 
 ## Executive Summary
 
-RekaKebijakan is a public policy simulation platform that helps policy teams evaluate draft regulations, programs, and implementation plans before they are released. The system transforms uploaded policy sources into a structured policy graph, generates synthetic stakeholder personas, runs bounded scenario simulations, and produces reports with traceable evidence.
+PAKAR is a public policy simulation platform that helps policy teams evaluate draft regulations, programs, and implementation plans before they are released. The system transforms uploaded policy sources into a structured policy graph, generates synthetic stakeholder personas, runs bounded scenario simulations, and produces reports with traceable evidence.
 
-The core objective is to support earlier and more responsible policy analysis. Instead of waiting until a policy is implemented to discover stakeholder concerns, narrative risks, or evidence gaps, RekaKebijakan gives analysts a controlled environment to explore possible interpretations and reactions while preserving citations back to the original sources.
+The core objective is to support earlier and more responsible policy analysis. Instead of waiting until a policy is implemented to discover stakeholder concerns, narrative risks, or evidence gaps, PAKAR gives analysts a controlled environment to explore possible interpretations and reactions while preserving citations back to the original sources.
 
-RekaKebijakan is not intended to replace public consultation or expert review. It is designed as a decision-support tool that helps teams identify questions, risks, and consultation priorities earlier in the policy lifecycle.
+PAKAR is not intended to replace public consultation or expert review. It is designed as a decision-support tool that helps teams identify questions, risks, and consultation priorities earlier in the policy lifecycle.
 
 ## Problem Background
 
@@ -18,7 +20,7 @@ Public policy teams often face several challenges during early-stage analysis:
 - Public narratives may form before institutions have prepared evidence-based clarification.
 - Conventional review processes can be slow, manual, and difficult to reproduce.
 
-RekaKebijakan addresses these challenges by combining document-grounded extraction, graph modeling, synthetic persona generation, simulation, and evidence-aware reporting in one workflow.
+PAKAR addresses these challenges by combining document-grounded extraction, graph modeling, synthetic persona generation, simulation, and evidence-aware reporting in one workflow.
 
 ## Proposed Solution
 
@@ -58,7 +60,7 @@ The system aggregates simulation events into report sections, risks, and recomme
 
 ## Detailed Algorithm
 
-The RekaKebijakan algorithm is a staged pipeline. Each stage receives structured input from the previous stage and produces durable artifacts that can be inspected, cited, and reused.
+The PAKAR algorithm is a staged pipeline. Each stage receives structured input from the previous stage and produces durable artifacts that can be inspected, cited, and reused.
 
 ### Stage A: Project Initialization and Document Ingestion
 
@@ -420,7 +422,7 @@ Output:
 
 ## Architecture Overview
 
-RekaKebijakan uses a React frontend and a FastAPI backend. PostgreSQL stores durable workflow state, documents, chunks, jobs, projects, scenarios, runs, reports, and provenance. Uploaded files can be stored locally or in Firebase Storage. Background workers execute workflow jobs with leases, retries, heartbeats, and stale-revision checks.
+PAKAR uses a React frontend and a FastAPI backend. PostgreSQL stores durable workflow state, documents, chunks, jobs, projects, scenarios, runs, reports, and provenance. Uploaded files can be stored locally or in Firebase Storage. Background workers execute workflow jobs with leases, retries, heartbeats, and stale-revision checks.
 
 The backend supports two provider families:
 
@@ -445,7 +447,7 @@ This design prevents generated findings from becoming disconnected from their ev
 
 ## Responsible Use
 
-RekaKebijakan should be used as an early-warning and exploration system, not as an automated policy decision-maker.
+PAKAR should be used as an early-warning and exploration system, not as an automated policy decision-maker.
 
 Responsible-use principles:
 
@@ -457,6 +459,6 @@ Responsible-use principles:
 
 ## Expected Impact
 
-RekaKebijakan can help policy teams improve early-stage analysis by making stakeholder concerns, implementation risks, and evidence gaps visible sooner. The expected impact includes faster policy review cycles, more transparent reasoning, better-prepared public communication, and more targeted consultation with affected groups.
+PAKAR can help policy teams improve early-stage analysis by making stakeholder concerns, implementation risks, and evidence gaps visible sooner. The expected impact includes faster policy review cycles, more transparent reasoning, better-prepared public communication, and more targeted consultation with affected groups.
 
-For proposal purposes, the most important contribution is the combination of simulation and provenance. RekaKebijakan does not only generate outputs; it preserves the chain from source documents to graph entities, personas, simulation events, reports, and follow-up answers.
+For proposal purposes, the most important contribution is the combination of simulation and provenance. PAKAR does not only generate outputs; it preserves the chain from source documents to graph entities, personas, simulation events, reports, and follow-up answers.

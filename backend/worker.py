@@ -7,10 +7,11 @@ from app.oasis_direct import DirectOasisEngine
 from app.repository import Repository
 from app.service import WorkflowService
 from app.storage import make_storage_backend
+from app.business.service import BusinessService
 
 
 logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"))
-logger = logging.getLogger("rekakebijakan.worker")
+logger = logging.getLogger("pakar.worker")
 
 
 def main() -> None:
@@ -31,6 +32,7 @@ def main() -> None:
         if settings.oasis_enabled else None,
         settings.default_simulation_engine,
     )
+    workflow.business = BusinessService(repository, workflow.storage, settings, workflow.oasis_runtime)
     logger.info("Worker %s started", workflow.worker_id)
     try:
         while True:

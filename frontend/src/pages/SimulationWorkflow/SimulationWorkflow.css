@@ -448,6 +448,7 @@
   stroke: #f8f8f8;
   stroke-width: 4px;
 }
+.graph-nodes .graph-persona-role { fill: var(--muted); font-size: 10px; font-weight: 400; }
 .graph-nodes foreignObject button {
   width: 48px;
   height: 48px;

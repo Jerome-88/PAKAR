@@ -28,7 +28,7 @@ from ..services.zep_graph_memory_updater import ZepGraphMemoryManager
 from ..utils.llm_client import LLMResponseError
 
 # Get logger
-logger = get_logger('rekakebijakan.api')
+logger = get_logger('pakar.api')
 _build_locks: dict[str, threading.Lock] = {}
 _build_locks_guard = threading.Lock()
 
@@ -583,7 +583,7 @@ def _build_graph_impl():
             })
         
         # Get configuration
-        graph_name = data.get('graph_name', project.name or 'rekakebijakan Graph')
+        graph_name = data.get('graph_name', project.name or 'pakar Graph')
         chunk_size = data.get('chunk_size', project.chunk_size or Config.DEFAULT_CHUNK_SIZE)
         chunk_overlap = data.get('chunk_overlap', project.chunk_overlap or Config.DEFAULT_CHUNK_OVERLAP)
         if not isinstance(chunk_size, int) or chunk_size <= 0:
@@ -650,7 +650,7 @@ def _build_graph_impl():
         # Start background task
         def build_task():
             set_locale(current_locale)
-            build_logger = get_logger('rekakebijakan.build')
+            build_logger = get_logger('pakar.build')
             try:
                 build_logger.info(f"[{task_id}] Start building a graph...")
                 task_manager.update_task(

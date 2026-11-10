@@ -1,0 +1,47 @@
+.business-report-heading { padding: 4px 0 28px; border-bottom: 1px solid var(--line); }
+.business-report-heading h2 { max-width: 36ch; margin-bottom: 14px; font-size: clamp(24px, 3vw, 32px); line-height: 1.25; }
+.business-report-layout { display: grid; grid-template-columns: 205px minmax(0, 1fr); gap: 40px; align-items: start; padding-top: 32px; }
+.business-report-contents { position: sticky; top: 96px; padding-bottom: 20px; }
+.business-report-contents ol { list-style: none; padding: 0; margin: 0; }
+.business-report-contents li { margin: 0 0 6px; }
+.business-report-contents a { display: block; padding: 10px 0; color: var(--muted); font-size: 14px; line-height: 1.5; text-decoration-thickness: 1px; }
+.business-report-contents a:hover { color: var(--blue-dark); }
+.business-report-contents label { display: none; }
+.business-report-body { min-width: 0; }
+.business-report-body > section { margin-bottom: 44px; padding-bottom: 36px; border-bottom: 1px solid var(--line); scroll-margin-top: 96px; }
+.business-report-body > section > h2 { margin-bottom: 20px; font-size: 24px; }
+.business-report-body h3 { max-width: 65ch; }
+.business-report-body li { line-height: 1.65; margin: 8px 0; }
+.business-report-question { font-size: 20px; line-height: 1.5 !important; max-width: 56ch !important; }
+.business-report-finding, .business-report-assumption, .business-report-task, .business-report-disagreement { padding: 24px 0; border-top: 1px solid var(--line); scroll-margin-top: 96px; }
+.business-report-finding h3, .business-report-assumption h3 { margin-top: 14px; }
+.business-report-assumption h3 { font-size: 18px; font-weight: 500; }
+.business-report-epistemic { display: flex; gap: 20px; align-items: baseline; flex-wrap: wrap; font-size: 14px; }
+.business-report-epistemic > span { color: var(--muted); }
+.business-report-body .business-table { font-size: 14px; }
+.business-report-body .business-table th, .business-report-body .business-table td { padding: 15px 12px; }
+.business-report-body .business-table td p { font-size: 14px; }
+.business-report [id] { scroll-margin-top: 96px; }
+.business-report-ref { display: block; margin-top: 8px; }
+.business-report-chain { padding-left: 22px; }
+.business-report-chain li { padding-bottom: 10px; }
+.business-report-chain li p { margin-top: 0; }
+.business-report-appendix > details { padding: 14px 0; border-bottom: 1px solid var(--line); }
+.business-report-appendix article { padding-bottom: 20px; }
+.business-report-appendix code { white-space: normal; overflow-wrap: anywhere; }
+.business-report-provenance { display: grid; grid-template-columns: minmax(120px, 180px) minmax(0, 1fr); gap: 16px; margin-block: 8px; font-size: 14px; }
+.business-report-provenance dd { margin: 0; overflow-wrap: anywhere; }
+.business-report-scroll-hint { display: none; }
+.business-report .business-table-wrap:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+@media (max-width: 800px) {
+  .business-report-layout { display: block; padding-top: 20px; }
+  .business-report-contents { position: static; padding-bottom: 28px; }
+  .business-report-contents ol { display: none; }
+  .business-report-contents label { display: flex; }
+  .business-report-body > section { margin-bottom: 32px; padding-bottom: 28px; scroll-margin-top: 96px; }
+  .business-report-body > section > h2 { font-size: 24px; }
+  .business-report-body .business-table-wrap { overflow-x: auto; }
+  .business-report-body .business-table { min-width: 480px; }
+  .business-report-scroll-hint { display: block; font-size: 14px; color: var(--muted); margin: 12px 0 !important; }
+  .business-report-provenance { grid-template-columns: 1fr; gap: 4px; margin-block: 16px; }
+}

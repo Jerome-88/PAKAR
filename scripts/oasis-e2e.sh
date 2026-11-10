@@ -4,7 +4,7 @@ set -eu
 COMPOSE_FILES="-f compose.yaml -f compose.full.yaml"
 BASE_URL=${BASE_URL:-http://127.0.0.1:5173}
 KEEP_STACK=${KEEP_STACK:-false}
-RESULT_FILE=${OASIS_E2E_RESULT_FILE:-/tmp/rekakebijakan-oasis-e2e-result.json}
+RESULT_FILE=${OASIS_E2E_RESULT_FILE:-/tmp/pakar-oasis-e2e-result.json}
 
 if ! docker compose $COMPOSE_FILES config --format json | python3 -c '
 import json, sys
@@ -49,7 +49,7 @@ case "$SIMULATION_ID" in
   *) printf '%s\n' "oasis-e2e: invalid simulation ID in result file" >&2; exit 1 ;;
 esac
 docker compose $COMPOSE_FILES exec -T database \
-  psql -v ON_ERROR_STOP=1 -U "${POSTGRES_USER:-rekakebijakan}" -d "${POSTGRES_DB:-rekakebijakan}" \
+  psql -v ON_ERROR_STOP=1 -U "${POSTGRES_USER:-pakar}" -d "${POSTGRES_DB:-pakar}" \
   -c "SELECT 1 / CASE WHEN count(*) > 0 AND count(DISTINCT platform) = 2 THEN 1 ELSE 0 END AS raw_actions_valid FROM oasis_actions WHERE simulation_id = '$SIMULATION_ID' AND raw_action IS NOT NULL;"
 
 printf '%s\n' "oasis-e2e: steps 1-5 and raw action persistence passed ($SIMULATION_ID)"

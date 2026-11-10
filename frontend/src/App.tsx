@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
+import { publicDemoOnly } from "./config/publicDemo";
 import { problems, processSteps } from "./data/content";
 import type { Scenario } from "./data/scenarios";
 import { scenarios } from "./data/scenarios";
@@ -18,6 +19,11 @@ import Header, { Brand } from "./components/Header/Header";
 import AuthPage from "./pages/Auth/AuthPage";
 import { ProtectedRoute } from "./auth/ProtectedRoute";
 import "./App.css";
+import { BusinessDemoPage } from "./pages/Business/BusinessDemoPage";
+import { BusinessHomePage } from "./pages/Business/BusinessHomePage";
+import { BusinessProjectListPage } from "./pages/Business/BusinessProjectListPage";
+import { BusinessIntakePage, BusinessProjectPage } from "./pages/Business/BusinessPages";
+import { BusinessAnalysisPage } from "./pages/Business/BusinessAnalysisPage";
 
 const scrollTo = (id: string) =>
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -329,7 +335,7 @@ function LandingPage() {
                 <span>Putuskan lebih baik.</span>
               </h1>
               <p className="lead">
-                RekaKebijakan membantu tim kebijakan mengubah rancangan
+                PAKAR membantu tim kebijakan mengubah rancangan
                 regulasi menjadi skenario simulasi yang dapat ditinjau,
                 dibandingkan, dan dijelaskan sebelum diterapkan.
               </p>
@@ -643,7 +649,7 @@ function LandingPage() {
               Menyiapkan partisipasi publik yang lebih terarah.
             </h2>
             <p className="inverse-intro">
-              RekaKebijakan membantu institusi menemukan hal yang belum diuji,
+              PAKAR membantu institusi menemukan hal yang belum diuji,
               bukan menggantikan warga yang perlu didengar.
             </p>
             <div className="impact-grid">
@@ -678,7 +684,7 @@ function LandingPage() {
             </h2>
             <div className="use-grid">
               <article>
-                <h3>RekaKebijakan dapat:</h3>
+                <h3>PAKAR dapat:</h3>
                 {[
                   "Membantu merumuskan asumsi kebijakan",
                   "Memetakan kelompok terdampak",
@@ -693,7 +699,7 @@ function LandingPage() {
                 ))}
               </article>
               <article>
-                <h3>RekaKebijakan tidak dapat:</h3>
+                <h3>PAKAR tidak dapat:</h3>
                 {[
                   "Menggantikan konsultasi publik",
                   "Memprediksi opini warga secara pasti",
@@ -765,7 +771,7 @@ function LandingPage() {
           </div>
         </div>
         <div className="shell copyright">
-          © 2026 RekaKebijakan.
+          © 2026 PAKAR.
         </div>
       </footer>
     </div>
@@ -795,8 +801,17 @@ function SimulationRoute() {
 }
 
 function App() {
+  if (publicDemoOnly) return <BusinessDemoPage />;
   return (
     <Routes>
+      <Route path="/" element={<BusinessHomePage />} />
+      <Route path="/business" element={<BusinessHomePage />} />
+      <Route path="/business/demo" element={<BusinessDemoPage />} />
+      <Route path="/business/new" element={<Protected><BusinessIntakePage /></Protected>} />
+      <Route path="/business/projects" element={<Protected><BusinessProjectListPage /></Protected>} />
+      <Route path="/business/projects/:projectId" element={<Protected><BusinessProjectPage /></Protected>} />
+      <Route path="/business/analyses/:analysisId" element={<Protected><BusinessAnalysisPage /></Protected>} />
+      <Route path="/legacy" element={<LandingPage />} />
       <Route path="/login" element={<AuthPage mode="login" />} />
       <Route path="/register" element={<AuthPage mode="register" />} />
       <Route path="/dashboard/*" element={<Protected><Dashboard /></Protected>} />

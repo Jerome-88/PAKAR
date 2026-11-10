@@ -1,0 +1,162 @@
+name: pakar-vps
+
+x-app: &app
+  image: ${PAKAR_BACKEND_IMAGE:-pakar-backend:vps}
+  build:
+    context: ../backend
+    target: production
+  environment: &app-env
+    HOST: 0.0.0.0
+    PORT: "5001"
+    DATA_DIR: /app/data
+    UPLOAD_DIR: /app/data/uploads
+    STORAGE_BACKEND: local
+    STORAGE_PATH: /app/data/uploads
+    DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-pakar}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in deploy/.env}@database:5432/${POSTGRES_DB:-pakar}
+    PRODUCTION: "true"
+    AUTH_REQUIRED: "false"
+    TRUSTED_HOSTS: ${PAKAR_DOMAIN:?Set PAKAR_DOMAIN in deploy/.env},localhost,127.0.0.1,backend
+    CORS_ORIGINS: https://${PAKAR_DOMAIN}
+    SESSION_COOKIE_NAME: pakar_session
+    SESSION_COOKIE_SECURE: "true"
+    EMBEDDED_WORKER: "false"
+    WORKER_POLL_SECONDS: "0.5"
+    WORKER_LEASE_SECONDS: "180"
+    OASIS_ENABLED: "true"
+    OASIS_RUNTIME_DIR: /opt/pakar/oasis_engine_runtime
+    OASIS_DATA_DIR: /app/data/oasis/simulations
+    DEFAULT_SIMULATION_ENGINE: oasis
+    LLM_BASE_URL: ${LLM_BASE_URL:-https://api.groq.com/openai/v1}
+    LLM_API_KEY: ${LLM_API_KEY:-}
+    FREE_AI_KEY: ${FREE_AI_KEY:-}
+    PAKAR_ALLOWED_LLM_HOSTS: ${PAKAR_ALLOWED_LLM_HOSTS:-api.groq.com}
+    PAKAR_GROQ_REQUEST_TOKEN_LIMIT: ${PAKAR_GROQ_REQUEST_TOKEN_LIMIT:-7500}
+    LLM_MODEL: ${LLM_MODEL:-openai/gpt-oss-120b}
+    LLM_STRUCTURED_OUTPUTS: "true"
+    LLM_FALLBACK_POLICY: raise
+    PROVIDER_TIMEOUT_SECONDS: "120"
+    LLM_REQUEST_TIMEOUT_SECONDS: "90"
+    PAKAR_OPENROUTER_PROVIDER_ORDER: ${PAKAR_OPENROUTER_PROVIDER_ORDER:-}
+    PAKAR_OPENROUTER_MAX_PRICE: ${PAKAR_OPENROUTER_MAX_PRICE:-}
+    PAKAR_MAX_RUN_COST_USD: ${PAKAR_MAX_RUN_COST_USD:-0.01}
+    PAKAR_CREDIT_RESERVE_USD: ${PAKAR_CREDIT_RESERVE_USD:-0.10}
+    BPS_API_KEY: ${BPS_API_KEY:-}
+    PAKAR_BPS_INDICATORS: ${PAKAR_BPS_INDICATORS:-[]}
+  volumes:
+    - backend_data:/app/data
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  database:
+    image: postgres:17-alpine
+    command: ["postgres", "-c", "shared_buffers=64MB", "-c", "work_mem=4MB", "-c", "max_connections=30"]
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-pakar}
+      POSTGRES_USER: ${POSTGRES_USER:-pakar}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in deploy/.env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    mem_limit: 384m
+    mem_reservation: 128m
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  migrate:
+    <<: *app
+    command: ["alembic", "upgrade", "head"]
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: "no"
+    mem_limit: 512m
+
+  backend:
+    <<: *app
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5001/ready', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    restart: unless-stopped
+    stop_grace_period: 30s
+    mem_limit: 512m
+    mem_reservation: 200m
+
+  worker:
+    <<: *app
+    command: ["python", "worker.py"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    stop_grace_period: 30s
+    mem_limit: 768m
+    mem_reservation: 250m
+
+  frontend:
+    image: ${PAKAR_FRONTEND_IMAGE:-pakar-frontend:vps}
+    build:
+      context: ../frontend
+      target: production
+      args:
+        VITE_API_URL: /backend
+        VITE_DEMO_MODE: "false"
+    volumes:
+      - ./nginx.vps.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    mem_limit: 64m
+
+  edge:
+    image: caddy:2-alpine
+    environment:
+      PAKAR_DOMAIN: ${PAKAR_DOMAIN:?Set PAKAR_DOMAIN in deploy/.env}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      frontend:
+        condition: service_healthy
+    restart: unless-stopped
+    mem_limit: 64m
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  backend_data:
+    name: ${BACKEND_VOLUME_NAME:-pakar_vps_backend_data}
+  postgres_data:
+    name: ${POSTGRES_VOLUME_NAME:-pakar_vps_postgres_data}
+  caddy_data:
+  caddy_config:

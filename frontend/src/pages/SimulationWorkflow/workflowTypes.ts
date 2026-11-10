@@ -61,6 +61,7 @@ export type SimulationEvent = {
   time: string;
   channel: string;
   persona: string;
+  personaId?: string;
   group: string;
   type: string;
   statement: string;

@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+if __package__:
+    from .child_guard import watch_parent
+    from .legacy_branding import LEGACY_OASIS_RUNTIME_ENV
+else:
+    from child_guard import watch_parent
+    from legacy_branding import LEGACY_OASIS_RUNTIME_ENV
+watch_parent()
+
 import csv
 import hashlib
 import json
@@ -15,7 +23,10 @@ from types import SimpleNamespace
 
 
 def configure_runtime() -> Path:
-    runtime = Path(os.environ["REKAKEBIJAKAN_OASIS_RUNTIME_PATH"]).resolve()
+    configured_path = os.environ.get("PAKAR_OASIS_RUNTIME_PATH") or os.environ.get(LEGACY_OASIS_RUNTIME_ENV)
+    if not configured_path:
+        raise RuntimeError("PAKAR_OASIS_RUNTIME_PATH is required")
+    runtime = Path(configured_path).resolve()
     sys.path.insert(0, str(runtime))
     return runtime
 
@@ -331,6 +342,27 @@ def main() -> None:
     from app.utils.locale import set_locale
     set_locale(payload.get("language", "id"))
     try:
+        if sys.argv[1] == "business-stream":
+            import asyncio
+            import importlib.util
+
+            domain = Path(os.environ["PAKAR_BUSINESS_DOMAIN_PATH"])
+            spec = importlib.util.spec_from_file_location("pakar_business", domain / "__init__.py", submodule_search_locations=[str(domain)])
+            module = importlib.util.module_from_spec(spec)
+            sys.modules["pakar_business"] = module
+            spec.loader.exec_module(module)
+            from pakar_business.oasis_bridge import run
+
+            protocol_stdout = sys.stdout
+
+            def emit_business(message):
+                protocol_stdout.write(json.dumps(message, ensure_ascii=False) + "\n")
+                protocol_stdout.flush()
+
+            with redirect_stdout(sys.stderr):
+                data = asyncio.run(run(payload, emit_business))
+            emit_business({"kind": "result", "data": data})
+            return
         if sys.argv[1] == "sync-graph-stream":
             protocol_stdout = sys.stdout
 
@@ -348,7 +380,10 @@ def main() -> None:
             data = OPERATIONS[sys.argv[1]](payload)
         print(json.dumps({"success": True, "data": data}, ensure_ascii=False, default=str))
     except Exception as error:
-        print(json.dumps({"success": False, "error": str(error)}, ensure_ascii=False))
+        failure = {"success": False, "error": str(error)}
+        if sys.argv[1].endswith("-stream"):
+            failure["kind"] = "error"
+        print(json.dumps(failure, ensure_ascii=False), flush=True)
         traceback.print_exc(file=sys.stderr)
         raise SystemExit(1)
 

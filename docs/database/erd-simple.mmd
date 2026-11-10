@@ -1,0 +1,59 @@
+erDiagram
+    direction TB
+    users {
+        varchar id PK
+        varchar name
+        varchar email
+    }
+    business_projects {
+        varchar id PK
+        varchar owner_user_id FK
+        jsonb context
+    }
+    business_documents {
+        varchar id PK
+        varchar project_id FK
+        varchar name
+        varchar status
+    }
+    business_personas {
+        varchar id PK
+        varchar project_id FK
+        jsonb content
+    }
+    business_analyses {
+        varchar id PK
+        varchar project_id FK
+        varchar status
+        jsonb result
+    }
+    business_ideas {
+        varchar id PK
+        varchar project_id FK
+        varchar(160) title
+    }
+    business_chat_turns {
+        varchar id PK
+        varchar project_id FK
+        varchar status
+        jsonb response
+    }
+    business_claims {
+        varchar id PK
+        varchar document_id FK
+        jsonb content
+    }
+    business_idea_revisions {
+        varchar id PK
+        varchar idea_id FK
+        integer version
+        jsonb content
+    }
+    users ||..o{ business_projects : "owner_user_id"
+    business_projects ||..o{ business_documents : "project_id"
+    business_projects ||..o{ business_personas : "project_id"
+    business_projects ||..o{ business_analyses : "project_id"
+    business_projects ||..o{ business_ideas : "project_id"
+    business_projects ||..o{ business_chat_turns : "project_id"
+    business_documents ||..o{ business_claims : "document_id"
+    business_ideas ||..o{ business_idea_revisions : "idea_id"

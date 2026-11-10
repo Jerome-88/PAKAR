@@ -1,0 +1,5 @@
+Rencana jasa perawatan kendaraan di DKI Jakarta.
+Harga jual Rp150.000 per unit.
+Biaya variabel Rp90.000 per unit.
+Biaya tetap Rp18.000.000 per bulan.
+Volume transaksi dan kapasitas teknisi belum diukur.

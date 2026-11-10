@@ -1,3 +1,4 @@
+import { PersonaAvatar } from "../../components/PersonaAvatar/PersonaAvatar";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AppShell } from "../../components/AppShell/AppShell";
@@ -302,7 +303,7 @@ export default function PersonaStudioPage() {
                     {filtered.map((persona) => (
                       <tr key={persona.id}>
                         <td><input type="checkbox" checked={selected.includes(persona.id)} onChange={() => setSelected(selected.includes(persona.id) ? selected.filter((id) => id !== persona.id) : [...selected, persona.id])} aria-label={`Pilih ${persona.name}`} /></td>
-                        <td><button className="project-name-button" onClick={() => openDrawer(persona)}>{persona.name}</button></td>
+                        <td><button className="project-name-button" onClick={() => openDrawer(persona)}><span className="persona-identity"><PersonaAvatar id={persona.id} size={28} /><span>{persona.name}</span></span></button></td>
                         <td>{persona.group}</td>
                         <td>{persona.profile}</td>
                         <td>{persona.concern}</td>
@@ -325,7 +326,7 @@ export default function PersonaStudioPage() {
         <div className="persona-drawer-backdrop" onMouseDown={() => { setEditing(null); setDraft(null); }}>
           <aside className="persona-drawer" aria-label={`Edit ${editing.name}`} onMouseDown={(event) => event.stopPropagation()}>
             <div className="drawer-heading">
-              <div><p className="eyebrow">DETAIL PERSONA</p><h2>{editing.name}</h2></div>
+              <div><p className="eyebrow">DETAIL PERSONA</p><h2 className="persona-identity"><PersonaAvatar id={editing.id} size={40} /><span>{editing.name}</span></h2></div>
               <button className="dialog-close" onClick={() => { setEditing(null); setDraft(null); }} aria-label="Tutup panel">X</button>
             </div>
             <div className="drawer-form">

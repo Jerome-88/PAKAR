@@ -26,7 +26,7 @@ function renderApp(path: string) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
-  return render(
+  const rendered = render(
     <MemoryRouter initialEntries={[path]}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
@@ -36,14 +36,63 @@ function renderApp(path: string) {
       </QueryClientProvider>
     </MemoryRouter>,
   );
+  return { ...rendered, queryClient };
 }
 
 describe("application routing", () => {
+  it("opens the shared workspace without cookies or account controls and redirects old login links", async () => {
+    server.use(
+      http.get("/backend/api/auth/me", () => HttpResponse.json({ user: { id: "workspace_pakar", name: "Ruang kerja PAKAR", email: "workspace@pakar.invalid", shared: true } })),
+      http.get("/backend/api/v1/business/projects", () => HttpResponse.json({ items: [] })),
+    );
+    renderApp("/login?next=%2Fbusiness");
+    expect(await screen.findByRole("heading", { name: "Ide Anda, dari berbagai sudut pandang." })).toBeVisible();
+    expect(screen.getByTestId("location")).toHaveTextContent("/business");
+    expect(screen.queryByRole("button", { name: "Keluar" })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Email")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Analisis ide sendiri/ })).toHaveAttribute("href", "/business/new");
+    expect(screen.getByRole("link", { name: /Coba demo/ })).toHaveAttribute("href", "/business/demo");
+  });
+
+  it("lets a shared workspace reconnect after backend failure without showing a login form", async () => {
+    let reads = 0;
+    server.use(
+      http.get("/backend/api/auth/me", () => ++reads === 1 ? HttpResponse.json({ message: "Backend belum siap" }, { status: 503 }) : HttpResponse.json({ user: { id: "workspace_pakar", name: "Ruang kerja PAKAR", email: "workspace@pakar.invalid", shared: true } })),
+      http.get("/backend/api/v1/business/projects", () => HttpResponse.json({ items: [] })),
+      http.get("/backend/api/v1/business/capabilities", () => HttpResponse.json({})),
+    );
+    renderApp("/business/new");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Backend belum siap");
+    expect(screen.queryByLabelText("Email")).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Coba hubungkan lagi" }));
+    expect(await screen.findByRole("heading", { name: "Analisis bisnis baru" })).toBeVisible();
+    expect(screen.getByTestId("location")).toHaveTextContent("/business/new");
+  });
+  it("clears private query data when establishing or ending a session", async () => {
+    const user = userEvent.setup();
+    server.use(
+      http.post("/backend/api/auth/login", () => HttpResponse.json({ user: { id: "business-user", name: "Analyst", email: "analyst@example.com" } })),
+      http.post("/backend/api/auth/logout", () => HttpResponse.json({ ok: true })),
+      http.get("/backend/api/v1/business/projects", () => HttpResponse.json({ items: [] })),
+      http.get("/backend/api/v1/business/capabilities", () => HttpResponse.json({})),
+    );
+    const { queryClient } = renderApp("/login?next=%2Fbusiness%2Fnew");
+    queryClient.setQueryData(["previous-user-secret"], { report: "private" });
+    await user.type(await screen.findByLabelText("Email"), "analyst@example.com");
+    await user.type(screen.getByLabelText("Kata sandi"), "testing-password");
+    await user.click(screen.getByRole("button", { name: "Masuk" }));
+    await screen.findByRole("heading", { name: "Analisis bisnis baru" });
+    expect(queryClient.getQueryData(["previous-user-secret"])).toBeUndefined();
+    queryClient.setQueryData(["current-user-secret"], { report: "private" });
+    await user.click(screen.getByRole("button", { name: "Keluar" }));
+    await screen.findByRole("heading", { name: "Masuk ke PAKAR" });
+    expect(queryClient.getQueryData(["current-user-secret"])).toBeUndefined();
+  });
   it("redirects an unauthenticated protected route and preserves the destination", async () => {
     renderApp("/reports?risk=high#summary");
 
     expect(
-      await screen.findByRole("heading", { name: "Masuk ke RekaKebijakan" }),
+      await screen.findByRole("heading", { name: "Masuk ke PAKAR" }),
     ).toBeInTheDocument();
     expect(screen.getByTestId("location")).toHaveTextContent(
       "/login?next=%2Freports%3Frisk%3Dhigh%23summary",
@@ -57,7 +106,7 @@ describe("application routing", () => {
     await user.click(await screen.findByRole("link", { name: "Daftar" }));
 
     expect(
-      screen.getByRole("heading", { name: "Daftar ke RekaKebijakan" }),
+      screen.getByRole("heading", { name: "Daftar ke PAKAR" }),
     ).toBeInTheDocument();
     expect(screen.getByTestId("location")).toHaveTextContent("/register");
   });
@@ -84,7 +133,7 @@ describe("application routing", () => {
         HttpResponse.json({}, { status: 401 }),
       ),
     );
-    renderApp("/");
+    renderApp("/legacy");
 
     expect(
       (await screen.findAllByText("Coba tanpa masuk")).length,
@@ -98,7 +147,7 @@ describe("application routing", () => {
     ).toBeInTheDocument();
     expect(screen.getByTestId("location")).toHaveTextContent("/projects/new");
     expect(
-      screen.queryByRole("heading", { name: "Masuk ke RekaKebijakan" }),
+      screen.queryByRole("heading", { name: "Masuk ke PAKAR" }),
     ).not.toBeInTheDocument();
   });
 

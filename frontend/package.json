@@ -1,11 +1,13 @@
 {
-  "name": "rekakebijakan",
+  "name": "pakar",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:demo": "node scripts/build-demo.mjs",
+    "preview:demo": "node scripts/serve-demo.mjs",
     "lint": "eslint .",
     "test": "vitest run",
     "test:e2e": "playwright test",
@@ -13,6 +15,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@dicebear/core": "10.7.0",
+    "@dicebear/styles": "10.6.0",
     "@fontsource/ibm-plex-sans": "^5.2.8",
     "@tanstack/react-query": "^5.101.4",
     "d3-drag": "^3.0.0",

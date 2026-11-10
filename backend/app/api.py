@@ -86,7 +86,7 @@ async def start_stage(request: Request, simulation_id: str, stage: str, payload:
 
 @public_router.get("/health")
 async def health():
-    return {"status": "ok", "service": "rekakebijakan", "engine": "configurable"}
+    return {"status": "ok", "service": "pakar", "engine": "configurable"}
 
 
 @public_router.get("/public/quick-demo")

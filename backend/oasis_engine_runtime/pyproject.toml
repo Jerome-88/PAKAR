@@ -1,11 +1,11 @@
 [project]
-name = "rekakebijakan-backend"
+name = "pakar-backend"
 version = "0.1.0"
-description = "rekakebijakan - A concise, general-purpose collective intelligence engine for predicting anything"
+description = "PAKAR - A concise, general-purpose collective intelligence engine for predicting anything"
 requires-python = ">=3.11,<3.13"
 license = { text = "AGPL-3.0" }
 authors = [
-    { name = "rekakebijakan Team" }
+    { name = "PAKAR Team" }
 ]
 
 dependencies = [

@@ -24,7 +24,7 @@ jobs:
           script: |
             set -e
 
-            cd /opt/rekakebijakan
+            cd "${{ vars.DEPLOY_PATH || '/opt/pakar' }}"
 
             echo "== Pull latest code =="
             git pull origin main

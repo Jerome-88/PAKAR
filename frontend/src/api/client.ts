@@ -115,6 +115,7 @@ export type ApiEventDto = {
   channel?: string;
   persona?: string;
   persona_name?: string;
+  persona_id?: string;
   group?: string;
   type?: string;
   event_type?: string;
@@ -369,6 +370,7 @@ export type AuthUser = {
   id: string;
   email: string;
   name: string;
+  shared?: boolean;
 };
 
 type AuthResponse = AuthUser | { user: AuthUser };

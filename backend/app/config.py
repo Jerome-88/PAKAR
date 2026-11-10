@@ -3,8 +3,16 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from dotenv import load_dotenv
+from .llm_access import require_allowed_llm_endpoint
+
+
+def llm_key_for_endpoint(base_url: str | None, default_key: str | None) -> str | None:
+    if urlsplit(base_url or "").hostname == "api.groq.com":
+        return os.getenv("FREE_AI_KEY") or default_key
+    return default_key
 
 
 @dataclass(frozen=True)
@@ -50,6 +58,8 @@ class Settings:
     oasis_runtime_dir: Path
     oasis_data_dir: Path
     default_simulation_engine: str
+    llm_structured_outputs: bool = False
+    auth_required: bool = False
 
     @classmethod
     def load(cls, overrides: dict | None = None) -> "Settings":
@@ -59,20 +69,21 @@ class Settings:
         values = {
             "DATABASE_URL": os.getenv(
                 "DATABASE_URL",
-                "postgresql+psycopg://rekakebijakan:rekakebijakan@localhost:5432/rekakebijakan",
+                "postgresql+psycopg://pakar:pakar@localhost:5432/pakar",
             ),
             "UPLOAD_DIR": os.getenv("UPLOAD_DIR", data_dir / "uploads"),
-            "MAX_UPLOAD_BYTES": int(os.getenv("MAX_UPLOAD_BYTES", 16 * 1024 * 1024)),
+            "MAX_UPLOAD_BYTES": int(os.getenv("MAX_UPLOAD_BYTES", 32 * 1024 * 1024)),
             "JOB_DELAY": float(os.getenv("JOB_DELAY", "0.08")),
             "TESTING": False,
             "CORS_ORIGINS": os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"),
-            "SESSION_COOKIE_NAME": os.getenv("SESSION_COOKIE_NAME", "rk_session"),
+            "SESSION_COOKIE_NAME": os.getenv("SESSION_COOKIE_NAME", "pakar_session"),
             "SESSION_TTL_SECONDS": int(os.getenv("SESSION_TTL_SECONDS", 7 * 24 * 60 * 60)),
             "SESSION_COOKIE_SECURE": os.getenv("SESSION_COOKIE_SECURE", "false"),
             "POLICY_PROVIDER": os.getenv("POLICY_PROVIDER", "deterministic"),
             "LLM_BASE_URL": os.getenv("LLM_BASE_URL") or None,
             "LLM_API_KEY": os.getenv("LLM_API_KEY") or None,
             "LLM_MODEL": os.getenv("LLM_MODEL", "gpt-4o-mini"),
+            "LLM_STRUCTURED_OUTPUTS": os.getenv("LLM_STRUCTURED_OUTPUTS", "false"),
             "LLM_FALLBACK_POLICY": os.getenv("LLM_FALLBACK_POLICY", "deterministic"),
             "LLM_MAX_OUTPUT_TOKENS": int(os.getenv("LLM_MAX_OUTPUT_TOKENS", "2500")),
             "CHUNK_SIZE": int(os.getenv("CHUNK_SIZE", "1200")),
@@ -84,15 +95,16 @@ class Settings:
             "STORAGE_BACKEND": os.getenv("STORAGE_BACKEND", "local"),
             "STORAGE_PATH": os.getenv("STORAGE_PATH", os.getenv("UPLOAD_DIR", data_dir / "uploads")),
             "FIREBASE_STORAGE_BUCKET": os.getenv("FIREBASE_STORAGE_BUCKET") or None,
-            "FIREBASE_STORAGE_PREFIX": os.getenv("FIREBASE_STORAGE_PREFIX", "rekakebijakan"),
+            "FIREBASE_STORAGE_PREFIX": os.getenv("FIREBASE_STORAGE_PREFIX", "pakar"),
             "TRUSTED_HOSTS": os.getenv("TRUSTED_HOSTS", "localhost,127.0.0.1,testserver"),
             "PRODUCTION": os.getenv("PRODUCTION", "false"),
+            "AUTH_REQUIRED": os.getenv("AUTH_REQUIRED", "false"),
             "AUTH_MAX_FAILURES": int(os.getenv("AUTH_MAX_FAILURES", "10")),
             "AUTH_WINDOW_SECONDS": int(os.getenv("AUTH_WINDOW_SECONDS", "300")),
             "PROJECT_RETENTION_DAYS": int(os.getenv("PROJECT_RETENTION_DAYS", "30")),
             "MAX_ACTIVE_PROJECTS_PER_USER": int(os.getenv("MAX_ACTIVE_PROJECTS_PER_USER", "100")),
             "MAX_FILES_PER_PROJECT": int(os.getenv("MAX_FILES_PER_PROJECT", "20")),
-            "MAX_FILE_UPLOAD_BYTES": int(os.getenv("MAX_FILE_UPLOAD_BYTES", 16 * 1024 * 1024)),
+            "MAX_FILE_UPLOAD_BYTES": int(os.getenv("MAX_FILE_UPLOAD_BYTES", 20 * 1024 * 1024)),
             "MAX_TOTAL_UPLOAD_BYTES": int(os.getenv("MAX_TOTAL_UPLOAD_BYTES", 1024 * 1024 * 1024)),
             "MAX_PDF_PAGES": int(os.getenv("MAX_PDF_PAGES", "200")),
             "MAX_EXTRACTED_CHARS": int(os.getenv("MAX_EXTRACTED_CHARS", "2000000")),
@@ -104,6 +116,11 @@ class Settings:
         }
         override_values = overrides or {}
         values.update(override_values)
+        require_allowed_llm_endpoint(values["LLM_BASE_URL"])
+        # A Groq key can coexist with the existing provider key. Resolve from
+        # the final endpoint, and preserve explicit test/application overrides.
+        if "LLM_API_KEY" not in override_values:
+            values["LLM_API_KEY"] = llm_key_for_endpoint(values["LLM_BASE_URL"], values["LLM_API_KEY"])
         if values["TESTING"] and "STORAGE_BACKEND" not in override_values:
             values["STORAGE_BACKEND"] = "local"
             values["STORAGE_PATH"] = values["UPLOAD_DIR"]
@@ -142,7 +159,10 @@ class Settings:
         production = values["PRODUCTION"]
         if isinstance(production, str):
             production = production.strip().lower() in {"1", "true", "yes", "on"}
-        if production and not secure:
+        auth_required = values["AUTH_REQUIRED"]
+        if isinstance(auth_required, str):
+            auth_required = auth_required.strip().lower() in {"1", "true", "yes", "on"}
+        if production and auth_required and not secure:
             raise ValueError("SESSION_COOKIE_SECURE must be enabled in production")
         oasis_enabled = values["OASIS_ENABLED"]
         if isinstance(oasis_enabled, str):
@@ -150,8 +170,8 @@ class Settings:
         default_simulation_engine = str(values["DEFAULT_SIMULATION_ENGINE"]).strip().lower()
         if default_simulation_engine not in {"deterministic", "oasis"}:
             raise ValueError("DEFAULT_SIMULATION_ENGINE must be deterministic or oasis")
-        if oasis_enabled and not values["TESTING"] and (not values["LLM_API_KEY"] or not os.getenv("ZEP_API_KEY")):
-            raise ValueError("LLM_API_KEY and ZEP_API_KEY are required when direct OASIS is enabled")
+        if oasis_enabled and not values["TESTING"] and not values["LLM_API_KEY"]:
+            raise ValueError("LLM_API_KEY is required when direct OASIS is enabled; legacy graph workflows additionally require ZEP_API_KEY")
         if int(values["AUTH_MAX_FAILURES"]) < 1 or int(values["AUTH_WINDOW_SECONDS"]) < 1:
             raise ValueError("Authentication rate-limit settings must be positive")
         limit_names = (
@@ -203,4 +223,6 @@ class Settings:
             oasis_runtime_dir=Path(values["OASIS_RUNTIME_DIR"]),
             oasis_data_dir=Path(values["OASIS_DATA_DIR"]),
             default_simulation_engine=default_simulation_engine,
+            llm_structured_outputs=str(values["LLM_STRUCTURED_OUTPUTS"]).lower() in {"1", "true", "yes", "on"},
+            auth_required=bool(auth_required),
         )

@@ -149,7 +149,7 @@ assert graph["graph_id"] == status["zep_graph_id"]
 assert events["event_count"] > 0
 assert all(event["id"].startswith("oasis-event-") for event in events["events"])
 assert all(event["persona_id"].startswith("oasis-") for event in events["events"])
-assert report["generated_by"] == "rekakebijakan-oasis-report-agent"
+assert report["generated_by"] == "pakar-oasis-report-agent"
 ' "$MAX_PROFILE_COUNT"
 fi
 

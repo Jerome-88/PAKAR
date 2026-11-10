@@ -9,7 +9,7 @@ describe("safeNext", () => {
   });
 
   it("rejects external and protocol-relative destinations", () => {
-    expect(safeNext("https://evil.example/path")).toBe("/dashboard");
-    expect(safeNext("//evil.example/path")).toBe("/dashboard");
+    expect(safeNext("https://evil.example/path")).toBe("/business");
+    expect(safeNext("//evil.example/path")).toBe("/business");
   });
 });

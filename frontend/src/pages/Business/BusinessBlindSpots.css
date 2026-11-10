@@ -1,0 +1,61 @@
+.business-blindspots { padding-bottom: 28px; }
+.blindspot-navigation { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; margin-bottom: 16px; color: var(--muted); font-size: 12px; }
+.blindspot-navigation button { display: inline-flex; align-items: center; gap: 8px; }
+.blindspot-navigation > span { padding-left: 18px; border-left: 1px solid #d6d1cb; }
+.blindspot-filters { display: grid; grid-template-columns: minmax(0, 1fr) 160px 180px; gap: 14px; margin-bottom: 20px; }
+.app-shell-business .business-workspace .blindspot-filters label { font-size: 12px; }
+.app-shell-business .business-workspace .blindspot-filters select { font-size: 12px; border-radius: 22px; }
+.blindspot-hero { padding: 30px 35px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+.blindspot-badges { display: flex; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 18px; }
+.blindspot-category, .blindspot-validation { display: inline-flex; align-items: center; gap: 8px; padding: 8px 13px; border-radius: 24px; color: #28629a; background: #e2edf9; font-size: 12px; font-weight: 700; line-height: 1.5; }
+.blindspot-validation { background: #ffe0e1; color: #b8323a; }
+.blindspot-validation img, .blindspot-source-warning img { display: block; flex-shrink: 0; }
+.app-shell-business .business-workspace .blindspot-hero h2 { margin: 0 0 14px; font-size: 25px; font-weight: 700; line-height: 1.4; letter-spacing: -.02em; }
+.blindspot-hero > .business-readable-text { color: var(--muted); font-size: 14px; line-height: 1.8; }
+.app-shell-business .business-workspace .blindspot-hero > .business-readable-text p { margin: 0 0 12px; max-width: none; }
+.blindspot-metrics { display: flex; align-items: stretch; flex-wrap: wrap; gap: 18px; margin: 22px 0 0; }
+.blindspot-metrics > div { min-width: 170px; padding: 13px; border-radius: 10px; background: #f3f3f3; }
+.blindspot-metrics dt { color: var(--muted); font-size: 11px; line-height: 1.6; font-weight: 600; }
+.blindspot-metrics dd { margin: 4px 0 0; color: var(--ink); font-size: 14px; line-height: 1.5; font-weight: 600; }
+.blindspot-metrics dd.is-high { color: #b8323a; }
+.blindspot-layout { display: grid; grid-template-columns: minmax(0, 414fr) minmax(0, 632fr); align-items: start; gap: 20px; margin-top: 20px; }
+.blindspot-assumption, .blindspot-sources, .blindspot-needed { min-width: 0; padding: 25px 20px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+.blindspot-assumption { border-color: #fed058; background: #fffdf5; }
+.app-shell-business .business-workspace .blindspot-layout h3 { margin: 0 0 18px; padding-bottom: 14px; border-bottom: 1px solid var(--line); font-size: 12px; font-weight: 700; line-height: 1.5; }
+.app-shell-business .business-workspace .blindspot-assumption h3 { border-color: #f5e7bc; }
+.blindspot-author { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.blindspot-author .pakar-mascot { width: 49px; height: 49px; }
+.blindspot-author .pakar-mascot > span { transform: scale(1.25); }
+.blindspot-author strong { display: block; font-size: 14px; line-height: 1.5; font-weight: 700; }
+.blindspot-author div > span { display: block; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.app-shell-business .business-workspace .blindspot-layout p { margin: 10px 0; max-width: none; font-size: 12px; line-height: 1.8; }
+.app-shell-business .business-workspace .blindspot-assumption blockquote { padding: 0; margin: 14px 0; background: transparent; font-size: 12px; line-height: 1.8; }
+.app-shell-business .business-workspace .blindspot-assumption .blindspot-assumption-note { margin: 18px 0 0; padding-top: 14px; border-top: 1px solid #f5e7bc; color: var(--muted); font-size: 11px; }
+.blindspot-sources > article + article { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+.app-shell-business .business-workspace .blindspot-sources h4 { margin: 0 0 6px; font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+.app-shell-business .business-workspace .blindspot-sources .blindspot-source-locator { margin: 0 0 14px; color: var(--muted); font-size: 11px; }
+.app-shell-business .business-workspace .blindspot-sources blockquote { margin: 12px 0; padding: 14px; border-radius: 10px; background: #f3f3f3; color: var(--muted); font-size: 13px; line-height: 1.8; }
+.blindspot-sources a { font-size: 12px; }
+.blindspot-sources details { padding-top: 12px; border-top: 1px solid var(--line); }
+.app-shell-business .business-workspace .blindspot-sources summary { font-size: 12px; }
+.blindspot-source-empty { color: var(--muted); }
+.app-shell-business .business-workspace .blindspot-sources .blindspot-source-warning { display: flex; align-items: flex-start; gap: 8px; padding-top: 16px; margin-top: 20px; border-top: 1px solid var(--line); color: #b8323a; font-size: 12px; }
+.blindspot-needed { grid-column: 1; }
+.blindspot-needed ol { display: grid; gap: 12px; padding: 0; margin: 0; list-style: none; }
+.blindspot-needed li { display: flex; align-items: flex-start; gap: 14px; padding: 18px; border-radius: 10px; background: #ffe8e2; }
+.blindspot-needed li > span { display: inline-flex; justify-content: center; align-items: center; flex-shrink: 0; min-width: 22px; height: 22px; border-radius: 50%; background: #fd937b; color: #46291f; font-size: 12px; font-weight: 700; }
+.app-shell-business .business-workspace .blindspot-needed li p { margin: 0; }
+.app-shell-business .business-workspace .blindspot-needed .blindspot-owner { margin-top: 18px; color: var(--muted); font-size: 11px; }
+@media (max-width: 1100px) {
+  .blindspot-filters { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .blindspot-filters label:first-child { grid-column: 1 / -1; }
+  .pakar-business-layout:not(.is-collapsed) .blindspot-layout { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 680px) {
+  .blindspot-hero { padding: 24px 20px; }
+  .app-shell-business .business-workspace .blindspot-hero h2 { font-size: 21px; }
+  .blindspot-layout { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .blindspot-metrics { gap: 10px; }
+  .blindspot-metrics > div { flex: 1; min-width: 125px; }
+  .blindspot-assumption, .blindspot-sources, .blindspot-needed { padding: 22px 18px; }
+}

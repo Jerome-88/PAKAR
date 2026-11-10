@@ -24,7 +24,7 @@ from ..utils.openai_chat_compat import (
 )
 from .zep_entity_reader import EntityNode, ZepEntityReader
 
-logger = get_logger('rekakebijakan.simulation_config')
+logger = get_logger('pakar.simulation_config')
 
 # Default daily activity schedule
 DEFAULT_TIMEZONE_CONFIG = {

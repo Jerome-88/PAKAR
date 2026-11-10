@@ -29,7 +29,7 @@ from ..utils.zep import (
 )
 from .zep_entity_reader import EntityNode, ZepEntityReader
 
-logger = get_logger('rekakebijakan.oasis_profile')
+logger = get_logger('pakar.oasis_profile')
 
 
 def _localized(indonesian: Any, english: Any) -> Any:

@@ -23,7 +23,7 @@ from ..utils.zep import (
     normalize_zep_search_query,
 )
 
-logger = get_logger('rekakebijakan.zep_tools')
+logger = get_logger('pakar.zep_tools')
 
 
 def _localized(indonesian: str, english: str) -> str:

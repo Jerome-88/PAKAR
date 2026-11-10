@@ -5,6 +5,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from app.database import metadata
+from app.business import tables as business_tables  # noqa: F401 - register shared metadata
 
 
 config = context.config

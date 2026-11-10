@@ -1,0 +1,20 @@
+.business-stakeholder-brief {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  margin-block: 16px;
+}
+
+.business-stakeholder-brief textarea {
+  width: 100%;
+  min-height: 128px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.business-stakeholder-brief small {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}

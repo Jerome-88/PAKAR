@@ -24,7 +24,7 @@ from ..utils.zep_lifecycle import (
     unregister_graph_reader,
 )
 
-logger = get_logger('rekakebijakan.api.report')
+logger = get_logger('pakar.api.report')
 
 
 # ============== Report generation interface ==============
@@ -1058,7 +1058,7 @@ def search_graph_tool():
     
     Request (JSON):
         {
-            "graph_id": "rekakebijakan_xxxx",
+            "graph_id": "pakar_xxxx",
             "query": "search query",
             "limit": 10
         }
@@ -1106,7 +1106,7 @@ def get_graph_statistics_tool():
     
     Request (JSON):
         {
-            "graph_id": "rekakebijakan_xxxx"
+            "graph_id": "pakar_xxxx"
         }
     """
     try:

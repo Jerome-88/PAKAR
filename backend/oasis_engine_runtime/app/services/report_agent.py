@@ -23,7 +23,7 @@ from .zep_tools import (
     InterviewResult
 )
 
-logger = get_logger('rekakebijakan.report_agent')
+logger = get_logger('pakar.report_agent')
 
 
 class ReportLogger:
@@ -338,8 +338,8 @@ class ReportConsoleLogger:
         
         # Attach to Report Agent loggers.
         loggers_to_attach = [
-            'rekakebijakan.report_agent',
-            'rekakebijakan.zep_tools',
+            'pakar.report_agent',
+            'pakar.zep_tools',
         ]
         
         for logger_name in loggers_to_attach:
@@ -354,8 +354,8 @@ class ReportConsoleLogger:
         
         if self._file_handler:
             loggers_to_detach = [
-                'rekakebijakan.report_agent',
-                'rekakebijakan.zep_tools',
+                'pakar.report_agent',
+                'pakar.zep_tools',
             ]
             
             for logger_name in loggers_to_detach:

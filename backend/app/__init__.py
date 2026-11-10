@@ -11,6 +11,8 @@ from pydantic import ValidationError
 from starlette.exceptions import HTTPException
 
 from .api import public_router, router, v1_router
+from .business.api import router as business_router
+from .business.service import BusinessService
 from .auth import LoginRateLimiter, router as auth_router
 from .config import Settings
 from .errors import ApiError
@@ -24,7 +26,7 @@ from .service import WorkflowService
 from .storage import make_storage_backend
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-logger = logging.getLogger("rekakebijakan")
+logger = logging.getLogger("pakar")
 
 
 def error_response(status_code: int, code: str, message: str, details=None, headers=None) -> JSONResponse:
@@ -72,8 +74,13 @@ def create_app(config: dict | None = None) -> FastAPI:
         )
         app.state.settings = settings
         app.state.repository = repository
+        app.state.workspace_user = repository.shared_workspace_user() if not settings.auth_required else None
         app.state.workflow = service
         app.state.storage = storage
+        business = BusinessService(repository, storage, settings, service.oasis_runtime)
+        business.spawn = service._spawn
+        service.business = business
+        app.state.business = business
         service.recover()
         try:
             yield
@@ -81,7 +88,7 @@ def create_app(config: dict | None = None) -> FastAPI:
             service.shutdown()
             repository.close()
 
-    app = FastAPI(title="RekaKebijakan API", version="0.2.0", lifespan=lifespan)
+    app = FastAPI(title="PAKAR API", version="0.3.0", lifespan=lifespan)
     app.state.settings = settings
     app.state.login_limiter = LoginRateLimiter(settings.auth_max_failures, settings.auth_window_seconds)
     app.state.registration_limiter = LoginRateLimiter(settings.auth_max_failures, settings.auth_window_seconds)
@@ -105,10 +112,11 @@ def create_app(config: dict | None = None) -> FastAPI:
     app.include_router(v1_router)
     app.include_router(public_router)
     app.include_router(auth_router)
+    app.include_router(business_router)
 
     @app.get("/health")
     async def health():
-        return {"status": "ok", "service": "rekakebijakan", "engine": settings.policy_provider,
+        return {"status": "ok", "service": "pakar", "engine": settings.policy_provider,
                 "simulation_engines": ["deterministic"] + (["oasis"] if settings.oasis_enabled else [])}
 
     @app.get("/ready")

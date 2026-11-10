@@ -1,0 +1,91 @@
+@font-face { font-family: Lexend; src: url("/figma/pakar/lexend-latin.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+
+.app-shell-business .business-results-navigation .business-tabs { padding: 4px; gap: 3px; background: #fff; border: 1px solid var(--line); border-radius: 30px; }
+.app-shell-business .business-results-navigation .business-tabs button { padding: 12px 20px; font-size: 14px; min-height: 44px; color: var(--ink); }
+.app-shell-business .business-results-navigation .business-tabs button.active { background: #171717; color: #fff; }
+.app-shell-business .business-results-navigation .business-tabs button:hover:not(.active) { background: #f3f3f3; }
+.app-shell-business .business-overview .result-graph { display: grid; grid-template-columns: minmax(0, 1fr) 306px; gap: 18px; align-items: start; background: transparent; border: 0; border-radius: 0; overflow: visible; margin-top: 18px; }
+.result-graph-main { min-width: 0; padding: 24px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+.app-shell-business .business-overview .result-graph-heading { padding: 0 0 20px; gap: 10px; }
+.app-shell-business .business-overview .result-graph-heading h2 { font-size: 16px; line-height: 1.5; font-weight: 700; }
+.app-shell-business .business-overview .result-graph-heading p { font-size: 12px; line-height: 1.7; margin-top: 6px; }
+.app-shell-business .business-overview .result-summary-link { color: #644328; font-size: 12px; font-weight: 600; text-underline-offset: 4px; }
+.app-shell-business .business-overview .result-network-controls { padding: 0 0 12px; gap: 8px; border: 0; background: #fff; }
+.app-shell-business .business-overview .result-network-controls > span { font-size: 11px; }
+.app-shell-business .business-overview .result-network-controls button { background: #fff; border-color: #e7e7e7; border-radius: 20px; font-size: 11px; }
+.app-shell-business .business-overview .result-network-controls button:hover { background: #f3f3f3; border-color: #8c755e; }
+.app-shell-business .business-overview .result-graph-stage { background: #f3f3f3; border-radius: 14px; }
+.app-shell-business .business-overview .result-graph-stage line { stroke: #aaa; stroke-dasharray: 2 4; stroke-width: 1.25; }
+.app-shell-business .business-overview .result-graph-stage line.selected { stroke: #6d655c; stroke-opacity: 1; }
+.app-shell-business .business-overview .result-graph-node text { font-family: Lexend, Quicksand, sans-serif; font-weight: 500; font-size: 12px; }
+.app-shell-business .business-overview .result-graph-node .result-node-role { fill: #686868; font-size: 10px; }
+.app-shell-business .business-overview .result-graph-detail { min-width: 0; padding: 18px 16px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+.app-shell-business .business-overview .result-context-heading { font-size: 16px; font-weight: 700; margin: 0 0 18px; }
+.app-shell-business .business-overview .result-graph-detail .persona-identity { gap: 10px; }
+.app-shell-business .business-overview .result-graph-detail .persona-identity h4 { margin: 0; font-size: 14px; font-weight: 700; }
+.app-shell-business .business-overview .result-graph-detail .persona-identity span { font-size: 12px; }
+.app-shell-business .business-overview .result-graph-detail > h4 { margin: 16px 0 8px; font-size: 13px; }
+.app-shell-business .business-overview .result-graph-detail p { font-size: 12px; line-height: 1.75; }
+.app-shell-business .business-overview .result-person-stance { margin-block: 14px 0; padding: 5px 10px; border-radius: 20px; font-weight: 600; }
+.app-shell-business .business-overview .result-connection-note { border-color: var(--line); padding-top: 12px; margin-top: 14px !important; }
+.app-shell-business .business-overview .result-graph-detail label { font-size: 12px; gap: 6px; margin-top: 16px; }
+.app-shell-business .business-overview .result-graph-detail select { font-size: 12px; }
+.app-shell-business .business-overview .result-context-open { justify-content: center; gap: 14px; min-height: 44px; margin-top: 16px; padding: 10px 14px; border: 1px solid #242424; border-radius: 30px; color: var(--ink); font-size: 12px; font-weight: 700; }
+.app-shell-business .business-overview .result-context-open:hover { background: #f3f3f3; text-decoration: none; }
+.result-context-open img { display: block; flex-shrink: 0; }
+.result-source-context { margin-top: 16px; max-height: 270px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #ccc2bb #f3f3f3; }
+.app-shell-business .business-overview .result-source-context h4 { margin: 0 0 10px; font-size: 12px; font-weight: 700; }
+.app-shell-business .business-overview .result-source-context blockquote, .app-shell-business .business-overview .result-source-context details { margin: 0 0 10px; padding: 12px; border: 0; border-radius: 10px; background: #f3f3f3; }
+.app-shell-business .business-overview .result-source-context blockquote p { margin: 10px 0 8px; font-size: 11px; font-weight: 600; }
+.app-shell-business .business-overview .result-source-context blockquote footer { margin: 0; padding: 0; background: transparent; font-size: 10px; color: var(--muted); }
+.app-shell-business .business-overview .result-source-context summary { color: var(--ink); font-size: 11px; font-weight: 600; line-height: 1.7; padding: 0; }
+.app-shell-business .business-overview .result-source-context details > small { display: block; color: var(--muted); font-size: 10px; line-height: 1.7; overflow-wrap: anywhere; }
+.result-context-tag { display: table; width: fit-content; margin-bottom: 7px; padding: 3px 7px; border-radius: 4px; color: #725094; background: #e9dcf5; font-size: 10px; font-weight: 600; }
+.app-shell-business .business-overview .result-graph-empty { min-height: 220px; margin: 0; display: grid; place-items: center; padding: 24px; border-radius: 14px; background: #f3f3f3; color: var(--muted); font-size: 14px; }
+.specialist-contributions { margin-top: 24px; }
+.specialist-contributions-heading { margin-bottom: 18px; }
+.app-shell-business .business-workspace .specialist-contributions-heading h2 { margin: 0 0 6px; font-size: 20px; }
+.app-shell-business .business-workspace .specialist-contributions-heading p { margin: 0; font-size: 12px; color: var(--muted); }
+.specialist-contributions-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.specialist-contribution { --review-color: #fed058; --review-surface: #fff7df; --review-ink: #856215; display: flex; flex-direction: column; gap: 18px; min-width: 0; padding: 26px 20px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+.specialist-contribution-peb { --review-color: #a7d051; --review-surface: #f0f6e2; --review-ink: #54731a; }
+.specialist-contribution-kubo { --review-color: #a0c0e6; --review-surface: #eaf1fa; --review-ink: #3e6593; }
+.specialist-contribution-noki { --review-color: #b896df; --review-surface: #f0e8f9; --review-ink: #725094; }
+.specialist-contribution-identity { display: flex; align-items: center; gap: 12px; }
+.specialist-contribution-identity .pakar-mascot { width: 49px; height: 49px; }
+.specialist-contribution-identity .pakar-mascot > span { transform: scale(1.25); }
+.app-shell-business .business-workspace .specialist-contribution-identity h3 { margin: 0 0 2px; font-size: 14px; font-weight: 700; }
+.app-shell-business .business-workspace .specialist-contribution-identity p { margin: 0; color: var(--muted); font-size: 12px; }
+.app-shell-business .business-workspace .specialist-contribution h4 { margin: 0 0 8px; font-size: 14px; line-height: 1.5; font-weight: 700; }
+.app-shell-business .business-workspace .specialist-contribution p { margin: 0; font-size: 12px; line-height: 1.8; overflow-wrap: anywhere; }
+.specialist-contribution-analysis { flex: 1; }
+.specialist-contribution-analysis .business-readable-text { color: var(--muted); }
+.specialist-assessment, .specialist-critical-question { padding: 13px; border: 1px solid var(--review-color); border-radius: 10px; background: var(--review-surface); }
+.app-shell-business .business-workspace .specialist-assessment h4 { font-size: 11px; font-weight: 600; color: var(--review-ink); margin-bottom: 5px; }
+.app-shell-business .business-workspace .specialist-assessment p { font-weight: 700; }
+.specialist-critical-question { background: #fff0ec; border-color: #fd937b; }
+.app-shell-business .business-workspace .specialist-critical-question h4 { color: #a64332; font-size: 11px; font-weight: 600; margin-bottom: 5px; }
+.app-shell-business .business-workspace .specialist-contribution details { margin: 0; font-size: 12px; }
+.app-shell-business .business-workspace .specialist-contribution summary { font-size: 12px; font-weight: 600; }
+.specialist-additional-finding { padding-block: 16px; border-top: 1px solid var(--line); }
+.specialist-additional-finding .business-readable-text { margin-bottom: 10px; }
+@media (max-width: 1000px) {
+  .app-shell-business .business-overview .result-graph { grid-template-columns: minmax(0, 1fr); }
+  .app-shell-business .business-overview .result-graph-detail { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 24px; padding: 22px; }
+  .app-shell-business .business-overview .result-graph-detail > .result-context-heading, .app-shell-business .business-overview .result-graph-detail > .persona-identity, .app-shell-business .business-overview .result-graph-detail > .result-connection-note { grid-column: 1 / -1; }
+  .app-shell-business .business-overview .result-graph-detail > h4, .app-shell-business .business-overview .result-graph-detail > p, .app-shell-business .business-overview .result-graph-detail > details { grid-column: 1 / -1; }
+  .app-shell-business .business-overview .result-graph-detail .result-context-heading { margin-bottom: 8px; }
+  .app-shell-business .business-overview .result-person-stance { justify-self: start; }
+  .app-shell-business .business-overview .result-source-context { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  .app-shell-business .business-results-navigation .business-tabs { width: 100%; }
+  .app-shell-business .business-results-navigation .business-tabs button { flex: 1; padding: 10px; font-size: 12px; gap: 6px; }
+  .result-graph-main { padding: 20px 14px 14px; }
+  .app-shell-business .business-overview .result-graph-heading { padding-bottom: 14px; }
+  .app-shell-business .business-overview .result-network-controls { align-items: flex-start; flex-direction: column; }
+  .app-shell-business .business-overview .result-graph-detail { display: block; padding: 20px 16px; }
+  .app-shell-business .business-overview .result-context-open { width: 100%; }
+  .specialist-contributions-grid { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .specialist-contribution { padding: 22px 18px; }
+}

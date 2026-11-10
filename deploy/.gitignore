@@ -1,0 +1,4 @@
+.env
+migration/
+*.dump
+*.tar.gz

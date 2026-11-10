@@ -75,7 +75,7 @@ class GraphBuilderService:
         self,
         text: str,
         ontology: Dict[str, Any],
-        graph_name: str = "rekakebijakan Graph",
+        graph_name: str = "pakar Graph",
         chunk_size: int = 500,
         chunk_overlap: int = 50,
         batch_size: int = 350
@@ -223,7 +223,7 @@ class GraphBuilderService:
     ) -> str:
         """Create a graph with a caller-durable ID and reconcile lost replies."""
 
-        graph_id = graph_id or f"rekakebijakan_{uuid.uuid4().hex[:16]}"
+        graph_id = graph_id or f"pakar_{uuid.uuid4().hex[:16]}"
         # Persist the client-generated ID before the non-idempotent POST so a
         # later reset can clean up a graph whose successful response was lost.
         if graph_id_callback:
@@ -233,7 +233,7 @@ class GraphBuilderService:
             self.client.graph.create(
                 graph_id=graph_id,
                 name=name,
-                description="rekakebijakan Social Simulation Graph"
+                description="pakar Social Simulation Graph"
             )
         except Exception as error:
             if not is_retryable_zep_error(error):
@@ -287,7 +287,7 @@ class GraphBuilderService:
                 for batch in getattr(page, "batches", None) or []:
                     metadata = getattr(batch, "metadata", None) or {}
                     if (
-                        metadata.get("rekakebijakan_operation_id") == operation_id
+                        (metadata.get("pakar_operation_id") or metadata.get("rekakebijakan_operation_id")) == operation_id
                         and metadata.get("graph_id") == graph_id
                     ):
                         matches.append(batch)
@@ -434,7 +434,7 @@ class GraphBuilderService:
         try:
             batch = self.client.batch.create(
                 metadata={
-                    "rekakebijakan_operation_id": operation_id,
+                    "pakar_operation_id": operation_id,
                     "graph_id": graph_id,
                     "chunk_count": total_chunks,
                 }
@@ -472,9 +472,9 @@ class GraphBuilderService:
                     graph_id=graph_id,
                     data=chunk,
                     data_type="text",
-                    source_description="rekakebijakan source document chunk",
+                    source_description="pakar source document chunk",
                     metadata={
-                        "rekakebijakan_operation_id": operation_id,
+                        "pakar_operation_id": operation_id,
                         "chunk_index": i + offset,
                         "chunk_sha256": hashlib.sha256(
                             chunk.encode("utf-8")

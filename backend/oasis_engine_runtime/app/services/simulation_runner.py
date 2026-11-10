@@ -28,7 +28,7 @@ from ..utils.zep import (
 from .zep_graph_memory_updater import ZepGraphMemoryManager
 from .simulation_ipc import SimulationIPCClient, CommandType, IPCResponse
 
-logger = get_logger('rekakebijakan.simulation_runner')
+logger = get_logger('pakar.simulation_runner')
 
 # Whether the cleanup handler has been registered.
 _cleanup_registered = False

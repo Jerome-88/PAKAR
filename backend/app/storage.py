@@ -149,7 +149,7 @@ class FirebaseStorageBackend(StorageBackend):
                 from firebase_admin import credentials, storage
             except ImportError as error:
                 raise RuntimeError("Install the 'firebase' optional dependency to use Firebase Storage") from error
-            app_name = f"rekakebijakan-storage-{hashlib.sha256(bucket.encode()).hexdigest()[:16]}"
+            app_name = f"pakar-storage-{hashlib.sha256(bucket.encode()).hexdigest()[:16]}"
             try:
                 app = firebase_admin.get_app(app_name)
             except ValueError:

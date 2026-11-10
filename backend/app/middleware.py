@@ -12,7 +12,7 @@ from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from .metrics import metrics
 
-logger = logging.getLogger("rekakebijakan.access")
+logger = logging.getLogger("pakar.access")
 request_id_pattern = re.compile(r"^[A-Za-z0-9._:-]{1,128}$")
 
 

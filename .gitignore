@@ -1,5 +1,95 @@
-# Logs
-logs
+# ==============================================================================
+# PAKAR - Root Gitignore Configuration
+# Ensures sensitive data & build artifacts are excluded while keeping everything
+# required for building and running via Docker Compose on VPS.
+# ==============================================================================
+
+# --- Environment Files & Secrets (NEVER commit secrets!) ---
+.env
+.env.*
+*.env
+*.env.*
+!.env.example
+!*.env.example
+!**/.env.example
+!deploy/vps.env.example
+
+# Private Credentials & Certificates
+secrets/
+**/secrets/
+*.pem
+*.key
+*.pfx
+*.p12
+*.crt
+*firebase*.json
+*service-account*.json
+
+# Database Dumps, Restores & Migration Artefacts
+*.dump
+*.sql
+*.sqlite
+*.sqlite3
+*.db
+*.bak
+*.tar.gz
+migration/
+deploy/migration/
+backups/
+/srv/pakar-backups/
+
+# --- Python & Backend Runtime ---
+__pycache__/
+**/__pycache__/
+*.py[cod]
+**/*.py[cod]
+*$py.class
+*.egg-info/
+**/*.egg-info/
+.eggs/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.installed.cfg
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+
+# Python Virtual Environments
+.venv/
+**/.venv/
+venv/
+**/venv/
+ENV/
+env/
+
+# Python Testing & Code Analysis Caches
+.pytest_cache/
+**/.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# --- Application Runtime Data & Uploads ---
+data/
+**/data/uploads/
+**/data/oasis/
+**/data/runtime-audit/
+backend/data/
+omnipredict/
+
+# --- Logs ---
+log/
+logs/
+**/log/
+**/logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,35 +97,43 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# --- Node.js & Frontend Build Outputs ---
+node_modules/
+**/node_modules/
+frontend/dist/
+frontend/dist-demo/
+frontend/dist-ssr/
+dist-demo/
+dist-ssr/
 *.local
-.env
-*.egg-info/
+.impeccable/config.local.json
 
-# Editor directories and files
+# Browser & E2E Test Reports
+frontend/playwright-report/
+**/playwright-report/
+frontend/test-results/
+**/test-results/
+
+# --- Operating System & Editor Files ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE & Editor Configs
+.idea/
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*~
 
-# Python backend runtime
-backend/.venv/
-backend/data/
-backend/secrets/
-secrets/
-backend/__pycache__/
-backend/.pytest_cache/
-backend/**/*.pyc
-
-omnipredict/
-
-# Browser test artifacts
-frontend/playwright-report/
-frontend/test-results/
+# --- Standalone Deployments / Demos ---
+/sites/pakar-demo-pepsodent/

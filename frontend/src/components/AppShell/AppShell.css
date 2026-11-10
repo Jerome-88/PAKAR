@@ -4,6 +4,9 @@
   grid-template-columns: 272px minmax(0, 1fr);
   background: #fff;
 }
+.app-shell.app-shell-business { grid-template-columns: minmax(0, 1fr); }
+.app-shell-business .app-topbar { min-height: 56px; }
+.app-shell-business .app-main { max-width: 1344px; width: 100%; margin: 0 auto; }
 .app-sidebar {
   position: sticky;
   top: 0;

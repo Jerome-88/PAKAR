@@ -176,7 +176,7 @@ test.describe("OASIS workflow", () => {
       const report = await responseJson<{ generated_by: string; sections: unknown[] }>(
         await page.request.get(`/backend/api/reports/${simulationId}`),
       );
-      expect(report.generated_by).toBe("rekakebijakan-oasis-report-agent");
+      expect(report.generated_by).toBe("pakar-oasis-report-agent");
       expect(report.sections.length).toBeGreaterThan(0);
 
       await page.reload();
