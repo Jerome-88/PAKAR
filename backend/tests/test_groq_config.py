@@ -43,7 +43,10 @@ def test_groq_analysis_defaults_allow_throttled_runs_but_keep_explicit_limits():
     assert (explicit["max_seconds"], explicit["max_tokens"]) == (60, 8000)
     assert service.analysis_options(payload | {"engine": "fixture"}, QuickAnalysisInput)["max_seconds"] == 300
     service.settings = SimpleNamespace(llm_base_url="https://openrouter.ai/api/v1")
-    assert service.analysis_options(payload, QuickAnalysisInput)["max_tokens"] == 100000
+    assert service.analysis_options(payload, QuickAnalysisInput)["max_tokens"] == 300000
+    assert service.analysis_options(payload, QuickAnalysisInput)["max_cost_usd"] == "0.10"
+    assert service.analysis_options(payload, QuickAnalysisInput)["max_seconds"] == 900
+    assert service.analysis_options(payload | {"max_tokens": 8000, "max_cost_usd": "0.01"}, QuickAnalysisInput)["max_tokens"] == 8000
     assert payload == {"expected_revision": 1}
 
 

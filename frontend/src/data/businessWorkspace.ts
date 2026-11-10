@@ -4,6 +4,7 @@ const key = "pakar:workspace-projects:v1";
 const event = "pakar-workspace-projects";
 const empty: string[] = [];
 let ids = empty;
+const removed = new Set<string>();
 try {
   const saved: unknown = JSON.parse(localStorage.getItem(key) ?? "[]");
   if (Array.isArray(saved)) ids = [...new Set(saved.filter((id): id is string => typeof id === "string" && /^business_[a-zA-Z0-9]+$/.test(id)))];
@@ -14,8 +15,15 @@ function subscribe(callback: () => void) {
 }
 export const useWorkspaceProjectIds = () => useSyncExternalStore(subscribe, () => ids, () => empty);
 export function rememberBusinessProject(id: string) {
-  if (ids.includes(id)) return;
+  if (removed.has(id) || ids.includes(id)) return;
   ids = [...ids, id];
   try { localStorage.setItem(key, JSON.stringify(ids)); } catch { /* Keep the saved project visible during this session. */ }
+  window.dispatchEvent(new Event(event));
+}
+
+export function forgetBusinessProject(id: string) {
+  removed.add(id);
+  ids = ids.filter(saved => saved !== id);
+  try { localStorage.setItem(key, JSON.stringify(ids)); } catch { /* Update this session even when storage is unavailable. */ }
   window.dispatchEvent(new Event(event));
 }

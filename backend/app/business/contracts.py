@@ -104,7 +104,7 @@ class AnalysisInput(Contract):
     max_personas: int = Field(default=10, ge=2, le=24)
     max_events: int = Field(default=80, ge=3, le=300)
     max_tokens: int = Field(default=24000, ge=1000, le=300000)
-    max_cost_usd: Decimal = Field(default=Decimal("0.03"), gt=0, le=Decimal("1"), allow_inf_nan=False)
+    max_cost_usd: Decimal = Field(default=Decimal("0.10"), gt=0, le=Decimal("1"), allow_inf_nan=False)
     max_seconds: int = Field(default=300, ge=10, le=900)
     persona_turn_seconds: int = Field(default=60, ge=5, le=60)
     review_concurrency: int = Field(default=1, ge=1, le=2)
@@ -148,7 +148,7 @@ class ScenarioInput(Contract):
 
 class SpecialistReviewInput(Contract):
     max_tokens: int = Field(default=100000, ge=1000, le=100000)
-    max_cost_usd: Decimal = Field(default=Decimal("0.01"), gt=0, le=Decimal("1"), allow_inf_nan=False)
+    max_cost_usd: Decimal = Field(default=Decimal("0.10"), gt=0, le=Decimal("1"), allow_inf_nan=False)
     max_seconds: int = Field(default=300, ge=10, le=300)
     review_concurrency: int = Field(default=1, ge=1, le=2)
     retry_failed: bool = False

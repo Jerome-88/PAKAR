@@ -3,11 +3,12 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import func, insert, select, update
+from sqlalchemy import delete, func, insert, select, update, or_
 
 from ..database import jobs, users
 from ..errors import ResourceNotFound, RevisionConflict, StageConflict, UploadQuotaExceeded
 from .tables import business_analyses, business_claims, business_documents, business_events, business_personas, business_projects
+from .tables import business_chat_turns
 
 
 def utcnow():
@@ -22,6 +23,22 @@ class BusinessRepository:
     def __init__(self, repository):
         self.shared = repository
         self.engine = repository.engine
+
+    def delete_project(self, project_id, owner):
+        with self.engine.begin() as db:
+            self.require_project(db, project_id, owner, lock=True)
+            analyses = select(business_analyses.c.id).where(business_analyses.c.project_id == project_id)
+            turns = select(business_chat_turns.c.id).where(business_chat_turns.c.project_id == project_id)
+            active = ("queued", "running")
+            if (db.execute(select(business_analyses.c.id).where(business_analyses.c.project_id == project_id, business_analyses.c.status.in_(active))).first()
+                    or db.execute(select(business_chat_turns.c.id).where(business_chat_turns.c.project_id == project_id, business_chat_turns.c.status.in_(active))).first()
+                    or db.execute(select(jobs.c.id).where(or_(jobs.c.analysis_id.in_(analyses), jobs.c.business_chat_turn_id.in_(turns)), jobs.c.status.in_(active))).first()):
+                raise StageConflict("Selesaikan atau batalkan analisis dan chat yang masih aktif sebelum menghapus project")
+            keys = list(db.execute(select(business_documents.c.storage_key).where(business_documents.c.project_id == project_id)).scalars())
+            results = list(db.execute(select(business_analyses.c.result).where(business_analyses.c.project_id == project_id)).scalars())
+            db.execute(delete(business_projects).where(business_projects.c.id == project_id))
+        # Credit reservations are independent audit records, never refunded here.
+        return keys, results
 
     @staticmethod
     def require_project(db, project_id, owner, lock=False):

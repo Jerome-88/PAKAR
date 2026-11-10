@@ -15,6 +15,9 @@
 .pakar-project-meta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
 .pakar-project-card-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
 .pakar-project-card-actions .pakar-action { flex: 1; padding-inline: 16px; white-space: nowrap; }
+.pakar-project-card-actions .pakar-project-delete, .pakar-project-delete-error { color: #b42318; }
+.pakar-project-delete-confirm { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+.pakar-project-delete-confirm > p { margin: 0; font-size: 13px; line-height: 1.8; overflow-wrap: anywhere; }
 .pakar-project-empty { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding: 36px; margin-top: 24px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
 .pakar-project-empty h2 { margin: 0; font-size: 24px; font-weight: 700; line-height: 1.4; }
 .pakar-project-empty p { max-width: 65ch; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.8; }

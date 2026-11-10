@@ -99,7 +99,7 @@ class SpendLedger:
         if urlsplit(settings.llm_base_url or "").hostname != "openrouter.ai":
             return None  # Local/test providers never query a real credit account.
         prices = price_ceiling()
-        ceiling = min(dollars(requested if requested is not None else ".005"), dollars(os.getenv("PAKAR_MAX_RUN_COST_USD", ".03")))
+        ceiling = min(dollars(requested if requested is not None else ".005"), dollars(os.getenv("PAKAR_MAX_RUN_COST_USD", ".10")))
         floor = dollars(os.getenv("PAKAR_CREDIT_RESERVE_USD", ".10"))
         data = call_worker("openrouter_credit", {"api_key": settings.llm_api_key}, timeout, cancelled=cancelled)
         available = dollars(data["remaining_usd"])

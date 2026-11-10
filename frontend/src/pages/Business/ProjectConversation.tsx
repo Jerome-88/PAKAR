@@ -103,7 +103,7 @@ export function ProjectConversation({ project, capabilities, onChanged, analysis
   const run = useMutation({ mutationFn: () => {
     setRunFrozen(true);
     if (!runKey.current) { runKey.current = crypto.randomUUID(); runInput.current = { revision: project.revision, idea: revision!.id, engine, brief: briefs[revision!.id] ?? "" }; }
-    return startQuickBusinessAnalysis(project.id, runInput.current!.revision, runInput.current!.engine, 2, runKey.current, { interaction_mode: "swarm", customer_count: 2, idea_revision_id: runInput.current!.idea, max_tokens: 60000, public_brief: runInput.current!.brief });
+    return startQuickBusinessAnalysis(project.id, runInput.current!.revision, runInput.current!.engine, 2, runKey.current, { interaction_mode: "swarm", customer_count: 2, idea_revision_id: runInput.current!.idea, public_brief: runInput.current!.brief });
   }, onSuccess: row => navigate(`/business/analyses/${row.id}?tab=swarm`) });
   const staleRun = run.error instanceof ApiError && run.error.status === 409 && run.error.code === "revision_conflict";
   const recoverRun = useMutation({ mutationFn: async () => {

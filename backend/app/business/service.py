@@ -61,6 +61,35 @@ class BusinessService:
         context = BusinessContext.model_validate(payload).model_dump(mode="json")
         return self.repository.create(owner, context, key, self.settings.max_active_projects_per_user)
 
+    def delete_project(self, project_id, owner):
+        keys, results = self.repository.delete_project(project_id, owner)
+        pending = False
+        for key in keys:
+            try:
+                self.storage.delete(key)
+            except Exception:
+                pending = True
+                logger.warning("business_delete_storage_cleanup_failed project=%s", project_id)
+        runtime_ids = [call.get("runtime_id") for result in results
+                       for call in [*(result.get("runtime_calls") or []), *((result.get("simulation") or {}).get("usage") or {}).get("calls", [])]
+                       if isinstance(call, dict)]
+        import re
+        import shutil
+        root = self.settings.oasis_data_dir.resolve()
+        for runtime_id in runtime_ids:
+            if not isinstance(runtime_id, str) or not re.fullmatch(r"business-[0-9a-f]{32}", runtime_id):
+                continue
+            target = root / runtime_id
+            if target.is_symlink() or target.resolve().parent != root:
+                continue
+            try:
+                if target.is_dir():
+                    shutil.rmtree(target)
+            except OSError:
+                pending = True
+                logger.warning("business_delete_runtime_cleanup_failed project=%s", project_id)
+        return {"status": "deleted", "cleanup_pending": pending}
+
     def upload(self, project_id, owner, files, purpose="evidence"):
         if purpose not in {"evidence", "idea"}:
             raise ValueError("Invalid document purpose")
@@ -141,6 +170,9 @@ class BusinessService:
 
     def analysis_options(self, payload, schema):
         options = dict(payload)
+        if options.get("engine", "oasis") == "oasis" and urlsplit(self.settings.llm_base_url or "").hostname == "openrouter.ai":
+            options.setdefault("max_seconds", 900)
+            options.setdefault("max_tokens", 300000)
         if options.get("engine", "oasis") == "oasis" and urlsplit(self.settings.llm_base_url or "").hostname == "api.groq.com":
             # Free-tier throttling needs time to wait. Explicit smaller user
             # limits remain authoritative; fixture/other-provider defaults stay.
@@ -367,7 +399,7 @@ class BusinessService:
 
             deadline = RunDeadline(snapshot["config"]["max_seconds"], cancelled=cancelled)
             if snapshot["config"]["engine"] == "oasis":
-                spend_ledger = SpendLedger.open(self.settings, self.shared.engine, f"analysis:{row['id']}", snapshot["config"].get("max_cost_usd", ".03"), timeout=min(10, deadline.remaining()), cancelled=cancelled)
+                spend_ledger = SpendLedger.open(self.settings, self.shared.engine, f"analysis:{row['id']}", snapshot["config"].get("max_cost_usd", ".10"), timeout=min(10, deadline.remaining()), cancelled=cancelled)
             spending = spend_ledger.budget if spend_ledger else None
             attempt_token_budget = snapshot["config"]["max_tokens"] // job["max_attempts"]
             attempt_total_cap = attempt_token_budget

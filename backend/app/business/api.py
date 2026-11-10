@@ -56,6 +56,11 @@ def project(request: Request, project_id: str):
     return service(request).repository.project(project_id, owner(request))
 
 
+@router.delete("/projects/{project_id}")
+def delete_project(request: Request, project_id: str):
+    return service(request).delete_project(project_id, owner(request))
+
+
 @router.post("/projects/{project_id}/documents", status_code=201)
 async def upload(request: Request, project_id: str):
     # Check access before receiving/extracting document contents.

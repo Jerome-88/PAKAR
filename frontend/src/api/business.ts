@@ -1,5 +1,5 @@
-import { request } from "./client";
-import { rememberBusinessProject } from "../data/businessWorkspace";
+import { ApiError, request } from "./client";
+import { forgetBusinessProject, rememberBusinessProject } from "../data/businessWorkspace";
 
 const root = "/api/v1/business";
 const encoded = encodeURIComponent;
@@ -111,6 +111,16 @@ export type BusinessProjectSummary = Pick<BusinessProject, "id" | "context" | "r
   latest_analysis: { id: string; project_id: string; status: string; stage: string; created_at: string; findings: BusinessFinding[] } | null;
 };
 export const listBusinessProjects = () => request<{ items: BusinessProjectSummary[] }>(`${root}/projects`);
+export async function deleteBusinessProject(id: string) {
+  let result = { status: "deleted", cleanup_pending: false };
+  try {
+    result = await request<typeof result>(`${root}/projects/${encoded(id)}`, { method: "DELETE" });
+  } catch (error) {
+    if (!(error instanceof ApiError) || error.status !== 404) throw error;
+  }
+  forgetBusinessProject(id);
+  return result;
+}
 export const getBusinessProject = async (id: string) => {
   const project = await request<BusinessProject>(`${root}/projects/${encoded(id)}`);
   rememberBusinessProject(project.id);
