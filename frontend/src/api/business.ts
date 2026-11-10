@@ -92,7 +92,7 @@ export type ReportFinding = BusinessFinding & {
 export type BusinessReport = {
   version: string; title: string; analysis_id: string; status: string; created_at: string | null; context: BusinessContext;
   sections: { id: string; title: string }[];
-  summary: { decision_question: string; text: string; finding_count: number; high_priority_count: number; disagreement_count: number; unavailable_evidence_count: number; top_finding_ids: string[]; validation_status: string; next_action: string };
+  summary: { conclusion?: { headline: string; reasons: { finding_id: string; title: string; text: string }[]; actions: string[]; incomplete: boolean }; decision_question: string; text: string; finding_count: number; high_priority_count: number; disagreement_count: number; unavailable_evidence_count: number; top_finding_ids: string[]; validation_status: string; next_action: string };
   assumptions: ReportAssumption[]; findings: ReportFinding[]; evidence: (BusinessEvidence & { related_claim_ids: string[] })[];
   contradictions: { author: string; summary: string }[];
   scenario: { is_scenario: boolean; baseline_id: string | null; shock: Shock | null; comparison_available: boolean; notice: string;

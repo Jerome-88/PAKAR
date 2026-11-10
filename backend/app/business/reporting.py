@@ -117,9 +117,29 @@ def build_report(snapshot, result, *, analysis_id=None, baseline=None, status=No
         limitations.append("Profit belum diketahui karena input harga, biaya atau volume yang diperlukan belum lengkap.")
     high_priority = sum(f["severity"] in {"HIGH", "CRITICAL"} for f in findings)
     unavailable = sum(e.get("status") == "UNAVAILABLE" for e in evidence)
+    incomplete = status not in (None, "completed") or simulation.get("stop_reason") not in (None, "round_limit", "discussion_quiet")
+    if incomplete:
+        headline = "Kesimpulan sementara: analisis belum lengkap"
+        takeaway = "Gunakan temuan yang sudah tersedia sebagai bahan pemeriksaan awal. Selesaikan bagian analisis yang terhenti sebelum mengambil keputusan lanjutan."
+    elif not findings:
+        headline = "Belum cukup dasar untuk menentukan kelayakan"
+        takeaway = "Belum ada temuan yang cukup untuk menyimpulkan ide ini layak atau bebas risiko. Periksa kelengkapan informasi dan uji asumsi utamanya terlebih dahulu."
+    elif high_priority:
+        headline = "Tangani risiko utama sebelum melanjutkan rencana"
+        takeaway = "Ada persoalan penting yang perlu diselesaikan sebelum rencana diperluas. Prioritaskan validasi di bawah; hasil ini belum membuktikan bisnis akan berhasil atau gagal."
+    else:
+        headline = "Uji asumsi utama sebelum memperluas rencana"
+        takeaway = "Gunakan uji terbatas untuk memeriksa temuan berikut sebelum menambah komitmen biaya atau skala usaha. Respons persona merupakan simulasi, bukan bukti permintaan pasar."
+    reasons = [{"finding_id": f["id"], "title": f["title"], "text": f["reasoning"]} for f in findings[:3]]
+    actions = list(dict.fromkeys(t["action"] for t in tasks if t["action"].strip()))[:3]
+    if incomplete:
+        actions = ["Periksa alasan analisis terhenti dan selesaikan bagian yang belum berjalan.", *actions[:2]]
+    if not actions:
+        actions = ["Lengkapi informasi utama dan lakukan validasi langsung dengan calon pengguna sebelum mengambil keputusan."]
     summary = {
         "decision_question": snapshot["context"]["decision_question"],
-        "text": f"{len(findings)} kandidat blind spot dicatat, termasuk {high_priority} berprioritas tinggi atau kritis. Hasil ini memetakan pertanyaan yang perlu divalidasi sebelum keputusan bisnis diambil.",
+        "text": takeaway,
+        "conclusion": {"headline": headline, "reasons": reasons, "actions": actions, "incomplete": incomplete},
         "finding_count": len(findings), "high_priority_count": high_priority, "disagreement_count": len(disagreements),
         "unavailable_evidence_count": unavailable, "top_finding_ids": [f["id"] for f in findings[:3]],
         "validation_status": "NEEDS_VALIDATION", "next_action": tasks[0]["action"] if tasks else "Review kelengkapan asumsi dan sumber; tidak adanya temuan belum membuktikan tidak adanya risiko.",
@@ -183,7 +203,12 @@ def render_html(report):
            f'<header><h1>{e(report["title"])}</h1><p>{e(report["context"]["industry"])} · {e(report["context"]["region"])}</p><p class="meta">Run {e(report["analysis_id"])} · {label(report["status"])} · {e(report["created_at"])}</p><p class="notice">Hipotesis untuk divalidasi. Laporan ini tidak menyatakan kelayakan bisnis atau memprediksi keberhasilan pasar.</p></header>',
            '<nav aria-label="Daftar isi laporan"><ul>' + ''.join(f'<li><a href="#{key}">{title}</a></li>' for key, title in SECTIONS) + '</ul></nav>']
     summary = report["summary"]
-    out += [heading("executive-summary"), f'<h3>Pertanyaan keputusan</h3><p>{e(summary["decision_question"])}</p><p>{e(summary["text"])}</p><p><strong>Status: perlu validasi.</strong> {summary["disagreement_count"]} catatan perbedaan pendapat; {summary["unavailable_evidence_count"]} sumber belum tersedia.</p>', metric_table(report["scenario"]["metrics"]), f'<h3>Langkah prioritas</h3><p>{e(summary["next_action"])}</p></section>']
+    conclusion = summary.get("conclusion", {})
+    out += [heading("executive-summary"), f'<h3>{e(conclusion.get("headline", "Kesimpulan awal"))}</h3><p>{e(summary["text"])}</p>']
+    if conclusion.get("reasons"):
+        out.append('<h3>Alasan utama</h3><ul>' + ''.join(f'<li><strong>{e(r["title"])}</strong><p>{e(r["text"])}</p></li>' for r in conclusion["reasons"]) + '</ul>')
+    out.append('<h3>Langkah berikutnya</h3><ol>' + ''.join(f'<li>{e(action)}</li>' for action in conclusion.get("actions", [summary["next_action"]])) + '</ol>')
+    out += [f'<details><summary>Lihat konteks dan perhitungan</summary><p>{e(summary["decision_question"])}</p>', metric_table(report["scenario"]["metrics"]), '</details></section>']
     out += [heading("assumption-register"), '<p>Penerimaan asumsi menetapkan input analisis, bukan kebenaran eksternal.</p>', table(["Asumsi / klaim", "Klasifikasi & nilai", "Status", "Jejak sumber"], [[f'<strong>{e(c["normalized_text"])}</strong><blockquote>{e(c["quote"])}</blockquote>', f'{label(c["classification"])}<br>{e(number(c["value"]))} {e(c["unit"] or "")}<br>{e(c["period"] or "Periode belum diketahui")}', f'{label(c["review_status"])}<br>{label(c["evidence_status"])}', f'{e(c["source_label"])}<br><span class="finding-ref">{e(c["id"])}</span>'] for c in report["assumptions"]]), '</section>']
     out.append(heading("top-blind-spots"))
     for f in report["findings"]:

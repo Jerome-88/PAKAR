@@ -35,6 +35,10 @@ describe("PRD report", () => {
     await screen.findByRole("heading", { name: "Executive Summary" });
     for (const title of titles) expect(screen.getByRole("heading", { name: title })).toBeInTheDocument();
     const executive = screen.getByRole("heading", { name: "Executive Summary" }).parentElement!;
+    expect(within(executive).getByRole("heading", { name: "Tangani risiko utama sebelum melanjutkan rencana" })).toBeInTheDocument();
+    expect(within(executive).getByRole("heading", { name: "Langkah berikutnya" })).toBeInTheDocument();
+    expect(within(executive).getByRole("table").closest("details")).not.toHaveAttribute("open");
+    await userEvent.click(within(executive).getByText("Lihat konteks dan perhitungan"));
     expect(within(within(executive).getByRole("table", { name: "Metrik kondisional pada input" })).getByRole("cell", { name: "Belum diketahui" })).toBeInTheDocument();
     expect(screen.getByText(/tidak membuktikan adanya konsensus/)).toBeInTheDocument();
     expect(screen.getByText(/Tugas berikut merupakan usulan/)).toBeInTheDocument();
