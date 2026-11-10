@@ -56,10 +56,10 @@ services:
       MAX_EXTRACTED_CHARS: ${MAX_EXTRACTED_CHARS:-2000000}
       MAX_CHUNKS_PER_DOCUMENT: ${MAX_CHUNKS_PER_DOCUMENT:-5000}
       POLICY_PROVIDER: ${POLICY_PROVIDER:-deterministic}
-      LLM_BASE_URL: ${LLM_BASE_URL:-https://openrouter.ai/api/v1}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://api.openai.com/v1}
       LLM_API_KEY: ${LLM_API_KEY:-}
-      PAKAR_ALLOWED_LLM_HOSTS: ${PAKAR_ALLOWED_LLM_HOSTS:-openrouter.ai}
-      LLM_MODEL: ${LLM_MODEL:-qwen/qwen3.6-35b-a3b}
+      PAKAR_ALLOWED_LLM_HOSTS: ${PAKAR_ALLOWED_LLM_HOSTS:-api.openai.com}
+      LLM_MODEL: ${LLM_MODEL:-gpt-6-luna}
       LLM_STRUCTURED_OUTPUTS: ${LLM_STRUCTURED_OUTPUTS:-true}
       LLM_FALLBACK_POLICY: ${LLM_FALLBACK_POLICY:-raise}
       PAKAR_OPENROUTER_PROVIDER_ORDER: ${PAKAR_OPENROUTER_PROVIDER_ORDER:-}
@@ -126,10 +126,10 @@ services:
       DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://${POSTGRES_USER:-pakar}:${POSTGRES_PASSWORD:-pakar}@database:5432/${POSTGRES_DB:-pakar}}
       UPLOAD_DIR: /app/data/uploads
       POLICY_PROVIDER: ${POLICY_PROVIDER:-deterministic}
-      LLM_BASE_URL: ${LLM_BASE_URL:-https://openrouter.ai/api/v1}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://api.openai.com/v1}
       LLM_API_KEY: ${LLM_API_KEY:-}
-      PAKAR_ALLOWED_LLM_HOSTS: ${PAKAR_ALLOWED_LLM_HOSTS:-openrouter.ai}
-      LLM_MODEL: ${LLM_MODEL:-qwen/qwen3.6-35b-a3b}
+      PAKAR_ALLOWED_LLM_HOSTS: ${PAKAR_ALLOWED_LLM_HOSTS:-api.openai.com}
+      LLM_MODEL: ${LLM_MODEL:-gpt-6-luna}
       LLM_STRUCTURED_OUTPUTS: ${LLM_STRUCTURED_OUTPUTS:-true}
       LLM_FALLBACK_POLICY: ${LLM_FALLBACK_POLICY:-raise}
       PAKAR_OPENROUTER_PROVIDER_ORDER: ${PAKAR_OPENROUTER_PROVIDER_ORDER:-}

@@ -170,7 +170,7 @@ class BusinessService:
 
     def analysis_options(self, payload, schema):
         options = dict(payload)
-        if options.get("engine", "oasis") == "oasis" and urlsplit(self.settings.llm_base_url or "").hostname == "openrouter.ai":
+        if options.get("engine", "oasis") == "oasis" and urlsplit(self.settings.llm_base_url or "").hostname in {"openrouter.ai", "api.openai.com"}:
             options.setdefault("max_seconds", 900)
             options.setdefault("max_tokens", 300000)
         if options.get("engine", "oasis") == "oasis" and urlsplit(self.settings.llm_base_url or "").hostname == "api.groq.com":

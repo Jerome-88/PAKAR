@@ -96,14 +96,24 @@ class SpendLedger:
         from sqlalchemy import select, update
         from sqlalchemy.dialects.postgresql import insert
         from .tables import provider_spend_accounts as accounts, provider_spend_reservations as reservations
-        if urlsplit(settings.llm_base_url or "").hostname != "openrouter.ai":
+        host = urlsplit(settings.llm_base_url or "").hostname
+        if host not in {"api.openai.com", "openrouter.ai"}:
             return None  # Local/test providers never query a real credit account.
-        prices = price_ceiling()
         ceiling = min(dollars(requested if requested is not None else ".005"), dollars(os.getenv("PAKAR_MAX_RUN_COST_USD", ".10")))
-        floor = dollars(os.getenv("PAKAR_CREDIT_RESERVE_USD", ".10"))
-        data = call_worker("openrouter_credit", {"api_key": settings.llm_api_key}, timeout, cancelled=cancelled)
-        available = dollars(data["remaining_usd"])
-        account_id = hashlib.sha256(settings.llm_api_key.encode()).hexdigest()
+        if host == "api.openai.com":
+            if settings.llm_model != "gpt-6-luna":
+                raise SpendingLimit("Harga model OpenAI belum dikonfigurasi untuk pengaman biaya")
+            # This account is a durable per-run allowance, not an OpenAI balance.
+            # Keeping the scope in its identity blocks retries after a crash.
+            prices = {"prompt": ".25", "completion": ".75", "request": "0"}
+            available, floor = ceiling, Decimal(0)
+            account_id = hashlib.sha256(f"openai-run:{scope}:{settings.llm_api_key}".encode()).hexdigest()
+        else:
+            prices = price_ceiling()
+            floor = dollars(os.getenv("PAKAR_CREDIT_RESERVE_USD", ".10"))
+            data = call_worker("openrouter_credit", {"api_key": settings.llm_api_key}, timeout, cancelled=cancelled)
+            available = dollars(data["remaining_usd"])
+            account_id = hashlib.sha256(settings.llm_api_key.encode()).hexdigest()
         with engine.begin() as connection:
             connection.execute(insert(accounts).values(id=account_id, available_usd=available).on_conflict_do_nothing())
             account = connection.execute(select(accounts).where(accounts.c.id == account_id).with_for_update()).mappings().one()

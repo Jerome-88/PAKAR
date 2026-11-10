@@ -170,3 +170,13 @@ def provider_options(base_url, *, sort=None, model=None):
             body["reasoning"] = {"enabled": False}
         return {"extra_body": body}
     return {}
+
+
+def completion_parameters(model, output_limit):
+    leaf = (model or "").casefold().rsplit("/", 1)[-1]
+    if leaf.startswith("gpt-6"):
+        # Luna's Chat Completions tool calling requires non-reasoning mode.
+        return {"max_completion_tokens": output_limit, "reasoning_effort": "none"}
+    if leaf.startswith("gpt-5"):
+        return {"max_completion_tokens": output_limit}
+    return {"max_tokens": output_limit, "temperature": 0.2}

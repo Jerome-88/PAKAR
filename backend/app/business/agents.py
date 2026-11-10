@@ -6,12 +6,12 @@ import threading
 import time
 
 from .budget import BudgetExceeded, call_worker
-from .usage import valid_cost
+from .usage import valid_cost, openai_usage_upper_bound
 from .finding_checks import arithmetic_issues
 from .contracts import Finding, Persona
 from .intake import discover
 from .preparation import contextual_personas, ground_personas
-from .structured import discovery_schema, provider_options, response_format
+from .structured import discovery_schema, provider_options, response_format, completion_parameters
 from .groq_limits import is_groq_reasoning_model
 from ..llm_access import require_allowed_llm_endpoint
 
@@ -55,8 +55,7 @@ class BusinessLLM:
             reserved = input_reservation + output_limit
             self.tokens += reserved
         started = time.monotonic()
-        model_leaf = self.settings.llm_model.casefold().rsplit("/", 1)[-1]
-        sampling = {"max_completion_tokens": output_limit} if model_leaf.startswith("gpt-5") else {"max_tokens": output_limit, "temperature": 0.2}
+        sampling = completion_parameters(self.settings.llm_model, output_limit)
         if is_groq_reasoning_model(self.settings.llm_base_url, self.settings.llm_model):
             sampling["reasoning_effort"] = "low"
         formatting = response_format("pakar_review", response_schema) if structured else {"type": "json_object"}
@@ -107,8 +106,11 @@ class BusinessLLM:
                           generation_id=response.get("id"), actual_model=response.get("model"),
                           cost=cost if valid_cost(cost) else None,
                           cost_status="provider_reported" if valid_cost(cost) else "unknown")
+            estimate = openai_usage_upper_bound(usage, self.settings.llm_base_url, self.settings.llm_model)
+            if estimate is not None:
+                record["estimated_cost_upper_bound_usd"] = estimate
             if reservation:
-                self.spending.settle(reservation, cost if valid_cost(cost) else None)
+                self.spending.settle(reservation, cost if valid_cost(cost) else estimate)
             if response.get("finish_reason") == "length":
                 raise ValueError("Respons specialist terpotong oleh batas output")
             value = json.loads(response.get("content") or "{}")

@@ -12,9 +12,9 @@ from pathlib import Path
 
 from .contracts import BusinessAction, SwarmAction, DialogueAction, Shock
 from .simulation import BusinessSimulation
-from .structured import action_schema, swarm_action_schema, provider_options, response_format
+from .structured import action_schema, swarm_action_schema, provider_options, response_format, completion_parameters
 from .swarm import SwarmSimulation, is_quiet_round
-from .usage import summarize_calls, valid_cost
+from .usage import summarize_calls, valid_cost, openai_usage_upper_bound
 from .information import scoped as information_scoped, public_profiles, public_context, public_schema, safe_view
 from .discussion import DialogueSimulation, ReactiveAgenda, reactive
 from .dialogue_protocol import request_view, decode as decode_dialogue
@@ -147,6 +147,9 @@ def track_model_usage(model, calls, context, emit, before_dispatch=None, after_r
                 call.update(tokens=usage.get("total_tokens"), prompt_tokens=usage.get("prompt_tokens"),
                             completion_tokens=usage.get("completion_tokens"),
                             cost=cost if valid_cost(cost) else None, cost_status="provider_reported" if valid_cost(cost) else "unknown")
+            estimate = openai_usage_upper_bound(usage, os.environ.get("LLM_BASE_URL"), context.get("model"))
+            if estimate is not None:
+                call["estimated_cost_upper_bound_usd"] = estimate
             call.update(generation_id=getattr(response, "id", None), actual_model=getattr(response, "model", None), actual_provider=getattr(response, "provider", None))
         if after_response:
             after_response(call)
@@ -238,13 +241,16 @@ async def run(payload, emit):
         # Groq counts reasoning inside the completion budget. A 650-token cap
         # can terminate constrained JSON before the visible action is complete.
         output_limit = 1600
-    parameters = {"max_completion_tokens": output_limit} if model_name.casefold().rsplit("/", 1)[-1].startswith("gpt-5") else {"temperature": 0.2, "max_tokens": output_limit}
+    parameters = completion_parameters(model_name, output_limit)
+    reasoning_effort = parameters.pop("reasoning_effort", None)
     structured = os.getenv("LLM_STRUCTURED_OUTPUTS", "false").lower() in {"1", "true", "yes", "on"}
     if "response_mode" in snapshot:
         structured = snapshot["response_mode"] == "json_schema"
     if structured or os.getenv("PAKAR_OPENROUTER_MAX_PRICE"):
         parameters.update(provider_options(os.environ.get("LLM_BASE_URL"), sort="latency" if swarm else None, model=model_name))
     model = ModelFactory.create(model_platform=ModelPlatformType.OPENAI, model_type=model_name, model_config_dict=parameters, timeout=turn_timeout, max_retries=0)
+    if reasoning_effort is not None:
+        model.model_config_dict["reasoning_effort"] = reasoning_effort
     if groq_reasoning:
         model.model_config_dict["reasoning_effort"] = "low"
     def reserve_dispatch(args, kwargs):
@@ -291,7 +297,7 @@ async def run(payload, emit):
         if isinstance(actual, int) and not isinstance(actual, bool) and actual >= 0:
             reserved_tokens += actual - call["reserved_tokens_upper_bound"]
         if spending and call.get("spending_reservation_id"):
-            spending.settle(call["spending_reservation_id"], call.get("cost"))
+            spending.settle(call["spending_reservation_id"], call.get("cost") if valid_cost(call.get("cost")) else call.get("estimated_cost_upper_bound_usd"))
 
     track_model_usage(model, calls, usage_context, emit, reserve_dispatch, settle_dispatch)
     graph = business_graph(model_personas, model, [ActionType.INTERVIEW, ActionType.DO_NOTHING]) if active_dialogue and config.get("business_system_prompt", False) else await generate_reddit_agent_graph(profile_path=str(profile_path), model=model, available_actions=[ActionType.INTERVIEW, ActionType.DO_NOTHING])

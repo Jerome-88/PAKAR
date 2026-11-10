@@ -16,3 +16,21 @@ def summarize_calls(calls):
             "reported_tokens_subtotal": sum(tokens), "cost": sum(known) if complete_cost else None,
             "reported_cost_subtotal": sum(known), "calls_with_reported_cost": len(known),
             "cost_status": "provider_reported" if complete_cost else "partial" if known else "unknown"}
+
+
+def openai_usage_upper_bound(usage, base_url, model):
+    """Conservative token-priced estimate, never a provider-reported invoice.
+
+    Luna Standard: $0.10/$0.50 per million input/output tokens. Charge every
+    input at the cache-write ceiling ($0.125), ignoring cache discounts.
+    Long prompts apply 2x input and 1.5x output. Unknown usage stays reserved.
+    """
+    from decimal import Decimal
+    from urllib.parse import urlsplit
+    if urlsplit(base_url or "").hostname != "api.openai.com" or model != "gpt-6-luna" or not isinstance(usage, dict):
+        return None
+    prompt, completion = usage.get("prompt_tokens"), usage.get("completion_tokens")
+    if any(not isinstance(n, int) or isinstance(n, bool) or n < 0 for n in (prompt, completion)):
+        return None
+    input_rate, output_rate = (Decimal(".25"), Decimal(".75")) if prompt > 272000 else (Decimal(".125"), Decimal(".50"))
+    return float((prompt * input_rate + completion * output_rate) / Decimal(1000000))

@@ -7,8 +7,8 @@ import type { FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { AppShell } from "../../components/AppShell/AppShell";
-import { addBusinessPersona, approveBusinessClaims, businessKeys, createBusinessProject, discoverBusinessStakeholders, excludeBusinessDocument, getBusinessCapabilities, getBusinessProject, patchBusinessClaim, patchBusinessPersona, startQuickBusinessAnalysis, uploadBusinessDocuments } from "../../api/business";
-import type { BusinessClaim, BusinessContext, BusinessPersona, BusinessProject } from "../../api/business";
+import { addBusinessPersona, approveBusinessClaims, businessKeys, createBusinessProject, discoverBusinessStakeholders, excludeBusinessDocument, getBusinessCapabilities, getBusinessProject, patchBusinessClaim, patchBusinessPersona, saveBusinessIdea, startQuickBusinessAnalysis, uploadBusinessDocuments } from "../../api/business";
+import type { BusinessClaim, BusinessContext, BusinessPersona, BusinessProject, IdeaRevision } from "../../api/business";
 import "./Business.css";
 import { errorText } from "./businessFormatting";
 import businessExamples from "./businessExamples.json";
@@ -45,14 +45,14 @@ export function BusinessIntakePage({ savedDemo }: { savedDemo?: { analysis: Busi
   const key = useRef(crypto.randomUUID());
   const [requestFrozen, setRequestFrozen] = useState(false);
   const [submittedIntent, setSubmittedIntent] = useState<"analysis" | "workspace">("analysis");
-  const submission = useRef<{ key: string; project?: BusinessProject; uploaded: boolean; analysisKey: string; analysisStarted: boolean; intent: "analysis" | "workspace"; draft: { context: BusinessContext; files: File[]; engine: "oasis" | "fixture"; rounds: number; interactionMode: "swarm" | "pairwise"; customerCount: number; publicBrief: string } } | null>(null);
+  const submission = useRef<{ key: string; project?: BusinessProject; uploaded: boolean; ideaKey: string; idea?: IdeaRevision; analysisKey: string; analysisStarted: boolean; intent: "analysis" | "workspace"; draft: { context: BusinessContext; files: File[]; engine: "oasis" | "fixture"; rounds: number; interactionMode: "swarm" | "pairwise"; customerCount: number; publicBrief: string } } | null>(null);
   const intent = useRef<"analysis" | "workspace">("analysis");
   const navigate = useNavigate();
   const capabilities = useQuery({ queryKey: ["business", "capabilities"], queryFn: getBusinessCapabilities, enabled: !savedDemo });
   const limit = capabilities.data?.max_file_bytes ?? 20 * 1024 * 1024;
   const reset = () => { key.current = crypto.randomUUID(); submission.current = null; setSavedProject(""); };
   const create = useMutation({ mutationFn: async () => {
-    if (!submission.current || submission.current.key !== key.current) submission.current = { key: key.current, uploaded: false, analysisKey: crypto.randomUUID(), analysisStarted: false, intent: intent.current, draft: {
+    if (!submission.current || submission.current.key !== key.current) submission.current = { key: key.current, uploaded: false, ideaKey: crypto.randomUUID(), analysisKey: crypto.randomUUID(), analysisStarted: false, intent: intent.current, draft: {
       context: { ...context, industry: context.industry.trim() || "Belum ditentukan", region: context.region.trim() || "Belum ditentukan", target_customer: context.target_customer.trim() || "Belum ditentukan" },
       files: example ? [new File([exampleSource], `contoh-${exampleId}.txt`, { type: "text/plain" })] : [...files], engine, rounds, interactionMode, customerCount, publicBrief,
     } };
@@ -64,14 +64,24 @@ export function BusinessIntakePage({ savedDemo }: { savedDemo?: { analysis: Busi
       setSavedProject(state.project.id);
     }
     if (!state.uploaded) {
-      setPhase("Membaca dokumen...");
-      state.project = await uploadBusinessDocuments(state.project.id, state.draft.files);
+      if (state.draft.files.length) {
+        setPhase("Membaca dokumen...");
+        state.project = await uploadBusinessDocuments(state.project.id, state.draft.files);
+      } else {
+        setPhase("Menyimpan ide...");
+        if (!state.idea) state.idea = await saveBusinessIdea(state.project.id, {
+          expected_revision: state.project.revision, expected_version: 0,
+          title: state.draft.context.name, text: state.draft.context.decision_question,
+          document_ids: [], source_turn_ids: [],
+        }, state.ideaKey);
+        state.project = await getBusinessProject(state.project.id);
+      }
       state.uploaded = true;
     }
     if (state.intent === "workspace") return { id: state.project.id, workspace: true };
     setPhase("Menyiapkan analisis otomatis...");
     state.analysisStarted = true;
-    const run = await startQuickBusinessAnalysis(state.project.id, state.project.revision, state.draft.engine, state.draft.rounds, state.analysisKey, { interaction_mode: state.draft.interactionMode, customer_count: state.draft.customerCount, public_brief: state.draft.publicBrief });
+    const run = await startQuickBusinessAnalysis(state.project.id, state.project.revision, state.draft.engine, state.draft.rounds, state.analysisKey, { interaction_mode: state.draft.interactionMode, customer_count: state.draft.customerCount, public_brief: state.draft.publicBrief, idea_revision_id: state.idea?.id });
     return { id: run.id, workspace: false };
   }, onSuccess: result => navigate(result.workspace ? `/business/projects/${result.id}?tab=chat` : `/business/analyses/${result.id}`), onError: error => {
     const rejectedBeforeAnalysis = !submission.current?.analysisStarted && error instanceof ApiError && error.status >= 400 && error.status < 500 && ![408, 429].includes(error.status);
@@ -92,14 +102,16 @@ export function BusinessIntakePage({ savedDemo }: { savedDemo?: { analysis: Busi
       if (intent.current === "workspace") savedDemo.onWorkspace(); else savedDemo.onStart();
       return;
     }
-    if (!example && files.length === 0) { setFileError("Pilih minimal satu dokumen bisnis."); return; }
     if (intent.current === "analysis" && publicBrief.trim().length < 20) { setBriefError("Isi brief untuk stakeholder minimal 20 karakter sebelum analisis. Anda tetap dapat membuka ruang ide dahulu."); return; }
     create.mutate();
   };
-  return <AppShell title={savedDemo ? "Siapkan demo Pepsodent" : "Analisis bisnis baru"} subtitle={savedDemo ? "Pilih dokumen dan isi brief contoh, lalu ikuti proses simulasinya." : "Unggah dokumen, jelaskan yang ingin diperiksa, lalu mulai. Persona disiapkan otomatis."} actions={<Link to={publicDemoOnly ? "/" : "/business"} className="button secondary">Kembali ke awal</Link>}>
-    <form className="business-workspace business-intake" onSubmit={submit}>
-      {savedDemo && <Notice>Demo ini memakai dokumen dan brief contoh Pepsodent dengan hasil yang sudah tersimpan. Pilih input contohnya dahulu; simulasi tidak memakai kredit AI.</Notice>}
-      <section><h2>Dokumen bisnis</h2>
+  const ideaOnly = !savedDemo && !example && files.length === 0;
+  const primaryIntent = ideaOnly ? "workspace" : "analysis";
+  const secondaryIntent = ideaOnly ? "analysis" : "workspace";
+  const actionDisabled = (action: "analysis" | "workspace") => create.isPending || !!fileError
+    || (!!savedDemo && (!demoDocumentSelected || publicBrief.trim().length < 20))
+    || (requestFrozen ? submittedIntent !== action : action === "analysis" && publicBrief.trim().length < 20);
+  const documentSection = (<section><h2>{savedDemo ? "Dokumen bisnis" : "Dokumen pendukung (opsional)"}</h2>{!savedDemo && <p>Bisa mulai dari ide teks saja. Tambahkan proposal atau data pendukung jika ada.</p>}
         {savedDemo ? <div className="business-upload"><p><strong>{demoDocument?.name ?? "Dokumen contoh Pepsodent"}</strong></p><p>Studi kasus sintetis yang menjadi sumber hasil demo ini.</p>{demoDocumentText && <details><summary>Lihat kutipan dokumen contoh</summary><p style={{ whiteSpace: "pre-wrap" }}>{demoDocumentText}</p><a className="business-text-button" href={`data:text/plain;charset=utf-8,${encodeURIComponent(demoDocumentText)}`} download="kutipan-contoh-pepsodent.txt">Unduh kutipan contoh (.txt)</a></details>}<button type="button" className="button secondary" disabled={demoDocumentSelected} onClick={() => { setDemoDocumentSelected(true); setFileError(""); }}>{demoDocumentSelected ? "Dokumen contoh dipilih" : "Gunakan dokumen contoh"}</button></div> : <>
         <label className="business-check"><input type="checkbox" checked={example} disabled={intakeLocked} onChange={e => { setExample(e.target.checked); reset(); setFileError(""); if (e.target.checked) selectExample(exampleId); else setEngine("oasis"); }} />Gunakan contoh proposal sintetis</label>
         {example ? <>
@@ -113,12 +125,17 @@ export function BusinessIntakePage({ savedDemo }: { savedDemo?: { analysis: Busi
           if (!invalid) { reset(); setFiles(selected); if (!context.name && selected[0]) setContext(c => ({ ...c, name: selected[0].name.replace(/\.[^.]+$/, "").slice(0, 160) })); }
         }} /><small>PDF berisi teks, DOCX, TXT atau Markdown. Maksimal {Math.round(limit / 1024 / 1024)} MB per berkas.</small>{files.map(file => <span key={`${file.name}-${file.size}`}>{file.name} ? {Math.ceil(file.size / 1024)} KB</span>)}</label>}
         </>}
-      </section>
+      </section>);
+  return <AppShell title={savedDemo ? "Siapkan demo Pepsodent" : "Analisis bisnis baru"} subtitle={savedDemo ? "Pilih dokumen dan isi brief contoh, lalu ikuti proses simulasinya." : "Ceritakan ide bisnis yang ingin dibahas. Dokumen pendukung opsional; Anda bisa berdiskusi sebelum simulasi."} actions={<Link to={publicDemoOnly ? "/" : "/business"} className="button secondary">Kembali ke awal</Link>}>
+    <form className="business-workspace business-intake" onSubmit={submit}>
+      {savedDemo && <Notice>Demo ini memakai dokumen dan brief contoh Pepsodent dengan hasil yang sudah tersimpan. Pilih input contohnya dahulu; simulasi tidak memakai kredit AI.</Notice>}
+      {savedDemo && documentSection}
       <section><h2>Apa yang ingin Anda periksa?</h2><div className="business-fields">
         <label className="business-field-wide">Nama analisis<input required minLength={2} maxLength={160} value={context.name} onChange={e => change("name", e.target.value)} disabled={intakeLocked} placeholder="Contoh: Rencana pembukaan kedai" /></label>
         <label className="business-field-wide">Keterangan dan pertanyaan<textarea required minLength={10} maxLength={2000} rows={3} value={context.decision_question} onChange={e => change("decision_question", e.target.value)} disabled={intakeLocked} placeholder="Jelaskan rencana bisnis dan keputusan yang ingin diuji. Misalnya: apa risiko ekspansi jika harga bahan baku naik?" /></label>
       </div></section>
-      <section><h2>Informasi yang boleh dibagikan</h2>{savedDemo && <><p>Gunakan brief contoh agar isi simulasi sesuai dengan konsep yang dibagikan ke persona.</p><button type="button" className="button secondary" disabled={publicBrief === savedDemo.publicBrief} onClick={() => { setPublicBrief(savedDemo.publicBrief); setBriefError(""); }}>Isi brief contoh</button></>}<StakeholderBriefField value={publicBrief} onChange={value => { reset(); setBriefError(""); setPublicBrief(value); }} disabled={intakeLocked} />{briefError && <p role="alert">{briefError}</p>}</section>
+      {!savedDemo && documentSection}
+      <section><h2>Informasi yang boleh dibagikan</h2>{!savedDemo && <p>Boleh dikosongkan untuk diskusi ide. Isi sebelum menjalankan simulasi dengan stakeholder.</p>}{savedDemo && <><p>Gunakan brief contoh agar isi simulasi sesuai dengan konsep yang dibagikan ke persona.</p><button type="button" className="button secondary" disabled={publicBrief === savedDemo.publicBrief} onClick={() => { setPublicBrief(savedDemo.publicBrief); setBriefError(""); }}>Isi brief contoh</button></>}<StakeholderBriefField value={publicBrief} onChange={value => { reset(); setBriefError(""); setPublicBrief(value); }} disabled={intakeLocked} />{briefError && <p role="alert">{briefError}</p>}</section>
       <details><summary>Pengaturan tambahan</summary><div className="business-fields">
         <label>Industri<input maxLength={100} value={context.industry} onChange={e => change("industry", e.target.value)} disabled={intakeLocked} placeholder="Opsional, jika sudah diketahui" /></label>
         <label>Wilayah<input maxLength={120} value={context.region} onChange={e => change("region", e.target.value)} disabled={intakeLocked} placeholder="Opsional, untuk mencocokkan evidence wilayah" /></label>
@@ -129,13 +146,13 @@ export function BusinessIntakePage({ savedDemo }: { savedDemo?: { analysis: Busi
         <label>Ronde interaksi<input type="number" min={2} max={12} required value={rounds} disabled={intakeLocked} onChange={e => { reset(); setRounds(Number(e.target.value)); }} /></label>
         <label>Klasifikasi data<select value={context.data_classification} disabled={example || create.isPending} onChange={e => { change("data_classification", e.target.value); if (e.target.value !== "synthetic") setEngine("oasis"); }}><option value="non_confidential">Non-rahasia</option><option value="public">Publik</option><option value="synthetic">Sintetis</option></select></label>
       </div></details>
-      <p>Persona dan asumsi disiapkan dari dokumen tanpa persetujuan satu per satu. Hasilnya tetap perlu diperiksa; nilai yang belum jelas dibiarkan belum diketahui.</p>
-      {!savedDemo && <label className="business-check"><input type="checkbox" required disabled={intakeLocked} />Saya berwenang memakai dokumen ini dan mengizinkan konteksnya diproses oleh model. Dokumen tidak memuat informasi rahasia atau data pribadi.</label>}
+      <p>Persona dan asumsi disiapkan dari ide dan dokumen yang Anda berikan tanpa persetujuan satu per satu. Hasilnya tetap perlu diperiksa; nilai yang belum jelas dibiarkan belum diketahui.</p>
+      {!savedDemo && <label className="business-check"><input type="checkbox" required disabled={intakeLocked} />Saya berwenang memakai ide dan dokumen pendukung ini serta mengizinkan konteksnya diproses oleh model. Informasi yang diberikan tidak memuat rahasia atau data pribadi.</label>}
       {engine === "fixture" && <Notice>Demo tanpa AI memakai persona kontekstual dan respons terprogram. Tidak ada panggilan model.</Notice>}
       {!savedDemo && engine === "oasis" && capabilities.data && !capabilities.data.oasis_available && <Notice error>Model atau runtime belum tersedia. Periksa layanan, atau gunakan contoh sintetis dengan mode demo di pengaturan tambahan.</Notice>}
       {fileError && <Notice error>{fileError}</Notice>}{create.isError && <Notice error>{errorText(create.error)}</Notice>}
       {create.isError && requestFrozen && <Notice>Brief dan input dibekukan karena status permintaan belum pasti. Gunakan tombol yang sama untuk mencoba permintaan tersimpan; identitas run tidak berubah.</Notice>}
-      <div className="business-actions"><button className="button primary" disabled={create.isPending || !!fileError || (!!savedDemo && !demoDocumentSelected) || (requestFrozen ? submittedIntent !== "analysis" : publicBrief.trim().length < 20)} onClick={() => { intent.current = "analysis"; }}>{phase || (savedDemo ? "Mulai simulasi demo" : "Mulai analisis")}</button><button className="button secondary" disabled={create.isPending || !!fileError || (!!savedDemo && (!demoDocumentSelected || publicBrief.trim().length < 20)) || (requestFrozen && submittedIntent !== "workspace")} onClick={() => { intent.current = "workspace"; }}>Buka ruang ide dahulu</button>{savedProject && create.isError && <Link to={`/business/projects/${savedProject}`}>Buka dokumen yang sudah tersimpan</Link>}</div>
+      <div className="business-actions"><button className="button primary" disabled={actionDisabled(primaryIntent)} onClick={() => { intent.current = primaryIntent; }}>{phase || (savedDemo ? "Mulai simulasi demo" : ideaOnly ? "Diskusikan ide" : "Mulai analisis")}</button><button className="button secondary" disabled={actionDisabled(secondaryIntent)} onClick={() => { intent.current = secondaryIntent; }}>{ideaOnly ? "Mulai simulasi" : "Buka ruang ide dahulu"}</button>{savedProject && create.isError && <Link to={`/business/projects/${savedProject}`}>Buka project yang sudah tersimpan</Link>}</div>
     </form>
   </AppShell>;
 }
