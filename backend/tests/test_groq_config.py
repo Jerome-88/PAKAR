@@ -123,6 +123,8 @@ def test_groq_endpoint_selects_free_ai_key_instead_of_old_provider_key(monkeypat
 
 def test_free_key_never_overrides_other_endpoints_or_explicit_key(monkeypatch):
     monkeypatch.setenv("FREE_AI_KEY", "test-groq-key")
+    monkeypatch.setenv("OPENAI_API_KEY", "test-openai-fallback")
+    monkeypatch.setenv("OPENAI_KEY", "test-openai-legacy-fallback")
     monkeypatch.setenv("LLM_API_KEY", "test-original-key")
     for endpoint in ("https://openrouter.ai/api/v1", "https://api.openai.com/v1", "https://api.groq.com.example/v1"):
         assert Settings.load({"TESTING": True, "LLM_BASE_URL": endpoint}).llm_api_key == "test-original-key"
@@ -206,3 +208,14 @@ def test_async_wait_preserves_cancellation_and_does_not_retry_success(monkeypatc
     with pytest.raises(asyncio.CancelledError):
         asyncio.run(groq_limits.complete_async(cancelled, "https://api.groq.com/openai/v1"))
     assert waits == [1.5]
+
+
+@pytest.mark.parametrize("standard_key,legacy_key,expected", [
+    ("test-openai-standard", "test-openai-legacy", "test-openai-standard"),
+    ("", "test-openai-legacy", "test-openai-legacy"),
+])
+def test_openai_key_aliases_are_fallbacks_only(monkeypatch, standard_key, legacy_key, expected):
+    monkeypatch.setenv("LLM_API_KEY", "")
+    monkeypatch.setenv("OPENAI_API_KEY", standard_key)
+    monkeypatch.setenv("OPENAI_KEY", legacy_key)
+    assert Settings.load({"TESTING": True, "LLM_BASE_URL": "https://api.openai.com/v1"}).llm_api_key == expected

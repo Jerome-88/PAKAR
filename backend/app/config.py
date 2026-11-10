@@ -11,7 +11,7 @@ from .llm_access import require_allowed_llm_endpoint
 
 def llm_key_for_endpoint(base_url: str | None, default_key: str | None) -> str | None:
     if urlsplit(base_url or "").hostname == "api.openai.com":
-        return os.getenv("OPENAI_API_KEY") or os.getenv("OPENAI_KEY") or default_key
+        return default_key or os.getenv("OPENAI_API_KEY") or os.getenv("OPENAI_KEY")
     if urlsplit(base_url or "").hostname == "api.groq.com":
         return os.getenv("FREE_AI_KEY") or default_key
     return default_key
